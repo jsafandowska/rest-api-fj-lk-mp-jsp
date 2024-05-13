@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @RestController
 @RequestMapping("api/v1/books")
+//swego rodzaju ścieżka do kontrolera
 @Slf4j
 public class BookController {
 
@@ -28,6 +29,7 @@ public class BookController {
         books.add(new Book(generator.incrementAndGet(), "Ogniem i mieczem", "LEKTURA", true));
         books.add(new Book(generator.incrementAndGet(), "Ogniem i mieczem 2", "LEKTURA", true));
     }
+//    te dane są zapisywane na sam koniec
 
     @GetMapping
     public ResponseEntity<List<Book>> findAll() {
