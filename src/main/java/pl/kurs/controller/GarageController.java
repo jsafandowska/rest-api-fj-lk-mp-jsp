@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.*;
 import pl.kurs.exceptions.GarageNotFoundException;
 import pl.kurs.model.Garage;
 import pl.kurs.model.command.CreateGarageCommand;
+import pl.kurs.model.command.EditGarageCommand;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -58,12 +60,12 @@ public class GarageController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Garage> editGaragePartially(@PathVariable int id, @RequestBody CreateGarageCommand command) {
+    public ResponseEntity<Garage> editGaragePartially(@PathVariable int id, @RequestBody EditGarageCommand command) {
         log.info("editGarage({}, {})", id, command);
         Garage garage = garages.stream().filter(b -> b.getId() == id).findFirst().orElseThrow(GarageNotFoundException::new);
         Optional.ofNullable(command.getAddress()).ifPresent(garage::setAddress);
         Optional.ofNullable(command.getPlaces()).ifPresent(garage::setPlaces);
-        Optional.ofNullable(command.isLpgAllowed()).ifPresent(garage::setLpgAllowed);
+        Optional.ofNullable(command.getLpgAllowed()).ifPresent(garage::setLpgAllowed);
         return ResponseEntity.status(HttpStatus.OK).body(garage);
     }
 }

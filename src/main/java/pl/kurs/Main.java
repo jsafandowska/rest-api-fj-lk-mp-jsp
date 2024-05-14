@@ -10,9 +10,6 @@ public class Main {
 
         SpringApplication.run(Main.class, args);
 
-        // stworz dwie klasy Car(id, brand,model, String fuelType)
-        // Garage(id, int places, address,  boolean lpgAllowed)
-        // tworzymy nowe kontrolery i pelnego CRUDA
 
     }
 }
