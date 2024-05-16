@@ -6,8 +6,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.kurs.exceptions.CarNotFoundException;
+import pl.kurs.model.Book;
 import pl.kurs.model.Car;
 import pl.kurs.model.command.CreateCarCommand;
+import pl.kurs.model.command.EditCarCommand;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -17,14 +20,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RequestMapping("api/v1/cars")
 @Slf4j
 public class CarController {
-
     private List<Car> cars = new ArrayList<>();
     private AtomicInteger generator = new AtomicInteger(0);
 
     @PostConstruct
     public void init() {
-        cars.add(new Car(generator.incrementAndGet(), "Mercedes", "S-class", "petrol"));
-        cars.add(new Car(generator.incrementAndGet(), "Audi", "RS", "petrol"));
+        cars.add(new Car(generator.incrementAndGet(), "BMW", "M5", "petrol"));
+        cars.add(new Car(generator.incrementAndGet(), "Porsche", "911", "petrol"));
     }
 
     @GetMapping
@@ -57,7 +59,7 @@ public class CarController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Car> editCar(@PathVariable int id, @RequestBody CreateCarCommand command) {
+    public ResponseEntity<Car> editCar(@PathVariable int id, @RequestBody EditCarCommand command) {
         log.info("editCar({}, {})", id, command);
         Car car = cars.stream().filter(b -> b.getId() == id).findFirst().orElseThrow(CarNotFoundException::new);
         car.setBrand(command.getBrand());
@@ -67,7 +69,7 @@ public class CarController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Car> editCarPartially(@PathVariable int id, @RequestBody CreateCarCommand command) {
+    public ResponseEntity<Car> editCarPartially(@PathVariable int id, @RequestBody EditCarCommand command) {
         log.info("editCar({}, {})", id, command);
         Car car = cars.stream().filter(b -> b.getId() == id).findFirst().orElseThrow(CarNotFoundException::new);
         Optional.ofNullable(command.getBrand()).ifPresent(car::setBrand);
@@ -75,5 +77,4 @@ public class CarController {
         Optional.ofNullable(command.getFuelType()).ifPresent(car::setFuelType);
         return ResponseEntity.status(HttpStatus.OK).body(car);
     }
-
 }
