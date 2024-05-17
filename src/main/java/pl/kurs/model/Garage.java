@@ -10,5 +10,6 @@ import lombok.*;
 public class Garage {
     private int id;
     private int places;
+    private String address;
     private boolean lpgAllowed;
 }

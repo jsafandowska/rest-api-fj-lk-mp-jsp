@@ -8,6 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @ToString
 public class EditGarageCommand {
-    private boolean lpgAllowed;
+    private Integer places;
+    private String address;
+    private Boolean lpgAllowed;
 }
-
