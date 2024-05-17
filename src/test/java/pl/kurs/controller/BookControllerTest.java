@@ -49,13 +49,12 @@ class BookControllerTest {
         books.add(new Book(bookIdGenerator.getId(), "Pan Tadeusz", "LEKTURA", true));
 
         postman.perform(get("/api/v1/books/1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.title").value("Pan Tadeusz"))
-                .andExpect(jsonPath("$.category").value("LEKTURA"))
-                .andExpect(jsonPath("$.available").value(true));
+               .andExpect(status().isOk())
+               .andExpect(jsonPath("$.id").value(1))
+               .andExpect(jsonPath("$.title").value("Pan Tadeusz"))
+               .andExpect(jsonPath("$.category").value("LEKTURA"))
+               .andExpect(jsonPath("$.available").value(true));
     }
-
 
 
     @Test
@@ -64,13 +63,13 @@ class BookControllerTest {
         String json = objectMapper.writeValueAsString(command);
 
         postman.perform(post("/api/v1/books")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.title").value("podstawy java"))
-                .andExpect(jsonPath("$.category").value("NAUKOWE"))
-                .andExpect(jsonPath("$.available").value(true));
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(json))
+               .andExpect(status().isCreated())
+               .andExpect(jsonPath("$.id").exists())
+               .andExpect(jsonPath("$.title").value("podstawy java"))
+               .andExpect(jsonPath("$.category").value("NAUKOWE"))
+               .andExpect(jsonPath("$.available").value(true));
 
         Book recentlyAdded = books.get(books.size() - 1);
         Assertions.assertEquals("podstawy java", recentlyAdded.getTitle());
@@ -79,5 +78,21 @@ class BookControllerTest {
         Assertions.assertTrue(recentlyAdded.getId() > 0);
 
         Mockito.verify(bookIdGenerator, Mockito.times(1)).getId();
+    }
+
+    @Test
+    public void shouldReturnAllBooks() throws Exception {
+        books.add(new Book(bookIdGenerator.getId(), "Pan Tadeusz", "LEKTURA", true));
+        books.add(new Book(bookIdGenerator.getId(), "Jas i Malgosia", "LEKTURA", true));
+        postman.perform(get("/api/v1/books"))
+               .andExpect(status().isOk())
+               .andExpect(jsonPath("$[0].id").value(1))
+               .andExpect(jsonPath("$[0].title").value("Pan Tadeusz"))
+               .andExpect(jsonPath("$[0].category").value("LEKTURA"))
+               .andExpect(jsonPath("$[0].available").value(true))
+               .andExpect(jsonPath("$[1].id").value(2))
+               .andExpect(jsonPath("$[1].title").value("Jas i Malgosia"))
+               .andExpect(jsonPath("$[1].category").value("LEKTURA"))
+               .andExpect(jsonPath("$[1].available").value(true));
     }
 }
