@@ -1,4 +1,5 @@
 package pl.kurs.controller;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -7,6 +8,7 @@ import pl.kurs.exceptions.GarageNotFoundException;
 import pl.kurs.model.Garage;
 import pl.kurs.model.command.CreateGarageCommand;
 import pl.kurs.model.command.EditGarageCommand;
+import pl.kurs.service.GarageIdGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,9 +18,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RestController
 @RequestMapping("api/v1/garages")
 @Slf4j
+@RequiredArgsConstructor
 public class GarageController {
-    private List<Garage> garages = new ArrayList<>();
-    private AtomicInteger generator = new AtomicInteger(0);
+    private final List<Garage> garages;
+    private final GarageIdGenerator garageIdGenerator;
 
     @GetMapping
     public ResponseEntity<List<Garage>> findAll() {
@@ -29,7 +32,7 @@ public class GarageController {
     @PostMapping
     public ResponseEntity<Garage> addGarage(@RequestBody CreateGarageCommand command) {
         log.info("addGarage({})", command);
-        Garage garage = new Garage(generator.incrementAndGet(), command.getPlaces(), command.getAddress(), command.isLpgAllowed());
+        Garage garage = new Garage(garageIdGenerator.getId(), command.getPlaces(), command.getAddress(), command.isLpgAllowed());
         garages.add(garage);
         return ResponseEntity.status(HttpStatus.CREATED).body(garage);
     }
