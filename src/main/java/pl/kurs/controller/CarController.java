@@ -1,6 +1,7 @@
 package pl.kurs.controller;
 
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import pl.kurs.exceptions.CarNotFoundException;
 import pl.kurs.model.Car;
 import pl.kurs.model.command.CreateCarCommand;
+import pl.kurs.service.CarIdGenerator;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -16,16 +19,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RestController
 @RequestMapping("api/v1/cars")
 @Slf4j
+@RequiredArgsConstructor
 public class CarController {
 
-    private List<Car> cars = new ArrayList<>();
-    private AtomicInteger generator = new AtomicInteger(0);
+    private final List<Car> cars;
+    private final CarIdGenerator generator;
 
-    @PostConstruct
-    public void init() {
-        cars.add(new Car(generator.incrementAndGet(), "Mercedes", "S-class", "petrol"));
-        cars.add(new Car(generator.incrementAndGet(), "Audi", "RS", "petrol"));
-    }
+//    @PostConstruct
+//    public void init() {
+//        cars.add(new Car(generator.incrementAndGet(), "Mercedes", "S-class", "petrol"));
+//        cars.add(new Car(generator.incrementAndGet(), "Audi", "RS", "petrol"));
+//    }
 
     @GetMapping
     public ResponseEntity<List<Car>> findAll() {
@@ -36,7 +40,7 @@ public class CarController {
     @PostMapping
     public ResponseEntity<Car> addCar(@RequestBody CreateCarCommand command) {
         log.info("addCar({})", command);
-        Car car = new Car(generator.incrementAndGet(), command.getBrand(), command.getModel(), command.getFuelType());
+        Car car = new Car(generator.getId(), command.getBrand(), command.getModel(), command.getFuelType());
         cars.add(car);
         return ResponseEntity.status(HttpStatus.CREATED).body(car);
     }
