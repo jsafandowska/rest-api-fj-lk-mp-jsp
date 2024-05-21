@@ -13,11 +13,9 @@ import pl.kurs.model.command.CreateBookCommand;
 import pl.kurs.model.command.EditBookCommand;
 import pl.kurs.service.BookIdGenerator;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
+
 
 @RestController
 @RequestMapping("api/v1/books")
@@ -85,6 +83,7 @@ public class BookController {
         Optional.ofNullable(command.getTitle()).ifPresent(book::setTitle);
         return ResponseEntity.status(HttpStatus.OK).body(book);
     }
+
 
 
 }
