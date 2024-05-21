@@ -1,6 +1,4 @@
 package pl.kurs.controller;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -11,19 +9,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import pl.kurs.Main;
 import pl.kurs.model.Book;
 import pl.kurs.model.command.CreateBookCommand;
 import pl.kurs.model.command.EditBookCommand;
 import pl.kurs.service.BookIdGenerator;
-
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -82,7 +73,6 @@ class BookControllerTest {
 
     @Test
     public void shouldDeleteBook() throws Exception {
-        // Setup: Add a book to the list
         Book bookToDelete = new Book(bookIdGenerator.getId(), "Some Title", "Some Category", true);
         books.add(bookToDelete);
         postman.perform(delete("/api/v1/books/" + bookToDelete.getId()))
@@ -93,7 +83,6 @@ class BookControllerTest {
 
     @Test
     public void shouldEditBook() throws Exception {
-        // Setup: Add a book to the list
         Book book = new Book(bookIdGenerator.getId(), "Old Title", "Old Category", true);
         books.add(book);
         int bookId = book.getId();

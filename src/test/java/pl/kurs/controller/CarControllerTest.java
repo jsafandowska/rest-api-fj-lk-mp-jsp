@@ -2,7 +2,6 @@ package pl.kurs.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +18,6 @@ import pl.kurs.service.CarIdGenerator;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -36,18 +34,36 @@ public class CarControllerTest {
     @SpyBean
     private CarIdGenerator idGenerator;
 
-
     @Test
     public void shouldReturnSingleCar() throws Exception {
         Car car = new Car(idGenerator.getId(), "Audi", "RS5", "petrol");
         cars.add(car);
-//        cars.add(new Car(idGenerator.getId(), "Audi", "RS5", "petrol"));
-        postman.perform(get("/api/v1/cars/"+car.getId()))
+        postman.perform(get("/api/v1/cars/" + car.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(car.getId()))
                 .andExpect(jsonPath("$.brand").value("Audi"))
                 .andExpect(jsonPath("$.model").value("RS5"))
                 .andExpect(jsonPath("$.fuelType").value("petrol"));
+    }
+
+
+    @Test
+    public void shouldReturnAllCars() throws Exception {
+        cars.clear();
+        Car car1 = new Car(idGenerator.getId(), "BMW", "M3", "petrol");
+        Car car2 = new Car(idGenerator.getId(), "BMW", "M2", "petrol");
+        cars.add(car1);
+        cars.add(car2);
+        postman.perform(get("/api/v1/cars"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(car1.getId()))
+                .andExpect(jsonPath("$[0].brand").value("BMW"))
+                .andExpect(jsonPath("$[0].model").value("M3"))
+                .andExpect(jsonPath("$[0].fuelType").value("petrol"))
+                .andExpect(jsonPath("$[1].id").value(car2.getId()))
+                .andExpect(jsonPath("$[1].brand").value("BMW"))
+                .andExpect(jsonPath("$[1].model").value("M2"))
+                .andExpect(jsonPath("$[1].fuelType").value("petrol"));
     }
 
 

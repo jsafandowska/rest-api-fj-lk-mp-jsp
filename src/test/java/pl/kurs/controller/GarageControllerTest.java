@@ -37,14 +37,33 @@ public class GarageControllerTest {
 
     @Test
     public void shouldReturnSingleGarage() throws Exception {
-       Garage garage = new Garage(idGenerator.getId(), 3, "Gdańsk", true);
-       garages.add(garage);
-        postman.perform(get("/api/v1/garages/"+garage.getId()))
+        Garage garage = new Garage(idGenerator.getId(), 3, "Gdańsk", true);
+        garages.add(garage);
+        postman.perform(get("/api/v1/garages/" + garage.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(garage.getId()))
                 .andExpect(jsonPath("$.places").value(3))
                 .andExpect(jsonPath("$.address").value("Gdańsk"))
                 .andExpect(jsonPath("$.lpgAllowed").value(true));
+    }
+
+    @Test
+    public void shouldReturnAllGarages() throws Exception {
+        garages.clear();
+        Garage garage1 = new Garage(idGenerator.getId(), 3, "Gdańsk", true);
+        Garage garage2 = new Garage(idGenerator.getId(), 3, "Gdańsk", false);
+        garages.add(garage1);
+        garages.add(garage2);
+        postman.perform(get("/api/v1/garages"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(garage1.getId()))
+                .andExpect(jsonPath("$[0].places").value(3))
+                .andExpect(jsonPath("$[0].address").value("Gdańsk"))
+                .andExpect(jsonPath("$[0].lpgAllowed").value(true))
+                .andExpect(jsonPath("$[1].id").value(garage2.getId()))
+                .andExpect(jsonPath("$[1].places").value(3))
+                .andExpect(jsonPath("$[1].address").value("Gdańsk"))
+                .andExpect(jsonPath("$[1].lpgAllowed").value(false));
     }
 
     @Test
