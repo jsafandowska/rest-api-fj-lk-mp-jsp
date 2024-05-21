@@ -20,8 +20,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 @RequiredArgsConstructor
 public class GarageController {
+
     private final List<Garage> garages;
-    private final GarageIdGenerator garageIdGenerator;
+    private final GarageIdGenerator generator;
 
     @GetMapping
     public ResponseEntity<List<Garage>> findAll() {
@@ -32,7 +33,7 @@ public class GarageController {
     @PostMapping
     public ResponseEntity<Garage> addGarage(@RequestBody CreateGarageCommand command) {
         log.info("addGarage({})", command);
-        Garage garage = new Garage(garageIdGenerator.getId(), command.getPlaces(), command.getAddress(), command.isLpgAllowed());
+        Garage garage = new Garage(generator.getId(), command.getPlaces(), command.getAddress(), command.isLpgAllowed());
         garages.add(garage);
         return ResponseEntity.status(HttpStatus.CREATED).body(garage);
     }

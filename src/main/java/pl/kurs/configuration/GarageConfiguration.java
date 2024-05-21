@@ -12,7 +12,7 @@ import java.util.List;
 @Configuration
 public class GarageConfiguration {
     @Bean
-    public List<Garage> garages(){
-        return  Collections.synchronizedList(new ArrayList<>());
+    public List<Garage> garages() {
+        return Collections.synchronizedList(new ArrayList<>());
     }
 }

@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class CarIdGenerator {
     private final AtomicInteger idGenerator = new AtomicInteger(0);
 
-    public int getId(){
+    public int getId() {
         return idGenerator.incrementAndGet();
     }
 }

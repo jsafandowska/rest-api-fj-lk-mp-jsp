@@ -15,127 +15,138 @@ import pl.kurs.model.Garage;
 import pl.kurs.model.command.CreateGarageCommand;
 import pl.kurs.model.command.EditGarageCommand;
 import pl.kurs.service.GarageIdGenerator;
+
 import java.util.List;
+
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = Main.class)
 @AutoConfigureMockMvc
-class GarageControllerTest {
-
+public class GarageControllerTest {
     @Autowired
     private MockMvc postman;
-
     @Autowired
     private List<Garage> garages;
-
     @Autowired
-    private ObjectMapper objectMapper;
-
+    private ObjectMapper obj;
     @SpyBean
-    private GarageIdGenerator garageIdGenerator;
+    private GarageIdGenerator idGenerator;
 
     @Test
     public void shouldReturnSingleGarage() throws Exception {
-        garages.add(new Garage(garageIdGenerator.getId(), 100, "Prosta 2", true));
-
-        postman.perform(get("/api/v1/garages/1"))
-               .andExpect(status().isOk())
-               .andExpect(jsonPath("$.id").value(1))
-               .andExpect(jsonPath("$.places").value(100))
-               .andExpect(jsonPath("$.address").value("Prosta 2"))
-               .andExpect(jsonPath("$.lpgAllowed").value(true));
-    }
-
-
-    @Test
-    public void shouldAddGarage() throws Exception {
-        CreateGarageCommand command = new CreateGarageCommand(200, "Kreta 10", false);
-        String json = objectMapper.writeValueAsString(command);
-
-        postman.perform(post("/api/v1/garages")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(json))
-               .andExpect(status().isCreated())
-               .andExpect(jsonPath("$.id").exists())
-               .andExpect(jsonPath("$.places").value(200))
-               .andExpect(jsonPath("$.address").value("Kreta 10"))
-               .andExpect(jsonPath("$.lpgAllowed").value(false));
-
-        Garage recentlyAdded = garages.get(garages.size() - 1);
-        Assertions.assertEquals(200, recentlyAdded.getPlaces());
-        Assertions.assertEquals("Kreta 10", recentlyAdded.getAddress());
-        Assertions.assertFalse(recentlyAdded.isLpgAllowed());
-        Assertions.assertTrue(recentlyAdded.getId() > 0);
-
-        Mockito.verify(garageIdGenerator, Mockito.times(1)).getId();
+        Garage garage = new Garage(idGenerator.getId(), 3, "Gdańsk", true);
+        garages.add(garage);
+        postman.perform(get("/api/v1/garages/" + garage.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(garage.getId()))
+                .andExpect(jsonPath("$.places").value(3))
+                .andExpect(jsonPath("$.address").value("Gdańsk"))
+                .andExpect(jsonPath("$.lpgAllowed").value(true));
     }
 
     @Test
     public void shouldReturnAllGarages() throws Exception {
-        garages.add(new Garage(garageIdGenerator.getId(), 100, "Prosta 2", true));
-        garages.add(new Garage(garageIdGenerator.getId(), 200, "Kreta 10", false));
+        garages.clear();
+        Garage garage1 = new Garage(idGenerator.getId(), 3, "Gdańsk", true);
+        Garage garage2 = new Garage(idGenerator.getId(), 3, "Gdańsk", false);
+        garages.add(garage1);
+        garages.add(garage2);
         postman.perform(get("/api/v1/garages"))
-               .andExpect(status().isOk())
-               .andExpect(jsonPath("$[0].id").value(1))
-               .andExpect(jsonPath("$[0].places").value(100))
-               .andExpect(jsonPath("$[0].address").value("Prosta 2"))
-               .andExpect(jsonPath("$[0].lpgAllowed").value(true))
-               .andExpect(jsonPath("$[1].id").value(2))
-               .andExpect(jsonPath("$[1].places").value(200))
-               .andExpect(jsonPath("$[1].address").value("Kreta 10"))
-               .andExpect(jsonPath("$[1].lpgAllowed").value(false));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(garage1.getId()))
+                .andExpect(jsonPath("$[0].places").value(3))
+                .andExpect(jsonPath("$[0].address").value("Gdańsk"))
+                .andExpect(jsonPath("$[0].lpgAllowed").value(true))
+                .andExpect(jsonPath("$[1].id").value(garage2.getId()))
+                .andExpect(jsonPath("$[1].places").value(3))
+                .andExpect(jsonPath("$[1].address").value("Gdańsk"))
+                .andExpect(jsonPath("$[1].lpgAllowed").value(false));
     }
 
     @Test
-    public void shouldDeleteOneGarage() throws Exception {
-        garages.add(new Garage(garageIdGenerator.getId(), 100, "Prosta 2", true));
-        garages.add(new Garage(garageIdGenerator.getId(), 200, "Kreta 10", false));
-        postman.perform(delete("/api/v1/garages/1"))
-               .andExpect(status().isNoContent());
-        Assertions.assertEquals(garages.size(), 1);
+    public void shouldAddGarage() throws Exception {
+        CreateGarageCommand command = new CreateGarageCommand(2, "Sopot", true);
+        String json = obj.writeValueAsString(command);
+
+        postman.perform(post("/api/v1/garages")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.places").value(2))
+                .andExpect(jsonPath("$.address").value("Sopot"))
+                .andExpect(jsonPath("$.lpgAllowed").value(true));
+
+        Garage recentlyAdded = garages.get(garages.size() - 1);
+        Assertions.assertEquals(2, recentlyAdded.getPlaces());
+        Assertions.assertEquals("Sopot", recentlyAdded.getAddress());
+        Assertions.assertTrue(recentlyAdded.isLpgAllowed());
+        Assertions.assertTrue(recentlyAdded.getId() > 0);
+
+        Mockito.verify(idGenerator, Mockito.times(1)).getId();
+    }
+
+    //
+    @Test
+    public void shouldDeleteGarage() throws Exception {
+        Garage garageToDelete = new Garage(idGenerator.getId(), 1, "Warszawa", true);
+        garages.add(garageToDelete);
+
+        postman.perform(delete("/api/v1/garages/" + garageToDelete.getId()))
+                .andExpect(status().isNoContent());
+        boolean garageExists = garages.stream().anyMatch(garage -> garage.getId() == garageToDelete.getId());
+        Assertions.assertFalse(garageExists, "The garage should be deleted from the list");
     }
 
     @Test
     public void shouldEditGarage() throws Exception {
-        garages.add(new Garage(garageIdGenerator.getId(), 100, "Prosta 2", true));
-        EditGarageCommand command = new EditGarageCommand(200, "Nowa 1", false);
-        String json = objectMapper.writeValueAsString(command);
+        Garage garage = new Garage(idGenerator.getId(), 1, "oldAddress", false);
+        garages.add(garage);
 
-        postman.perform(put("/api/v1/garages/1")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(json))
-               .andExpect(status().isOk())
-               .andExpect(jsonPath("$.id").value(1))
-               .andExpect(jsonPath("$.places").value(200))
-               .andExpect(jsonPath("$.address").value("Nowa 1"))
-               .andExpect(jsonPath("$.lpgAllowed").value(false));
+        CreateGarageCommand command = new CreateGarageCommand(2, "newAddress", true);
+        String json = obj.writeValueAsString(command);
 
-        Garage updatedGarage = garages.get(0);
-        Assertions.assertEquals(200, updatedGarage.getPlaces());
-        Assertions.assertEquals("Nowa 1", updatedGarage.getAddress());
-        Assertions.assertFalse(updatedGarage.isLpgAllowed());
+        postman.perform(put("/api/v1/garages/" + garage.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.places").value(2))
+                .andExpect(jsonPath("$.address").value("newAddress"))
+                .andExpect(jsonPath("$.lpgAllowed").value(true));
+        Garage createdgarage = garages.stream().filter(b -> b.getId() == garage.getId()).findFirst().orElse(null);
+
+        Assertions.assertNotNull(createdgarage, "The book should exist in the list");
+        Assertions.assertEquals(2, createdgarage.getPlaces());
+        Assertions.assertEquals("newAddress", createdgarage.getAddress());
+        Assertions.assertTrue(createdgarage.isLpgAllowed());
     }
 
     @Test
-    public void shouldPartiallyEditGarage() throws Exception {
-        garages.add(new Garage(garageIdGenerator.getId(), 100, "Prosta 2", true));
-        EditGarageCommand command = new EditGarageCommand(300, null, true);
-        String json = objectMapper.writeValueAsString(command);
+    public void shouldEditGaragePartially() throws Exception {
 
-        postman.perform(patch("/api/v1/garages/1")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(json))
-               .andExpect(status().isOk())
-               .andExpect(jsonPath("$.id").value(1))
-               .andExpect(jsonPath("$.places").value(300))
-               .andExpect(jsonPath("$.address").value("Prosta 2"))
-               .andExpect(jsonPath("$.lpgAllowed").value(true));
+        Garage garage = new Garage(idGenerator.getId(), 1, "oldAddress", false);
+        garages.add(garage);
 
-        Garage partiallyUpdatedGarage = garages.get(0);
-        Assertions.assertEquals(300, partiallyUpdatedGarage.getPlaces());
-        Assertions.assertEquals("Prosta 2", partiallyUpdatedGarage.getAddress());
-        Assertions.assertTrue(partiallyUpdatedGarage.isLpgAllowed());
+        EditGarageCommand command = new EditGarageCommand(null, "newAddress", null);
+        String json = obj.writeValueAsString(command);
+        postman.perform(patch("/api/v1/garages/" + garage.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.places").value(1))
+                .andExpect(jsonPath("$.address").value("newAddress"))
+                .andExpect(jsonPath("$.lpgAllowed").value(false));
+        Garage editedGarage = garages.stream().filter(b -> b.getId() == garage.getId()).findFirst().orElse(null);
+
+        Assertions.assertNotNull(editedGarage, "The garage should exist in the list");
+        Assertions.assertEquals(1, editedGarage.getPlaces());
+        Assertions.assertEquals("newAddress", editedGarage.getAddress());
+        Assertions.assertFalse(editedGarage.isLpgAllowed());
+
     }
 }

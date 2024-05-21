@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class CarController {
 
     private final List<Car> cars;
-    private final CarIdGenerator carIdGenerator;
+    private final CarIdGenerator generator;
 
 //    @PostConstruct
 //    public void init() {
@@ -40,7 +40,7 @@ public class CarController {
     @PostMapping
     public ResponseEntity<Car> addCar(@RequestBody CreateCarCommand command) {
         log.info("addCar({})", command);
-        Car car = new Car(carIdGenerator.getId(), command.getBrand(), command.getModel(), command.getFuelType());
+        Car car = new Car(generator.getId(), command.getBrand(), command.getModel(), command.getFuelType());
         cars.add(car);
         return ResponseEntity.status(HttpStatus.CREATED).body(car);
     }
