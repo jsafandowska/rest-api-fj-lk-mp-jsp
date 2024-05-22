@@ -12,7 +12,8 @@ import java.util.List;
 @Configuration
 public class CarConfiguration {
     @Bean
-    public List<Car> cars(){
-        return  Collections.synchronizedList(new ArrayList<>());
+    public List<Car> cars() {
+        return Collections.synchronizedList(new ArrayList<>());
     }
+
 }
