@@ -7,10 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.kurs.exceptions.CarNotFoundException;
-import pl.kurs.model.Book;
 import pl.kurs.model.Car;
 import pl.kurs.model.command.CreateCarCommand;
-import pl.kurs.model.command.EditCarCommand;
 import pl.kurs.service.CarIdGenerator;
 
 import java.util.ArrayList;
@@ -22,15 +20,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RequestMapping("api/v1/cars")
 @Slf4j
 @RequiredArgsConstructor
-
 public class CarController {
+
     private final List<Car> cars;
-    private final CarIdGenerator carIdGenerator;
+    private final CarIdGenerator generator;
 
 //    @PostConstruct
 //    public void init() {
-//        cars.add(new Car(carIdGenerator.getId(), "BMW", "M5", "petrol"));
-//        cars.add(new Car(carIdGenerator.getId(), "Porsche", "911", "petrol"));
+//        cars.add(new Car(generator.incrementAndGet(), "Mercedes", "S-class", "petrol"));
+//        cars.add(new Car(generator.incrementAndGet(), "Audi", "RS", "petrol"));
 //    }
 
     @GetMapping
@@ -42,7 +40,7 @@ public class CarController {
     @PostMapping
     public ResponseEntity<Car> addCar(@RequestBody CreateCarCommand command) {
         log.info("addCar({})", command);
-        Car car = new Car(carIdGenerator.getId(), command.getBrand(), command.getModel(), command.getFuelType());
+        Car car = new Car(generator.getId(), command.getBrand(), command.getModel(), command.getFuelType());
         cars.add(car);
         return ResponseEntity.status(HttpStatus.CREATED).body(car);
     }
@@ -63,7 +61,7 @@ public class CarController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Car> editCar(@PathVariable int id, @RequestBody EditCarCommand command) {
+    public ResponseEntity<Car> editCar(@PathVariable int id, @RequestBody CreateCarCommand command) {
         log.info("editCar({}, {})", id, command);
         Car car = cars.stream().filter(b -> b.getId() == id).findFirst().orElseThrow(CarNotFoundException::new);
         car.setBrand(command.getBrand());
@@ -73,7 +71,7 @@ public class CarController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Car> editCarPartially(@PathVariable int id, @RequestBody EditCarCommand command) {
+    public ResponseEntity<Car> editCarPartially(@PathVariable int id, @RequestBody CreateCarCommand command) {
         log.info("editCar({}, {})", id, command);
         Car car = cars.stream().filter(b -> b.getId() == id).findFirst().orElseThrow(CarNotFoundException::new);
         Optional.ofNullable(command.getBrand()).ifPresent(car::setBrand);
@@ -81,4 +79,5 @@ public class CarController {
         Optional.ofNullable(command.getFuelType()).ifPresent(car::setFuelType);
         return ResponseEntity.status(HttpStatus.OK).body(car);
     }
+
 }
