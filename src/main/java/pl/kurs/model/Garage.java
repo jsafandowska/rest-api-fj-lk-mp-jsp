@@ -1,10 +1,10 @@
 package pl.kurs.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -18,6 +18,9 @@ public class Garage {
     private int places;
     private String address;
     private boolean lpgAllowed;
+    @OneToMany(mappedBy = "garage")
+    @ToString.Exclude
+    private Set<Car> cars = new HashSet<>();
 
     public Garage(int places, String address, boolean lpgAllowed) {
         this.places = places;

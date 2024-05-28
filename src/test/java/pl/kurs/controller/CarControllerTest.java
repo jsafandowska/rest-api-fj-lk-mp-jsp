@@ -11,8 +11,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import pl.kurs.Main;
 import pl.kurs.model.Car;
+import pl.kurs.model.Garage;
 import pl.kurs.model.command.CreateCarCommand;
 import pl.kurs.repository.CarRepository;
+import pl.kurs.repository.GarageRepository;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -25,25 +27,30 @@ public class CarControllerTest {
     @Autowired
     private MockMvc postman;
     @Autowired
-    private ObjectMapper obj;
+    private ObjectMapper objectMapper;
     @Autowired
     private CarRepository carRepository;
+    @Autowired
+    private GarageRepository garageRepository;
 
     @Test
     public void shouldReturnSingleCar() throws Exception {
-        Car car = carRepository.saveAndFlush(new Car("Audi", "RS5", "petrol"));
+        Garage garage = garageRepository.findAllWithCars().get(0);
+        Car car = carRepository.saveAndFlush(new Car("Audi", "RS5", "petrol", garage));
         postman.perform(get("/api/v1/cars/" + car.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(car.getId()))
                 .andExpect(jsonPath("$.brand").value("Audi"))
                 .andExpect(jsonPath("$.model").value("RS5"))
-                .andExpect(jsonPath("$.fuelType").value("petrol"));
+                .andExpect(jsonPath("$.fuelType").value("petrol"))
+                .andExpect(jsonPath("$.garageId").value(garage.getId()));
     }
 
     @Test
     public void shouldAddCar() throws Exception {
-        CreateCarCommand command = new CreateCarCommand("Audi", "RS5", "petrol");
-        String json = obj.writeValueAsString(command);
+        Garage garage = garageRepository.findAllWithCars().get(0);
+        CreateCarCommand command = new CreateCarCommand("Audi", "RS5", "petrol", garage.getId());
+        String json = objectMapper.writeValueAsString(command);
         String responseString = postman.perform(post("/api/v1/cars")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
@@ -52,22 +59,24 @@ public class CarControllerTest {
                 .andExpect(jsonPath("$.brand").value("Audi"))
                 .andExpect(jsonPath("$.model").value("RS5"))
                 .andExpect(jsonPath("$.fuelType").value("petrol"))
+                .andExpect(jsonPath("$.garageId").value(garage.getId()))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
 
-        Car saved = obj.readValue(responseString, Car.class);
+        Car saved = objectMapper.readValue(responseString, Car.class);
         Car recentlyAdded = carRepository.findById(saved.getId()).get();
         Assertions.assertEquals("Audi", recentlyAdded.getBrand());
         Assertions.assertEquals("RS5", recentlyAdded.getModel());
         Assertions.assertEquals("petrol", recentlyAdded.getFuelType());
-        Assertions.assertEquals(saved.getId(), recentlyAdded.getId());
+        Assertions.assertEquals(garage.getId(), recentlyAdded.getGarage().getId());
         Assertions.assertTrue(recentlyAdded.getId() > 0);
     }
 
     @Test
     public void shouldDeleteCar() throws Exception {
-        Car carToDelete = carRepository.saveAndFlush(new Car("Mercedes", "C63", "petrol"));
+        Garage garage = garageRepository.findAllWithCars().get(0);
+        Car carToDelete = carRepository.saveAndFlush(new Car("Mercedes", "C63", "petrol", garage));
         postman.perform(delete("/api/v1/cars/" + carToDelete.getId()))
                 .andExpect(status().isNoContent());
         boolean carExists = carRepository.existsById(carToDelete.getId());
@@ -76,9 +85,11 @@ public class CarControllerTest {
 
     @Test
     public void shouldEditCar() throws Exception {
-        Car carToEdit = carRepository.saveAndFlush(new Car("Mercedes", "C63", "petrol"));
-        CreateCarCommand command = new CreateCarCommand("BMW", "M6", "petrol");
-        String json = obj.writeValueAsString(command);
+        Garage garage = garageRepository.findAllWithCars().get(0);
+        Car carToEdit = carRepository.saveAndFlush(new Car("Mercedes", "C63", "petrol", garage));
+
+        CreateCarCommand command = new CreateCarCommand("BMW", "M6", "petrol", garage.getId());
+        String json = objectMapper.writeValueAsString(command);
         String responseString = postman.perform(put("/api/v1/cars/" + carToEdit.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
@@ -87,23 +98,27 @@ public class CarControllerTest {
                 .andExpect(jsonPath("$.brand").value("BMW"))
                 .andExpect(jsonPath("$.model").value("M6"))
                 .andExpect(jsonPath("$.fuelType").value("petrol"))
+                .andExpect(jsonPath("$.garageId").value(garage.getId()))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
-        Car saved = obj.readValue(responseString, Car.class);
+        Car saved = objectMapper.readValue(responseString, Car.class);
         Car recentlyAdded = carRepository.findById(saved.getId()).get();
         Assertions.assertNotNull(recentlyAdded, "The car should exist in the list");
         Assertions.assertEquals("BMW", recentlyAdded.getBrand());
         Assertions.assertEquals("M6", recentlyAdded.getModel());
         Assertions.assertEquals("petrol", recentlyAdded.getFuelType());
+        Assertions.assertEquals(garage.getId(), recentlyAdded.getGarage().getId());
         Assertions.assertTrue(recentlyAdded.getId() > 0);
     }
 
     @Test
     public void shouldEditCarPartially() throws Exception {
-        Car carToDelete = carRepository.saveAndFlush(new Car("Mercedes", "C63", "petrol"));
-        CreateCarCommand command = new CreateCarCommand(null, "M6", null);
-        String json = obj.writeValueAsString(command);
+        Garage garage = garageRepository.findAllWithCars().get(0);
+        Car carToDelete = carRepository.saveAndFlush(new Car("Mercedes", "C63", "petrol", garage));
+
+        CreateCarCommand command = new CreateCarCommand(null, "M6", null, garage.getId());
+        String json = objectMapper.writeValueAsString(command);
         String responseString = postman.perform(patch("/api/v1/cars/" + carToDelete.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
@@ -112,18 +127,21 @@ public class CarControllerTest {
                 .andExpect(jsonPath("$.brand").value("Mercedes"))
                 .andExpect(jsonPath("$.model").value("M6"))
                 .andExpect(jsonPath("$.fuelType").value("petrol"))
+                .andExpect(jsonPath("$.garageId").value(garage.getId()))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
 
-        Car saved = obj.readValue(responseString, Car.class);
+        Car saved = objectMapper.readValue(responseString, Car.class);
         Car recentlyAdded = carRepository.findById(saved.getId()).get();
         Assertions.assertNotNull(recentlyAdded, "The car should exist in the list");
         Assertions.assertEquals(saved.getId(), recentlyAdded.getId());
         Assertions.assertEquals("Mercedes", recentlyAdded.getBrand());
         Assertions.assertEquals("M6", recentlyAdded.getModel());
         Assertions.assertEquals("petrol", recentlyAdded.getFuelType());
+        Assertions.assertEquals(garage.getId(), recentlyAdded.getGarage().getId());
         Assertions.assertTrue(recentlyAdded.getId() > 0);
 
     }
 }
+
