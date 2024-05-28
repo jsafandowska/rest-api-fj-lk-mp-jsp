@@ -11,4 +11,5 @@ public class CreateBookCommand {
 
     private String title;
     private String category;
+    private Integer authorId;
 }
