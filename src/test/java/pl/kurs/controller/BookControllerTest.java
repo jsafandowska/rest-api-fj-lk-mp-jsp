@@ -103,7 +103,7 @@ class BookControllerTest {
         Assertions.assertNotNull(recentlyAdded, "The book should exist in the list");
         Assertions.assertEquals("New Title", recentlyAdded.getTitle());
         Assertions.assertEquals("New Category", recentlyAdded.getCategory());
-        Assertions.assertTrue(recentlyAdded.getId() > 0);
+        Assertions.assertEquals(recentlyAdded.getId(),book.getId());
     }
 
     @Test
