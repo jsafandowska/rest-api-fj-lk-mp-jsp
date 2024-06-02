@@ -1,4 +1,5 @@
 package pl.kurs.controller;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -9,12 +10,8 @@ import pl.kurs.model.Garage;
 import pl.kurs.model.command.CreateGarageCommand;
 import pl.kurs.model.command.EditGarageCommand;
 import pl.kurs.repository.GarageRepository;
-
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @RestController
 @RequestMapping("api/v1/garages")
@@ -23,6 +20,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class GarageController {
 
     private final GarageRepository garageRepository;
+
+
+    @PostConstruct
+    public void init() {
+        garageRepository.saveAndFlush(new Garage(2, "Warszawa", true));
+        garageRepository.saveAndFlush(new Garage(3, "Piątkowska", false));
+    }
 
     @GetMapping
     public ResponseEntity<List<Garage>> findAll() {
@@ -69,4 +73,5 @@ public class GarageController {
         Optional.ofNullable(command.getLpgAllowed()).ifPresent(garage::setLpgAllowed);
         return ResponseEntity.status(HttpStatus.OK).body(garageRepository.saveAndFlush(garage));
     }
+
 }

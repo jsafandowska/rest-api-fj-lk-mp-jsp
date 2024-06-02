@@ -11,8 +11,6 @@ import pl.kurs.model.Car;
 import pl.kurs.model.command.CreateCarCommand;
 import pl.kurs.repository.CarRepository;
 
-
-
 import java.util.List;
 import java.util.Optional;
 
@@ -39,7 +37,7 @@ public class CarController {
     @PostMapping
     public ResponseEntity<Car> addCar(@RequestBody CreateCarCommand command) {
         log.info("addCar({})", command);
-        Car car = carRepository.saveAndFlush(new Car(command.getBrand(), command.getModel(), command.getFuelType()));;
+        Car car = carRepository.saveAndFlush(new Car(command.getBrand(), command.getModel(), command.getFuelType()));
         return ResponseEntity.status(HttpStatus.CREATED).body(car);
     }
 
