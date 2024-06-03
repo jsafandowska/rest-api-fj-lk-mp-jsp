@@ -12,8 +12,12 @@ import java.util.List;
 @Configuration
 public class CarConfiguration {
     @Bean
-    public List<Car> cars() {
+<<<<<<<< HEAD:src/main/java/pl/kurs/configuration/BookConfiguration.java
+    public List<Book> books() {
         return Collections.synchronizedList(new ArrayList<>());
+========
+    public List<Car> cars(){
+        return  Collections.synchronizedList(new ArrayList<>());
+>>>>>>>> bc9555e9adaba7a683d6628079a4c620b657017b:src/main/java/pl/kurs/configuration/CarConfiguration.java
     }
-
 }
