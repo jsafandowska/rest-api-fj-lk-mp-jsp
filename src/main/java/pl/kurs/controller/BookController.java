@@ -3,87 +3,85 @@ package pl.kurs.controller;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.kurs.exceptions.AuthorNotFoundException;
 import pl.kurs.exceptions.BookNotFoundException;
+import pl.kurs.model.Author;
 import pl.kurs.model.Book;
 import pl.kurs.model.command.CreateBookCommand;
 import pl.kurs.model.command.EditBookCommand;
-import pl.kurs.service.BookIdGenerator;
+import pl.kurs.model.dto.BookDto;
+import pl.kurs.repository.AuthorRepository;
+import pl.kurs.repository.BookRepository;
 
 import java.util.List;
 import java.util.Optional;
 
-
 @RestController
 @RequestMapping("api/v1/books")
-//swego rodzaju ścieżka do kontrolera
 @Slf4j
 @RequiredArgsConstructor
 public class BookController {
 
-    private final List<Book> books;
+    private final BookRepository bookRepository;
+    private final AuthorRepository authorRepository;
 
-    private final BookIdGenerator bookIdGenerator;
-
-//    @PostConstruct
-//    public void init() {
-//        books.add(new Book(bookIdGenerator.getId(), "Ogniem i mieczem", "LEKTURA", true));
-//        books.add(new Book(bookIdGenerator.getId(), "Ogniem i mieczem 2", "LEKTURA", true));
-//    }
-//    te dane są zapisywane na sam koniec
+    @PostConstruct
+    public void init() {
+        Author a1 = authorRepository.saveAndFlush(new Author("Kazimierz", "Wielki", 1900, 2000));
+        Author a2 = authorRepository.saveAndFlush(new Author("Maria", "Wielka", 1900, 2000));
+        bookRepository.saveAndFlush(new Book("Ogniem i mieczem", "LEKTURA", true, a1));
+        bookRepository.saveAndFlush(new Book("Ogniem i mieczem 2", "LEKTURA", true, a2));
+    }
 
     @GetMapping
-    public ResponseEntity<List<Book>> findAll() {
+    public ResponseEntity<List<BookDto>> findAll() {
         log.info("findAll");
-        return ResponseEntity.ok(books);
+        return ResponseEntity.ok(bookRepository.findAll().stream().map(BookDto::toDto).toList());
     }
 
     @PostMapping
-    public ResponseEntity<Book> addBook(@RequestBody CreateBookCommand command) {
+    public ResponseEntity<BookDto> addBook(@RequestBody CreateBookCommand command) {
         log.info("addBook({})", command);
-        Book book = new Book(bookIdGenerator.getId(), command.getTitle(), command.getCategory(), true);
-        books.add(book);
-        return ResponseEntity.status(HttpStatus.CREATED).body(book);
+        Author author = authorRepository.findById(command.getAuthorId()).orElseThrow(AuthorNotFoundException::new);
+        Book book = bookRepository.saveAndFlush(new Book(command.getTitle(), command.getCategory(), true, author));
+        return ResponseEntity.status(HttpStatus.CREATED).body(BookDto.toDto(book));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Book> findBook(@PathVariable int id) {
+    public ResponseEntity<BookDto> findBook(@PathVariable int id) {
         log.info("findBook({})", id);
-        return ResponseEntity.ok(books.stream().filter(b -> b.getId() == id).findFirst().orElseThrow(BookNotFoundException::new));
+        return ResponseEntity.ok(BookDto.toDto(bookRepository.findById(id).orElseThrow(BookNotFoundException::new)));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Book> deleteBook(@PathVariable int id) {
+    public ResponseEntity<BookDto> deleteBook(@PathVariable int id) {
         log.info("deleteBook({})", id);
-        if (!books.removeIf(b -> b.getId() == id)) {
-            throw new BookNotFoundException();
-        }
+        bookRepository.deleteById(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Book> editBook(@PathVariable int id, @RequestBody EditBookCommand command) {
+    public ResponseEntity<BookDto> editBook(@PathVariable int id, @RequestBody EditBookCommand command) {
         log.info("editBook({}, {})", id, command);
-        Book book = books.stream().filter(b -> b.getId() == id).findFirst().orElseThrow(BookNotFoundException::new);
+        Book book = bookRepository.findById(id).orElseThrow(BookNotFoundException::new);
         book.setAvailable(command.getAvailable());
         book.setCategory(command.getCategory());
         book.setTitle(command.getTitle());
-        return ResponseEntity.status(HttpStatus.OK).body(book);
+        return ResponseEntity.status(HttpStatus.OK).body(BookDto.toDto(bookRepository.saveAndFlush(book)));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Book> editBookPartially(@PathVariable int id, @RequestBody EditBookCommand command) {
+    public ResponseEntity<BookDto> editBookPartially(@PathVariable int id, @RequestBody EditBookCommand command) {
         log.info("editBook({}, {})", id, command);
-        Book book = books.stream().filter(b -> b.getId() == id).findFirst().orElseThrow(BookNotFoundException::new);
+        Book book = bookRepository.findById(id).orElseThrow(BookNotFoundException::new);
         Optional.ofNullable(command.getAvailable()).ifPresent(book::setAvailable);
         Optional.ofNullable(command.getCategory()).ifPresent(book::setCategory);
         Optional.ofNullable(command.getTitle()).ifPresent(book::setTitle);
-        return ResponseEntity.status(HttpStatus.OK).body(book);
+        return ResponseEntity.status(HttpStatus.OK).body(BookDto.toDto(bookRepository.saveAndFlush(book)));
     }
-
 
 
 }

@@ -16,10 +16,16 @@ public class Book {
     private String title;
     private String category;
     private boolean available;
+    @ManyToOne
+    @JoinColumn(name = "author_id")
+    @ToString.Exclude
+    private Author author;
 
-    public Book(String title, String category, boolean available) {
+    public Book(String title, String category, boolean available, Author author) {
         this.title = title;
         this.category = category;
         this.available = available;
+        this.author = author;
+        author.getBooks().add(this);
     }
 }
