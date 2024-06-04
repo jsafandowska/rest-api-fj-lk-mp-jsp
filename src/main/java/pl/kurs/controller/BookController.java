@@ -3,6 +3,9 @@ package pl.kurs.controller;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,9 +40,9 @@ public class BookController {
     }
 
     @GetMapping
-    public ResponseEntity<List<BookDto>> findAll() {
+    public ResponseEntity<Page<BookDto>> findAll(@PageableDefault Pageable pageable) {
         log.info("findAll");
-        return ResponseEntity.ok(bookRepository.findAll().stream().map(BookDto::toDto).toList());
+        return ResponseEntity.ok(bookRepository.findAll(pageable).map(BookDto::toDto));
     }
 
     @PostMapping

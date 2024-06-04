@@ -31,8 +31,8 @@ public class CarController {
     public void init() {
         Garage g1 = garageRepository.saveAndFlush(new Garage(2, "Zielona", true));
         Garage g2 = garageRepository.saveAndFlush(new Garage(1, "Żółta", false));
-        carRepository.saveAndFlush(new Car("Mercedes", "S-class", "petrol", g1));
-        carRepository.saveAndFlush(new Car("Audi", "RS", "petrol", g2));
+        carRepository.saveAndFlush(new Car("Mercedes", "S-class", "petrol"));
+        carRepository.saveAndFlush(new Car("Audi", "RS", "petrol"));
     }
 
     @GetMapping
@@ -44,8 +44,7 @@ public class CarController {
     @PostMapping
     public ResponseEntity<CarDto> addCar(@RequestBody CreateCarCommand command) {
         log.info("addCar({})", command);
-        Garage garage = garageRepository.findById(command.getGarageId()).orElseThrow(GarageNotFoundException::new);
-        Car car = carRepository.saveAndFlush(new Car(command.getBrand(), command.getModel(), command.getFuelType(), garage));
+        Car car = carRepository.saveAndFlush(new Car(command.getBrand(), command.getModel(), command.getFuelType()));
         return ResponseEntity.status(HttpStatus.CREATED).body(CarDto.toDto(car));
     }
 
