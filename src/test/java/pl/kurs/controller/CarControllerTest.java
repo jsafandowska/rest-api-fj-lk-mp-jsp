@@ -11,8 +11,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import pl.kurs.Main;
 import pl.kurs.model.Car;
+import pl.kurs.model.Garage;
 import pl.kurs.model.command.CreateCarCommand;
 import pl.kurs.repository.CarRepository;
+import pl.kurs.repository.GarageRepository;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -28,10 +30,13 @@ public class CarControllerTest {
     private ObjectMapper obj;
     @Autowired
     private CarRepository carRepository;
+    @Autowired
+    private GarageRepository garageRepository;
 
     @Test
     public void shouldReturnSingleCar() throws Exception {
-        Car car = carRepository.saveAndFlush(new Car("Audi", "RS5", "petrol"));
+        Garage garage = garageRepository.findAllWitCars().get(0);
+        Car car = carRepository.saveAndFlush(new Car("Audi", "RS5", "petrol", garage));
         postman.perform(get("/api/v1/cars/" + car.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(car.getId()))
@@ -42,7 +47,8 @@ public class CarControllerTest {
 
     @Test
     public void shouldAddCar() throws Exception {
-        CreateCarCommand command = new CreateCarCommand("Audi", "RS5", "petrol");
+        Garage garage = garageRepository.findAllWitCars().get(0);
+        CreateCarCommand command = new CreateCarCommand("Audi", "RS5", "petrol", garage.getId());
         String json = obj.writeValueAsString(command);
         String responseString = postman.perform(post("/api/v1/cars")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -67,7 +73,8 @@ public class CarControllerTest {
 
     @Test
     public void shouldDeleteCar() throws Exception {
-        Car carToDelete = carRepository.saveAndFlush(new Car("Mercedes", "C63", "petrol"));
+        Garage garage = garageRepository.findAllWitCars().get(0);
+        Car carToDelete = carRepository.saveAndFlush(new Car("Mercedes", "C63", "petrol", garage));
         postman.perform(delete("/api/v1/cars/" + carToDelete.getId()))
                 .andExpect(status().isNoContent());
         boolean carExists = carRepository.existsById(carToDelete.getId());
@@ -76,8 +83,9 @@ public class CarControllerTest {
 
     @Test
     public void shouldEditCar() throws Exception {
-        Car carToEdit = carRepository.saveAndFlush(new Car("Mercedes", "C63", "petrol"));
-        CreateCarCommand command = new CreateCarCommand("BMW", "M6", "petrol");
+        Garage garage = garageRepository.findAllWitCars().get(0);
+        Car carToEdit = carRepository.saveAndFlush(new Car("Mercedes", "C63", "petrol", garage));
+        CreateCarCommand command = new CreateCarCommand("BMW", "M6", "petrol", garage.getId());
         String json = obj.writeValueAsString(command);
         String responseString = postman.perform(put("/api/v1/cars/" + carToEdit.getId())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -101,8 +109,9 @@ public class CarControllerTest {
 
     @Test
     public void shouldEditCarPartially() throws Exception {
-        Car carToDelete = carRepository.saveAndFlush(new Car("Mercedes", "C63", "petrol"));
-        CreateCarCommand command = new CreateCarCommand(null, "M6", null);
+        Garage garage = garageRepository.findAllWitCars().get(0);
+        Car carToDelete = carRepository.saveAndFlush(new Car("Mercedes", "C63", "petrol", garage));
+        CreateCarCommand command = new CreateCarCommand(null, "M6", null, garage.getId());
         String json = obj.writeValueAsString(command);
         String responseString = postman.perform(patch("/api/v1/cars/" + carToDelete.getId())
                         .contentType(MediaType.APPLICATION_JSON)
