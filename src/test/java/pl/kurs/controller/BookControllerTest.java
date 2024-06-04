@@ -16,7 +16,6 @@ import pl.kurs.model.command.CreateBookCommand;
 import pl.kurs.model.command.EditBookCommand;
 import pl.kurs.repository.AuthorRepository;
 import pl.kurs.repository.BookRepository;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -55,7 +54,7 @@ class BookControllerTest {
 
     @Test
     public void shouldAddBook() throws Exception {
-        Author author = authorRepository.findAll().get(0);
+        Author author = authorRepository.findAllWithBooks().get(0);
         CreateBookCommand command = new CreateBookCommand("podstawy java", "NAUKOWE", author.getId());
         String json = objectMapper.writeValueAsString(command);
         String responseString = postman.perform(post("/api/v1/books")
@@ -79,68 +78,76 @@ class BookControllerTest {
         Assertions.assertEquals(saved.getId(), recentlyAdded.getId());
         Assertions.assertEquals(author.getId(), recentlyAdded.getAuthor().getId());
         Assertions.assertTrue(recentlyAdded.isAvailable());
-        Assertions.assertTrue(recentlyAdded.getId() > 0);
     }
 
-//    @Test
-//    public void shouldDeleteBook() throws Exception {
-//        Book bookToDelete = bookRepository.saveAndFlush(new Book("Some Title", "Some Category", true));
-//        postman.perform(delete("/api/v1/books/" + bookToDelete.getId()))
-//                .andExpect(status().isNoContent());
-//        boolean bookExists = bookRepository.existsById(bookToDelete.getId());
-//        Assertions.assertFalse(bookExists, "The book should be deleted from the list");
-//    }
-//
-//    @Test
-//    public void shouldEditBook() throws Exception {
-//        Book book = bookRepository.saveAndFlush(new Book("Old Title", "Old Category", true));
-//        EditBookCommand command = new EditBookCommand("New Title", "New Category", false);
-//        String json = objectMapper.writeValueAsString(command);
-//
-//        String responseString = postman.perform(put("/api/v1/books/" + book.getId())
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(json))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.id").value(book.getId()))
-//                .andExpect(jsonPath("$.title").value("New Title"))
-//                .andExpect(jsonPath("$.category").value("New Category"))
-//                .andExpect(jsonPath("$.available").value(false))
-//                .andReturn()
-//                .getResponse()
-//                .getContentAsString();
-//
-//        Book saved = objectMapper.readValue(responseString, Book.class);
-//        Book recentlyAdded = bookRepository.findById(saved.getId()).get();
-//        Assertions.assertNotNull(recentlyAdded, "The book should exist in the list");
-//        Assertions.assertEquals("New Title", recentlyAdded.getTitle());
-//        Assertions.assertEquals("New Category", recentlyAdded.getCategory());
-//        Assertions.assertEquals(recentlyAdded.getId(),book.getId());
-//    }
-//
-//    @Test
-//    public void shouldEditBookPartially() throws Exception {
-//        Book book = bookRepository.saveAndFlush(new Book("Old Title", "Old Category", true));
-//        EditBookCommand command = new EditBookCommand(null, "New Category", null);
-//        String json = objectMapper.writeValueAsString(command);
-//        String responseString = postman.perform(patch("/api/v1/books/" + book.getId())
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(json))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.id").value(book.getId()))
-//                .andExpect(jsonPath("$.title").value("Old Title"))
-//                .andExpect(jsonPath("$.category").value("New Category"))
-//                .andExpect(jsonPath("$.available").value(true))
-//                .andReturn()
-//                .getResponse()
-//                .getContentAsString();
-//
-//        Book saved = objectMapper.readValue(responseString, Book.class);
-//        Book recentlyAdded = bookRepository.findById(saved.getId()).get();
-//        Assertions.assertNotNull(saved, "The book should exist in the list");
-//        Assertions.assertEquals(saved.getId(), recentlyAdded.getId());
-//        Assertions.assertEquals("Old Title", saved.getTitle());
-//        Assertions.assertEquals("New Category", saved.getCategory());
-//        Assertions.assertTrue(saved.isAvailable());
-//        Assertions.assertTrue(recentlyAdded.getId() > 0);
-//    }
+    @Test
+//    @Transactional
+    public void shouldDeleteBook() throws Exception {
+//        Author author = authorRepository.findAll().get(0);
+        Author author = authorRepository.findAllWithBooks().get(0);
+        Book bookToDelete = bookRepository.saveAndFlush(new Book("Some Title", "Some Category", true,author));
+        postman.perform(delete("/api/v1/books/" + bookToDelete.getId()))
+                .andExpect(status().isNoContent());
+        boolean bookExists = bookRepository.existsById(bookToDelete.getId());
+        Assertions.assertFalse(bookExists, "The book should be deleted from the list");
+    }
+
+    @Test
+    public void shouldEditBook() throws Exception {
+        Author author = authorRepository.findAllWithBooks().get(0);
+        Book book = bookRepository.saveAndFlush(new Book("Old Title", "Old Category", true,author));
+        EditBookCommand command = new EditBookCommand("New Title", "New Category", false);
+        String json = objectMapper.writeValueAsString(command);
+
+        String responseString = postman.perform(put("/api/v1/books/" + book.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(book.getId()))
+                .andExpect(jsonPath("$.title").value("New Title"))
+                .andExpect(jsonPath("$.category").value("New Category"))
+                .andExpect(jsonPath("$.available").value(false))
+                .andExpect(jsonPath("$.authorId").value(author.getId()))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        Book saved = objectMapper.readValue(responseString, Book.class);
+        Book recentlyAdded = bookRepository.findById(saved.getId()).get();
+        Assertions.assertNotNull(recentlyAdded, "The book should exist in the list");
+        Assertions.assertEquals("New Title", recentlyAdded.getTitle());
+        Assertions.assertEquals("New Category", recentlyAdded.getCategory());
+        Assertions.assertEquals(recentlyAdded.getId(),book.getId());
+        Assertions.assertEquals(author.getId(), recentlyAdded.getAuthor().getId());
+        Assertions.assertFalse(recentlyAdded.isAvailable());
+    }
+
+    @Test
+    public void shouldEditBookPartially() throws Exception {
+        Author author = authorRepository.findAllWithBooks().get(0);
+        Book book = bookRepository.saveAndFlush(new Book("Old Title", "Old Category", true,author));
+        EditBookCommand command = new EditBookCommand(null, "New Category", null);
+        String json = objectMapper.writeValueAsString(command);
+        String responseString = postman.perform(patch("/api/v1/books/" + book.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(book.getId()))
+                .andExpect(jsonPath("$.title").value("Old Title"))
+                .andExpect(jsonPath("$.category").value("New Category"))
+                .andExpect(jsonPath("$.available").value(true))
+                .andExpect(jsonPath("$.authorId").value(author.getId()))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        Book saved = objectMapper.readValue(responseString, Book.class);
+        Book recentlyAdded = bookRepository.findById(saved.getId()).get();
+        Assertions.assertNotNull(saved, "The book should exist in the list");
+        Assertions.assertEquals(book.getId(), recentlyAdded.getId());
+        Assertions.assertEquals("Old Title", saved.getTitle());
+        Assertions.assertEquals("New Category", saved.getCategory());
+        Assertions.assertTrue(saved.isAvailable());
+        Assertions.assertEquals(author.getId(), recentlyAdded.getAuthor().getId());
+    }
 }
