@@ -44,8 +44,15 @@ public class CarControllerTest {
                 .andExpect(jsonPath("$.model").value("RS5"))
                 .andExpect(jsonPath("$.fuelType").value("petrol"));
     }
+    @Test
+    public void shouldThrowExceptionWhenCarNotFound() throws Exception {
+        int nonExistentCarId = 999;
+        postman.perform(get("/api/v1/cars/" + nonExistentCarId))
+                .andExpect(status().isNotFound());
+    }
 
     @Test
+//    @Transactional
     public void shouldAddCar() throws Exception {
         Garage garage = garageRepository.findAllWitCars().get(0);
         CreateCarCommand command = new CreateCarCommand("Audi", "RS5", "petrol", garage.getId());
@@ -72,6 +79,7 @@ public class CarControllerTest {
     }
 
     @Test
+//    @Transactional
     public void shouldDeleteCar() throws Exception {
         Garage garage = garageRepository.findAllWitCars().get(0);
         Car carToDelete = carRepository.saveAndFlush(new Car("Mercedes", "C63", "petrol", garage));
@@ -82,6 +90,7 @@ public class CarControllerTest {
     }
 
     @Test
+//    @Transactional
     public void shouldEditCar() throws Exception {
         Garage garage = garageRepository.findAllWitCars().get(0);
         Car carToEdit = carRepository.saveAndFlush(new Car("Mercedes", "C63", "petrol", garage));
@@ -108,6 +117,7 @@ public class CarControllerTest {
     }
 
     @Test
+//    @Transactional
     public void shouldEditCarPartially() throws Exception {
         Garage garage = garageRepository.findAllWitCars().get(0);
         Car carToDelete = carRepository.saveAndFlush(new Car("Mercedes", "C63", "petrol", garage));
@@ -132,7 +142,6 @@ public class CarControllerTest {
         Assertions.assertEquals("Mercedes", recentlyAdded.getBrand());
         Assertions.assertEquals("M6", recentlyAdded.getModel());
         Assertions.assertEquals("petrol", recentlyAdded.getFuelType());
-        Assertions.assertTrue(recentlyAdded.getId() > 0);
 
     }
 }

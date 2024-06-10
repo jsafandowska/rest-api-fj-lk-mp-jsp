@@ -2,11 +2,13 @@ package pl.kurs.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import pl.kurs.exceptions.TheGarageDoesNotAllowParkingLPGCars;
+import pl.kurs.exceptions.TheGarageIsFull;
 
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString
+@ToString(exclude = "garage")
 @Entity
 public class Car {
     @Id
@@ -20,6 +22,9 @@ public class Car {
     @ToString.Exclude
     private Garage garage;
 
+    @ManyToOne
+    @JoinColumn(name = "garage_id")
+    private Garage garage;
 
     public Car(String brand, String model, String fuelType, Garage garage) {
         this.brand = brand;

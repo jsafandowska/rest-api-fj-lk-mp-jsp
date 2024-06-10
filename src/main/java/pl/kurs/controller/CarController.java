@@ -6,9 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.kurs.exceptions.AuthorNotFoundException;
 import pl.kurs.exceptions.CarNotFoundException;
-import pl.kurs.model.Author;
+import pl.kurs.exceptions.GarageNotFoundException;
 import pl.kurs.model.Car;
 import pl.kurs.model.Garage;
 import pl.kurs.model.command.CreateCarCommand;
@@ -30,10 +29,10 @@ public class CarController {
 
     @PostConstruct
     public void init() {
-        Garage g1 = garageRepository.saveAndFlush(new Garage(10, "xxx", true));
-        Garage g2 = garageRepository.saveAndFlush(new Garage(10, "xxx", false));
-        carRepository.saveAndFlush(new Car("Mercedes", "S-class", "petrol", g1));
-        carRepository.saveAndFlush(new Car("Audi", "RS", "petrol", g2));
+        Garage g1 = garageRepository.saveAndFlush(new Garage(2, "Zielona", true));
+        Garage g2 = garageRepository.saveAndFlush(new Garage(1, "Żółta", false));
+        carRepository.saveAndFlush(new Car("Mercedes", "S-class", "petrol"));
+        carRepository.saveAndFlush(new Car("Audi", "RS", "petrol"));
     }
 
     @GetMapping
@@ -45,8 +44,7 @@ public class CarController {
     @PostMapping
     public ResponseEntity<CarDto> addCar(@RequestBody CreateCarCommand command) {
         log.info("addCar({})", command);
-        Garage garage = garageRepository.findById(command.getGarageID()).orElseThrow(AuthorNotFoundException::new);
-        Car car = carRepository.saveAndFlush(new Car(command.getBrand(), command.getModel(), command.getFuelType(), garage));
+        Car car = carRepository.saveAndFlush(new Car(command.getBrand(), command.getModel(), command.getFuelType()));
         return ResponseEntity.status(HttpStatus.CREATED).body(CarDto.toDto(car));
     }
 
