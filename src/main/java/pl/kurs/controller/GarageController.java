@@ -1,16 +1,21 @@
 package pl.kurs.controller;
+
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.kurs.exceptions.CarNotFoundException;
 import pl.kurs.exceptions.GarageNotFoundException;
+import pl.kurs.model.Car;
 import pl.kurs.model.Garage;
 import pl.kurs.model.command.CreateGarageCommand;
 import pl.kurs.model.command.EditGarageCommand;
 import pl.kurs.model.dto.GarageDto;
+import pl.kurs.repository.CarRepository;
 import pl.kurs.repository.GarageRepository;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -21,6 +26,7 @@ import java.util.Optional;
 public class GarageController {
 
     private final GarageRepository garageRepository;
+    private final CarRepository carRepository;
 
 
     @PostConstruct
@@ -74,5 +80,26 @@ public class GarageController {
         Optional.ofNullable(command.getLpgAllowed()).ifPresent(garage::setLpgAllowed);
         return ResponseEntity.status(HttpStatus.OK).body(GarageDto.toDto(garageRepository.saveAndFlush(garage)));
     }
+
+    @PatchMapping("/{id}/cars/{carId}")
+    public ResponseEntity<GarageDto> addCar(@PathVariable int id, @PathVariable int carId) {
+        log.info("addCar({}, {})", id, carId);
+        Garage garage = garageRepository.findById(id).orElseThrow(GarageNotFoundException::new);
+        Car car = carRepository.findById(carId).orElseThrow(CarNotFoundException::new);
+        garage.addCar(car);
+        carRepository.saveAndFlush(car);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{id}/cars/{carId}")
+    public ResponseEntity<GarageDto> deleteCarFromGarage(@PathVariable int id, @PathVariable int carId) {
+        log.info("addCar({}, {})", id, carId);
+        Garage garage = garageRepository.findById(id).orElseThrow(GarageNotFoundException::new);
+        Car car = carRepository.findById(carId).orElseThrow(CarNotFoundException::new);
+        garage.deleteCar(car);
+        carRepository.saveAndFlush(car);
+        return ResponseEntity.ok().build();
+    }
+
 
 }

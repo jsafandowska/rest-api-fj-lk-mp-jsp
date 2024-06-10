@@ -10,13 +10,13 @@ public class Main {
 
         SpringApplication.run(Main.class, args);
 
+        // poprawa testow, jesli ktores sie tertaz wywalają
+        // dodac dwa testy na dodanie i usunięcie samochodu
+        // postarać się stworzyć warstewe serwisową
+        // na razie mamy kontroler i repozytorium a powinnismy miec warstwe controlera ktora przyjmuje zadanie http i serwis ktory wykonuje logike
+        // serwis przyjmuje repozytorium a kontroler przyjmuje serwis
 
-        // poprawić testy w BookController, po dodaniu autora
 
-        // sprobowac zrobic połączenie jeden do wiele pomiedzy Car i Garage
-        // w pozostałych kontrolerach zmienic w metodach http encje na dto encji
-        // nalezy pamietac, ze samochodu nie mozna dodac jesli garaz jest pelny,
-        // nie mozna dodac samochodu na lpg jesli garaz nie dopuszcza takich pojazdow
     }
 
 }
