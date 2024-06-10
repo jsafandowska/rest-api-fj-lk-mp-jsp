@@ -1,3 +1,4 @@
 # Project exclude paths
 /target/
 /.idea/
+/rest-api-fj-lk-mp-jsp.iml
