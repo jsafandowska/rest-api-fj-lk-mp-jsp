@@ -68,18 +68,23 @@ public class GarageService {
     }
 
     @Transactional
-    public void addCar(int id, int carId) {
+    public GarageDto addCar(int id, int carId) {
         Garage garage = garageRepository.findById(id).orElseThrow(GarageNotFoundException::new);
         Car car = carRepository.findById(carId).orElseThrow(CarNotFoundException::new);
+        if (garage.getCars().contains(car)) {
+            throw new IllegalStateException("Car is already in this garage");
+        }
         garage.addCar(car);
         carRepository.saveAndFlush(car);
+        return GarageDto.toDto(garage);
     }
 
     @Transactional
-    public void deleteCarFromGarage(int id, int carId) {
+    public GarageDto deleteCarFromGarage(int id, int carId) {
         Garage garage = garageRepository.findById(id).orElseThrow(GarageNotFoundException::new);
         Car car = carRepository.findById(carId).orElseThrow(CarNotFoundException::new);
         garage.deleteCar(car);
         carRepository.saveAndFlush(car);
+        return GarageDto.toDto(garage);
     }
 }
