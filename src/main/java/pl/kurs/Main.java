@@ -9,14 +9,12 @@ public class Main {
     public static void main(String[] args) {
 
         SpringApplication.run(Main.class, args);
-
-
-        // poprawić testy w BookController, po dodaniu autora
-
-        // sprobowac zrobic połączenie jeden do wiele pomiedzy Car i Garage
-        // w pozostałych kontrolerach zmienic w metodach http encje na dto encji
-        // nalezy pamietac, ze samochodu nie mozna dodac jesli garaz jest pelny,
-        // nie mozna dodac samochodu na lpg jesli garaz nie dopuszcza takich pojazdow
+        // poprawa testow, jesli ktores sie teraz wywalaja
+        // dodac dwa testy na dodanie i usuniecie samchodu
+        // postarac sie stworzyc warstwe seriwsowa
+        // na razie mamy  kontroler i repozytorium a powinismy miec warstwe controlera ktora przyjmuje zapytanie http
+        // i seriws ktory wykonuje logike
+        // serwis przyjmuje repozytorium a kontroler przyjmuje seriws
     }
 
 }

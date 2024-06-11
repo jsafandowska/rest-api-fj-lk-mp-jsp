@@ -1,4 +1,5 @@
 package pl.kurs.controller;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -9,10 +10,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import pl.kurs.Main;
+import pl.kurs.model.Car;
 import pl.kurs.model.Garage;
 import pl.kurs.model.command.CreateGarageCommand;
 import pl.kurs.model.command.EditGarageCommand;
+import pl.kurs.repository.CarRepository;
 import pl.kurs.repository.GarageRepository;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -29,6 +33,8 @@ public class GarageControllerTest {
     @Autowired
     private GarageRepository garageRepository;
 
+    @Autowired
+    private CarRepository carRepository;
     @Test
     public void shouldReturnSingleGarage() throws Exception {
         Garage garage = garageRepository.saveAndFlush(new Garage(3, "Gdańsk", true));
@@ -120,5 +126,26 @@ public class GarageControllerTest {
         Assertions.assertEquals(1, recentlyAdded.getPlaces());
         Assertions.assertEquals("newAddress", recentlyAdded.getAddress());
         Assertions.assertFalse(recentlyAdded.isLpgAllowed());
+    }
+    @Test
+    public void shouldAddCarToGarage() throws Exception {
+        Garage garage = garageRepository.saveAndFlush(new Garage(1, "Gdańsk", true));
+        Car car = carRepository.saveAndFlush(new Car("Mercedes", "C63", "petrol"));
+        postman.perform(patch("/api/v1/garages/" + garage.getId() + "/cars/" + car.getId()))
+                .andExpect(status().isOk());
+        Garage recentlyAdded = garageRepository.findById(garage.getId()).get();
+        Assertions.assertEquals(1, recentlyAdded.getCars().size());
+        Assertions.assertEquals("Mercedes", recentlyAdded.getCars().iterator().next().getBrand());
+    }
+    @Test
+    public void shouldDeleteCarFromGarage() throws Exception {
+        Garage garage = garageRepository.saveAndFlush(new Garage(1, "Gdańsk", true));
+        Car car = carRepository.saveAndFlush(new Car("Mercedes", "C63", "petrol"));
+       postman.perform(patch("/api/v1/garages/{id}/cars/{carId}", garage.getId(), car.getId())
+               .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+       Garage recentlyAdded = garageRepository.findById(garage.getId()).get();
+        Assertions.assertEquals(0, recentlyAdded.getCars().size());
+
     }
 }
