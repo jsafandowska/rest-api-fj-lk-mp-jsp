@@ -1,9 +1,10 @@
 package pl.kurs.model;
 
 import jakarta.persistence.*;
-import lombok.*;
-import pl.kurs.exceptions.TheGarageDoesNotAllowParkingLPGCars;
-import pl.kurs.exceptions.TheGarageIsFull;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter

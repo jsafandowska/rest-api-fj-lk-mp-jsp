@@ -2,13 +2,22 @@ package pl.kurs.model.dto;
 
 import pl.kurs.model.Garage;
 
-public record GarageDto(int id, int places, String address, boolean lpgAllowed) {
+import java.util.List;
+
+
+public record GarageDto(int id, int places, String address, boolean lpgAllowed, List<CarDto> cars) {
+
     public static GarageDto toDto(Garage garage) {
-        return new GarageDto(garage.getId(),
+        List<CarDto> carDtos = garage.getCars().stream()
+                                     .map(CarDto::toDto)
+                                     .toList();
+        return new GarageDto(
+                garage.getId(),
                 garage.getPlaces(),
                 garage.getAddress(),
-                garage.isLpgAllowed());
+                garage.isLpgAllowed(),
+                carDtos
+        );
     }
-
-//    jest sens to robić w przypadku garażu??
 }
+

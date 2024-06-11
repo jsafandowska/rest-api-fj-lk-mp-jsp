@@ -2,6 +2,7 @@ package pl.kurs.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -10,9 +11,14 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import pl.kurs.Main;
-import pl.kurs.model.Car;
+import pl.kurs.exceptions.CarNotFoundException;
 import pl.kurs.model.command.CreateCarCommand;
-import pl.kurs.repository.CarRepository;
+import pl.kurs.model.command.CreateGarageCommand;
+import pl.kurs.model.command.EditCarCommand;
+import pl.kurs.model.dto.CarDto;
+import pl.kurs.model.dto.GarageDto;
+import pl.kurs.service.CarService;
+import pl.kurs.service.GarageService;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -21,118 +27,129 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = Main.class)
 @AutoConfigureMockMvc
 @ActiveProfiles("tests")
-public class CarControllerTest {
+class CarControllerTest {
+
     @Autowired
     private MockMvc postman;
+
     @Autowired
-    private ObjectMapper obj;
+    private ObjectMapper objectMapper;
+
     @Autowired
-    private CarRepository carRepository;
+    private CarService carService;
+
+    @Autowired
+    private GarageService garageService;
+
+    private GarageDto garage1;
+    private GarageDto garage2;
+
+    @BeforeEach
+    public void setup() {
+        garage1 = garageService.addGarage(new CreateGarageCommand(2, "Zielona", true));
+        garage2 = garageService.addGarage(new CreateGarageCommand(1, "Żółta", false));
+    }
 
     @Test
     public void shouldReturnSingleCar() throws Exception {
-        Car car = carRepository.saveAndFlush(new Car("Audi", "RS5", "petrol"));
-        postman.perform(get("/api/v1/cars/" + car.getId()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(car.getId()))
-                .andExpect(jsonPath("$.brand").value("Audi"))
-                .andExpect(jsonPath("$.model").value("RS5"))
-                .andExpect(jsonPath("$.fuelType").value("petrol"));
-    }
-    @Test
-    public void shouldThrowExceptionWhenCarNotFound() throws Exception {
-        int nonExistentCarId = 999;
-        postman.perform(get("/api/v1/cars/" + nonExistentCarId))
-                .andExpect(status().isNotFound());
+        CarDto car = carService.addCar(new CreateCarCommand("Audi", "RS", "petrol", garage2.id()));
+        int id = car.id();
+        postman.perform(get("/api/v1/cars/" + id))
+               .andExpect(status().isOk())
+               .andExpect(jsonPath("$.id").value(id))
+               .andExpect(jsonPath("$.brand").value("Audi"))
+               .andExpect(jsonPath("$.model").value("RS"))
+               .andExpect(jsonPath("$.fuelType").value("petrol"));
     }
 
     @Test
-//    @Transactional
     public void shouldAddCar() throws Exception {
-        CreateCarCommand command = new CreateCarCommand("Audi", "RS5", "petrol");
-        String json = obj.writeValueAsString(command);
+        CreateCarCommand command = new CreateCarCommand("Mercedes", "S-class", "petrol", garage1.id());
+        String json = objectMapper.writeValueAsString(command);
         String responseString = postman.perform(post("/api/v1/cars")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.brand").value("Audi"))
-                .andExpect(jsonPath("$.model").value("RS5"))
-                .andExpect(jsonPath("$.fuelType").value("petrol"))
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
+                                                        .contentType(MediaType.APPLICATION_JSON)
+                                                        .content(json))
+                                       .andExpect(status().isCreated())
+                                       .andExpect(jsonPath("$.id").exists())
+                                       .andExpect(jsonPath("$.brand").value("Mercedes"))
+                                       .andExpect(jsonPath("$.model").value("S-class"))
+                                       .andExpect(jsonPath("$.fuelType").value("petrol"))
+                                       .andReturn()
+                                       .getResponse()
+                                       .getContentAsString();
 
-        Car saved = obj.readValue(responseString, Car.class);
-        Car recentlyAdded = carRepository.findById(saved.getId()).get();
-        Assertions.assertEquals("Audi", recentlyAdded.getBrand());
-        Assertions.assertEquals("RS5", recentlyAdded.getModel());
-        Assertions.assertEquals("petrol", recentlyAdded.getFuelType());
-        Assertions.assertEquals(saved.getId(), recentlyAdded.getId());
-        Assertions.assertTrue(recentlyAdded.getId() > 0);
+        CarDto saved = objectMapper.readValue(responseString, CarDto.class);
+        CarDto recentlyAdded = carService.findCar(saved.id());
+
+        Assertions.assertEquals("Mercedes", recentlyAdded.brand());
+        Assertions.assertEquals("S-class", recentlyAdded.model());
+        Assertions.assertEquals("petrol", recentlyAdded.fuelType());
+        Assertions.assertEquals(saved.id(), recentlyAdded.id());
     }
 
     @Test
-//    @Transactional
     public void shouldDeleteCar() throws Exception {
-        Car carToDelete = carRepository.saveAndFlush(new Car("Mercedes", "C63", "petrol"));
-        postman.perform(delete("/api/v1/cars/" + carToDelete.getId()))
-                .andExpect(status().isNoContent());
-        boolean carExists = carRepository.existsById(carToDelete.getId());
-        Assertions.assertFalse(carExists, "The car should be deleted from the list");
+        CarDto car = carService.addCar(new CreateCarCommand("BMW", "X5", "diesel", garage1.id()));
+        int id = car.id();
+        postman.perform(delete("/api/v1/cars/" + id))
+               .andExpect(status().isNoContent());
+        Assertions.assertThrows(CarNotFoundException.class, () -> carService.findCar(id));
     }
 
     @Test
-//    @Transactional
     public void shouldEditCar() throws Exception {
-        Car carToEdit = carRepository.saveAndFlush(new Car("Mercedes", "C63", "petrol"));
-        CreateCarCommand command = new CreateCarCommand("BMW", "M6", "petrol");
-        String json = obj.writeValueAsString(command);
-        String responseString = postman.perform(put("/api/v1/cars/" + carToEdit.getId())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.brand").value("BMW"))
-                .andExpect(jsonPath("$.model").value("M6"))
-                .andExpect(jsonPath("$.fuelType").value("petrol"))
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-        Car saved = obj.readValue(responseString, Car.class);
-        Car recentlyAdded = carRepository.findById(saved.getId()).get();
-        Assertions.assertNotNull(recentlyAdded, "The car should exist in the list");
-        Assertions.assertEquals("BMW", recentlyAdded.getBrand());
-        Assertions.assertEquals("M6", recentlyAdded.getModel());
-        Assertions.assertEquals("petrol", recentlyAdded.getFuelType());
-        Assertions.assertTrue(recentlyAdded.getId() > 0);
+        CarDto car = carService.addCar(new CreateCarCommand("Audi", "A4", "petrol", garage2.id()));
+        int id = car.id();
+        EditCarCommand command = new EditCarCommand("Audi", "A6", "diesel");
+        String json = objectMapper.writeValueAsString(command);
+
+        String responseString = postman.perform(put("/api/v1/cars/" + id)
+                                                        .contentType(MediaType.APPLICATION_JSON)
+                                                        .content(json))
+                                       .andExpect(status().isOk())
+                                       .andExpect(jsonPath("$.id").value(id))
+                                       .andExpect(jsonPath("$.brand").value("Audi"))
+                                       .andExpect(jsonPath("$.model").value("A6"))
+                                       .andExpect(jsonPath("$.fuelType").value("diesel"))
+                                       .andReturn()
+                                       .getResponse()
+                                       .getContentAsString();
+
+        CarDto saved = objectMapper.readValue(responseString, CarDto.class);
+        CarDto recentlyEdited = carService.findCar(saved.id());
+
+        Assertions.assertEquals("Audi", recentlyEdited.brand());
+        Assertions.assertEquals("A6", recentlyEdited.model());
+        Assertions.assertEquals("diesel", recentlyEdited.fuelType());
+        Assertions.assertEquals(saved.id(), recentlyEdited.id());
     }
 
     @Test
-//    @Transactional
     public void shouldEditCarPartially() throws Exception {
-        Car carToDelete = carRepository.saveAndFlush(new Car("Mercedes", "C63", "petrol"));
-        CreateCarCommand command = new CreateCarCommand(null, "M6", null);
-        String json = obj.writeValueAsString(command);
-        String responseString = postman.perform(patch("/api/v1/cars/" + carToDelete.getId())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.brand").value("Mercedes"))
-                .andExpect(jsonPath("$.model").value("M6"))
-                .andExpect(jsonPath("$.fuelType").value("petrol"))
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
+        CarDto car = carService.addCar(new CreateCarCommand("Audi", "A4", "petrol", garage2.id()));
+        int id = car.id();
+        EditCarCommand command = new EditCarCommand(null, "A6", null);
+        String json = objectMapper.writeValueAsString(command);
 
-        Car saved = obj.readValue(responseString, Car.class);
-        Car recentlyAdded = carRepository.findById(saved.getId()).get();
-        Assertions.assertNotNull(recentlyAdded, "The car should exist in the list");
-        Assertions.assertEquals(saved.getId(), recentlyAdded.getId());
-        Assertions.assertEquals("Mercedes", recentlyAdded.getBrand());
-        Assertions.assertEquals("M6", recentlyAdded.getModel());
-        Assertions.assertEquals("petrol", recentlyAdded.getFuelType());
+        String responseString = postman.perform(patch("/api/v1/cars/" + id)
+                                                        .contentType(MediaType.APPLICATION_JSON)
+                                                        .content(json))
+                                       .andExpect(status().isOk())
+                                       .andExpect(jsonPath("$.id").value(id))
+                                       .andExpect(jsonPath("$.brand").value("Audi"))
+                                       .andExpect(jsonPath("$.model").value("A6"))
+                                       .andExpect(jsonPath("$.fuelType").value("petrol"))
+                                       .andReturn()
+                                       .getResponse()
+                                       .getContentAsString();
 
+        CarDto saved = objectMapper.readValue(responseString, CarDto.class);
+        CarDto recentlyEdited = carService.findCar(saved.id());
+
+        Assertions.assertEquals("Audi", recentlyEdited.brand());
+        Assertions.assertEquals("A6", recentlyEdited.model());
+        Assertions.assertEquals("petrol", recentlyEdited.fuelType());
+        Assertions.assertEquals(saved.id(), recentlyEdited.id());
     }
 }
+

@@ -1,4 +1,5 @@
 package pl.kurs.controller;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -9,10 +10,15 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import pl.kurs.Main;
-import pl.kurs.model.Garage;
+import pl.kurs.exceptions.GarageNotFoundException;
+import pl.kurs.model.command.CreateCarCommand;
 import pl.kurs.model.command.CreateGarageCommand;
 import pl.kurs.model.command.EditGarageCommand;
-import pl.kurs.repository.GarageRepository;
+import pl.kurs.model.dto.CarDto;
+import pl.kurs.model.dto.GarageDto;
+import pl.kurs.service.CarService;
+import pl.kurs.service.GarageService;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -20,105 +26,145 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = Main.class)
 @AutoConfigureMockMvc
 @ActiveProfiles("tests")
-public class GarageControllerTest {
-    @Autowired
-    private MockMvc postman;
-    @Autowired
-    private ObjectMapper obj;
+class GarageControllerTest {
 
     @Autowired
-    private GarageRepository garageRepository;
+    private MockMvc postman;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    private GarageService garageService;
+
+    @Autowired
+    private CarService carService;
 
     @Test
     public void shouldReturnSingleGarage() throws Exception {
-        Garage garage = garageRepository.saveAndFlush(new Garage(3, "Gdańsk", true));
-        postman.perform(get("/api/v1/garages/" + garage.getId()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(garage.getId()))
-                .andExpect(jsonPath("$.places").value(3))
-                .andExpect(jsonPath("$.address").value("Gdańsk"))
-                .andExpect(jsonPath("$.lpgAllowed").value(true));
+        GarageDto garage = garageService.addGarage(new CreateGarageCommand(2, "Zielona", true));
+        int id = garage.id();
+        postman.perform(get("/api/v1/garages/" + id))
+               .andExpect(status().isOk())
+               .andExpect(jsonPath("$.id").value(id))
+               .andExpect(jsonPath("$.places").value(2))
+               .andExpect(jsonPath("$.address").value("Zielona"))
+               .andExpect(jsonPath("$.lpgAllowed").value(true));
     }
 
     @Test
     public void shouldAddGarage() throws Exception {
-        CreateGarageCommand command = new CreateGarageCommand(2, "Sopot", true);
-        String json = obj.writeValueAsString(command);
+        CreateGarageCommand command = new CreateGarageCommand(2, "Warszawa", true);
+        String json = objectMapper.writeValueAsString(command);
         String responseString = postman.perform(post("/api/v1/garages")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.places").value(2))
-                .andExpect(jsonPath("$.address").value("Sopot"))
-                .andExpect(jsonPath("$.lpgAllowed").value(true))
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-        Garage saved = obj.readValue(responseString, Garage.class);
-        Garage recentlyAdded = garageRepository.findById(saved.getId()).get();
-        Assertions.assertEquals(2, recentlyAdded.getPlaces());
-        Assertions.assertEquals("Sopot", recentlyAdded.getAddress());
-        Assertions.assertTrue(recentlyAdded.isLpgAllowed());
-        Assertions.assertTrue(recentlyAdded.getId() > 0);
-        Assertions.assertEquals(saved.getId(), recentlyAdded.getId());
+                                                        .contentType(MediaType.APPLICATION_JSON)
+                                                        .content(json))
+                                       .andExpect(status().isCreated())
+                                       .andExpect(jsonPath("$.id").exists())
+                                       .andExpect(jsonPath("$.places").value(2))
+                                       .andExpect(jsonPath("$.address").value("Warszawa"))
+                                       .andExpect(jsonPath("$.lpgAllowed").value(true))
+                                       .andReturn()
+                                       .getResponse()
+                                       .getContentAsString();
+
+        GarageDto saved = objectMapper.readValue(responseString, GarageDto.class);
+        GarageDto recentlyAdded = garageService.findGarage(saved.id());
+
+        Assertions.assertEquals(2, recentlyAdded.places());
+        Assertions.assertEquals("Warszawa", recentlyAdded.address());
+        Assertions.assertEquals(saved.id(), recentlyAdded.id());
+        Assertions.assertTrue(recentlyAdded.lpgAllowed());
     }
 
     @Test
     public void shouldDeleteGarage() throws Exception {
-        Garage garageToDelete = garageRepository.saveAndFlush(new Garage(1, "Warszawa", true));
-        postman.perform(delete("/api/v1/garages/" + garageToDelete.getId()))
-                .andExpect(status().isNoContent());
-        boolean garageExists = garageRepository.existsById(garageToDelete.getId());
-        Assertions.assertFalse(garageExists, "The garage should be deleted from the list");
+        GarageDto garage = garageService.addGarage(new CreateGarageCommand(3, "Piątkowska", false));
+        int id = garage.id();
+        postman.perform(delete("/api/v1/garages/" + id))
+               .andExpect(status().isNoContent());
+        Assertions.assertThrows(GarageNotFoundException.class, () -> garageService.findGarage(id));
     }
 
     @Test
     public void shouldEditGarage() throws Exception {
-        Garage garage = garageRepository.saveAndFlush(new Garage(1, "oldAddress", false));
-        CreateGarageCommand command = new CreateGarageCommand(2, "newAddress", true);
-        String json = obj.writeValueAsString(command);
-        String responseString = postman.perform(put("/api/v1/garages/" + garage.getId())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.places").value(2))
-                .andExpect(jsonPath("$.address").value("newAddress"))
-                .andExpect(jsonPath("$.lpgAllowed").value(true))
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-        Garage saved = obj.readValue(responseString, Garage.class);
-        Garage recentlyAdded = garageRepository.findById(saved.getId()).get();
-        Assertions.assertNotNull(recentlyAdded, "The book should exist in the list");
-        Assertions.assertEquals(2, recentlyAdded.getPlaces());
-        Assertions.assertEquals("newAddress", recentlyAdded.getAddress());
-        Assertions.assertTrue(recentlyAdded.isLpgAllowed());
-        Assertions.assertTrue(recentlyAdded.getId() > 0);
+        GarageDto garage = garageService.addGarage(new CreateGarageCommand(2, "Old Address", true));
+        int id = garage.id();
+        CreateGarageCommand command = new CreateGarageCommand(3, "New Address", false);
+        String json = objectMapper.writeValueAsString(command);
+
+        String responseString = postman.perform(put("/api/v1/garages/" + id)
+                                                        .contentType(MediaType.APPLICATION_JSON)
+                                                        .content(json))
+                                       .andExpect(status().isOk())
+                                       .andExpect(jsonPath("$.id").value(id))
+                                       .andExpect(jsonPath("$.places").value(3))
+                                       .andExpect(jsonPath("$.address").value("New Address"))
+                                       .andExpect(jsonPath("$.lpgAllowed").value(false))
+                                       .andReturn()
+                                       .getResponse()
+                                       .getContentAsString();
+
+        GarageDto saved = objectMapper.readValue(responseString, GarageDto.class);
+        GarageDto recentlyEdited = garageService.findGarage(saved.id());
+
+        Assertions.assertEquals(3, recentlyEdited.places());
+        Assertions.assertEquals("New Address", recentlyEdited.address());
+        Assertions.assertEquals(saved.id(), recentlyEdited.id());
+        Assertions.assertFalse(recentlyEdited.lpgAllowed());
     }
 
     @Test
     public void shouldEditGaragePartially() throws Exception {
-        Garage garage = garageRepository.saveAndFlush(new Garage(1, "oldAddress", false));
-        EditGarageCommand command = new EditGarageCommand(null, "newAddress", null);
-        String json = obj.writeValueAsString(command);
-        String responseString = postman.perform(patch("/api/v1/garages/" + garage.getId())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.places").value(1))
-                .andExpect(jsonPath("$.address").value("newAddress"))
-                .andExpect(jsonPath("$.lpgAllowed").value(false))
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-        Garage saved = obj.readValue(responseString, Garage.class);
-        Garage recentlyAdded = garageRepository.findById(saved.getId()).get();
-        Assertions.assertNotNull(recentlyAdded, "The garage should exist in the list");
-        Assertions.assertEquals(1, recentlyAdded.getPlaces());
-        Assertions.assertEquals("newAddress", recentlyAdded.getAddress());
-        Assertions.assertFalse(recentlyAdded.isLpgAllowed());
+        GarageDto garage = garageService.addGarage(new CreateGarageCommand(2, "Old Address", true));
+        int id = garage.id();
+        EditGarageCommand command = new EditGarageCommand(null, "New Address", null);
+        String json = objectMapper.writeValueAsString(command);
+
+        String responseString = postman.perform(patch("/api/v1/garages/" + id)
+                                                        .contentType(MediaType.APPLICATION_JSON)
+                                                        .content(json))
+                                       .andExpect(status().isOk())
+                                       .andExpect(jsonPath("$.id").value(id))
+                                       .andExpect(jsonPath("$.places").value(2))
+                                       .andExpect(jsonPath("$.address").value("New Address"))
+                                       .andExpect(jsonPath("$.lpgAllowed").value(true))
+                                       .andReturn()
+                                       .getResponse()
+                                       .getContentAsString();
+
+        GarageDto saved = objectMapper.readValue(responseString, GarageDto.class);
+        GarageDto recentlyEdited = garageService.findGarage(saved.id());
+
+        Assertions.assertEquals(2, recentlyEdited.places());
+        Assertions.assertEquals("New Address", recentlyEdited.address());
+        Assertions.assertEquals(saved.id(), recentlyEdited.id());
+        Assertions.assertTrue(recentlyEdited.lpgAllowed());
+    }
+
+    @Test
+    public void shouldAddCarToGarage() throws Exception {
+        GarageDto garage = garageService.addGarage(new CreateGarageCommand(2, "Zielona", true));
+        CarDto car = carService.addCar(new CreateCarCommand("Audi", "RS", "petrol", garage.id()));
+        int id = garage.id();
+        int carId = car.id();
+        postman.perform(patch("/api/v1/garages/" + id + "/cars/" + carId))
+               .andExpect(status().isOk());
+        GarageDto updatedGarage = garageService.findGarage(id);
+        Assertions.assertTrue(updatedGarage.cars().stream().anyMatch(c -> c.id() == carId));
+    }
+
+    @Test
+    public void shouldDeleteCarFromGarage() throws Exception {
+        GarageDto garage = garageService.addGarage(new CreateGarageCommand(2, "Zielona", true));
+        CarDto car = carService.addCar(new CreateCarCommand("Audi", "RS", "petrol", garage.id()));
+        int id = garage.id();
+        int carId = car.id();
+        postman.perform(delete("/api/v1/garages/" + id + "/cars/" + carId))
+               .andExpect(status().isOk());
+        GarageDto updatedGarage = garageService.findGarage(id);
+        Assertions.assertFalse(updatedGarage.cars().stream().anyMatch(c -> c.id() == carId));
     }
 }
+
+
