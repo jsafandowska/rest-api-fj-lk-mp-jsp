@@ -9,10 +9,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import pl.kurs.Main;
+import pl.kurs.model.Car;
 import pl.kurs.model.Garage;
 import pl.kurs.model.command.CreateGarageCommand;
 import pl.kurs.model.command.EditGarageCommand;
+import pl.kurs.repository.CarRepository;
 import pl.kurs.repository.GarageRepository;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -25,9 +28,11 @@ public class GarageControllerTest {
     private MockMvc postman;
     @Autowired
     private ObjectMapper obj;
-
     @Autowired
     private GarageRepository garageRepository;
+    @Autowired
+    private CarRepository carRepository;
+
 
     @Test
     public void shouldReturnSingleGarage() throws Exception {
@@ -59,8 +64,8 @@ public class GarageControllerTest {
         Garage recentlyAdded = garageRepository.findById(saved.getId()).get();
         Assertions.assertEquals(2, recentlyAdded.getPlaces());
         Assertions.assertEquals("Sopot", recentlyAdded.getAddress());
-        Assertions.assertTrue(recentlyAdded.isLpgAllowed());
-        Assertions.assertTrue(recentlyAdded.getId() > 0);
+        assertTrue(recentlyAdded.isLpgAllowed());
+        assertTrue(recentlyAdded.getId() > 0);
         Assertions.assertEquals(saved.getId(), recentlyAdded.getId());
     }
 
@@ -70,7 +75,7 @@ public class GarageControllerTest {
         postman.perform(delete("/api/v1/garages/" + garageToDelete.getId()))
                 .andExpect(status().isNoContent());
         boolean garageExists = garageRepository.existsById(garageToDelete.getId());
-        Assertions.assertFalse(garageExists, "The garage should be deleted from the list");
+        assertFalse(garageExists, "The garage should be deleted from the list");
     }
 
     @Test
@@ -94,8 +99,8 @@ public class GarageControllerTest {
         Assertions.assertNotNull(recentlyAdded, "The book should exist in the list");
         Assertions.assertEquals(2, recentlyAdded.getPlaces());
         Assertions.assertEquals("newAddress", recentlyAdded.getAddress());
-        Assertions.assertTrue(recentlyAdded.isLpgAllowed());
-        Assertions.assertTrue(recentlyAdded.getId() > 0);
+        assertTrue(recentlyAdded.isLpgAllowed());
+        assertTrue(recentlyAdded.getId() > 0);
     }
 
     @Test
@@ -119,6 +124,36 @@ public class GarageControllerTest {
         Assertions.assertNotNull(recentlyAdded, "The garage should exist in the list");
         Assertions.assertEquals(1, recentlyAdded.getPlaces());
         Assertions.assertEquals("newAddress", recentlyAdded.getAddress());
-        Assertions.assertFalse(recentlyAdded.isLpgAllowed());
+        assertFalse(recentlyAdded.isLpgAllowed());
+    }
+
+    @Test
+    public void shouldDeleteCarFromGarageSuccessfully() throws Exception {
+        Garage garage = garageRepository.saveAndFlush(new Garage(2, "Test Address", true));
+        Car car = carRepository.saveAndFlush(new Car("Toyota", "Petrol", "Corolla"));
+        postman.perform(delete("/api/v1/garages/" + garage.getId() + "/cars/" + car.getId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        ;
+        Garage recentlyAdded = garageRepository.findById(garage.getId()).get();
+//        System.out.println(recentlyAdded.getCars()); --> faktycznie nie ma carsów
+//        System.out.println(garage.getCars()); ---->  a tu wyświetla się
+        assertEquals(0, recentlyAdded.getCars().size());
+    }
+
+    @Test
+    public void shouldAddCarToGarageSuccessfully() throws Exception {
+        Garage garage = garageRepository.saveAndFlush(new Garage(2, "Test Address", true));
+        Car car = carRepository.saveAndFlush(new Car("Toyota", "Petrol", "Corolla"));
+        postman.perform(patch("/api/v1/garages/{id}/cars/{carId}", garage.getId(), car.getId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        Garage updatedGarage = garageRepository.findById(garage.getId()).orElse(null);
+        System.out.println(updatedGarage.getCars());
+        assertNotNull(updatedGarage);
+        assertEquals(updatedGarage.getCars().size(), 1);
     }
 }
+
+
+

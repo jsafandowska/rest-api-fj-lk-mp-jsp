@@ -1,5 +1,4 @@
 package pl.kurs.controller;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -13,7 +12,6 @@ import pl.kurs.Main;
 import pl.kurs.model.Car;
 import pl.kurs.model.command.CreateCarCommand;
 import pl.kurs.repository.CarRepository;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -39,6 +37,7 @@ public class CarControllerTest {
                 .andExpect(jsonPath("$.model").value("RS5"))
                 .andExpect(jsonPath("$.fuelType").value("petrol"));
     }
+
     @Test
     public void shouldThrowExceptionWhenCarNotFound() throws Exception {
         int nonExistentCarId = 999;
@@ -73,7 +72,6 @@ public class CarControllerTest {
     }
 
     @Test
-//    @Transactional
     public void shouldDeleteCar() throws Exception {
         Car carToDelete = carRepository.saveAndFlush(new Car("Mercedes", "C63", "petrol"));
         postman.perform(delete("/api/v1/cars/" + carToDelete.getId()))
@@ -83,7 +81,6 @@ public class CarControllerTest {
     }
 
     @Test
-//    @Transactional
     public void shouldEditCar() throws Exception {
         Car carToEdit = carRepository.saveAndFlush(new Car("Mercedes", "C63", "petrol"));
         CreateCarCommand command = new CreateCarCommand("BMW", "M6", "petrol");
@@ -109,7 +106,6 @@ public class CarControllerTest {
     }
 
     @Test
-//    @Transactional
     public void shouldEditCarPartially() throws Exception {
         Car carToDelete = carRepository.saveAndFlush(new Car("Mercedes", "C63", "petrol"));
         CreateCarCommand command = new CreateCarCommand(null, "M6", null);

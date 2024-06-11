@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import pl.kurs.exceptions.TheGarageDoesNotAllowParkingLPGCars;
 import pl.kurs.exceptions.TheGarageIsFull;
-
+@EqualsAndHashCode
 @Getter
 @Setter
 @NoArgsConstructor
