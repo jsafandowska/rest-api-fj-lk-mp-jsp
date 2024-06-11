@@ -23,16 +23,20 @@ public class GarageServiceTest {
     private CarRepository carRepository;
     @InjectMocks
     private GarageService garageService;
+    private Garage garage1;
+    private Garage garage2;
+    private Car car;
 
     @BeforeEach
     public void init() {
         MockitoAnnotations.openMocks(this);
+        garage1 = new Garage(2, "X", true);
+        garage2 = new Garage(1, "Y", true);
+        car = new Car("Mercedes", "S-class", "petrol");
     }
 
     @Test
     void shouldReturnAllGarages() {
-        Garage garage1 = new Garage(2, "X", true);
-        Garage garage2 = new Garage(1, "Y", true);
         when(garageRepository.findAll()).thenReturn(List.of(garage1, garage2));
         List<GarageDto> garages = garageService.findAllGarages();
         assertEquals(2, garages.size());
@@ -52,15 +56,14 @@ public class GarageServiceTest {
 
     @Test
     void shouldFindGarage() {
-        Garage garage = new Garage(1, "B", true);
-        when(garageRepository.findById(anyInt())).thenReturn(Optional.of(garage));
-        GarageDto dto = garageService.findGarage(garage.getId());
-        assertEquals("B", dto.address());
+        when(garageRepository.findById(anyInt())).thenReturn(Optional.of(garage1));
+        GarageDto dto = garageService.findGarage(garage1.getId());
+        assertEquals("X", dto.address());
         verify(garageRepository, times(1)).findById(anyInt());
     }
 
     @Test
-    public void testDeleteGarage() {
+    public void shouldDeleteGarage() {
         doNothing().when(garageRepository).deleteById(1);
         garageService.deleteGarage(1);
         verify(garageRepository, times(1)).deleteById(1);
@@ -68,10 +71,9 @@ public class GarageServiceTest {
 
     @Test
     void shouldEditGarage() {
-        Garage garage = new Garage(2, "Warszawa", true);
         CreateGarageCommand command = new CreateGarageCommand(3, "Poznań", false);
-        when(garageRepository.findById(1)).thenReturn(Optional.of(garage));
-        when(garageRepository.saveAndFlush(any(Garage.class))).thenReturn(garage);
+        when(garageRepository.findById(anyInt())).thenReturn(Optional.of(garage1));
+        when(garageRepository.saveAndFlush(any(Garage.class))).thenReturn(garage1);
         GarageDto result = garageService.editGarage(1, command);
         assertEquals("Poznań", result.address());
         assertEquals(3, result.places());
@@ -82,10 +84,9 @@ public class GarageServiceTest {
 
     @Test
     void shouldEditGaragePartially() {
-        Garage garage = new Garage(2, "Warszawa", true);
         EditGarageCommand command = new EditGarageCommand(null, "Poznań", null);
-        when(garageRepository.findById(1)).thenReturn(Optional.of(garage));
-        when(garageRepository.saveAndFlush(any(Garage.class))).thenReturn(garage);
+        when(garageRepository.findById(1)).thenReturn(Optional.of(garage1));
+        when(garageRepository.saveAndFlush(any(Garage.class))).thenReturn(garage1);
         GarageDto result = garageService.editGaragePartially(1, command);
         assertEquals("Poznań", result.address());
         assertEquals(2, result.places());
@@ -95,31 +96,27 @@ public class GarageServiceTest {
 
 
     @Test
-    public void testAddCarToGarage() {
-        Garage garage = new Garage(2, "Warszawa", true);
-        Car car = new Car("Mercedes", "S-class", "petrol");
-        when(garageRepository.findById(1)).thenReturn(Optional.of(garage));
+    public void shouldAddCarToGarage() {
+        when(garageRepository.findById(1)).thenReturn(Optional.of(garage1));
         when(carRepository.findById(1)).thenReturn(Optional.of(car));
-        when(garageRepository.saveAndFlush(any(Garage.class))).thenReturn(garage);
+        when(garageRepository.saveAndFlush(any(Garage.class))).thenReturn(garage1);
         when(carRepository.saveAndFlush(any(Car.class))).thenReturn(car);
         GarageDto result = garageService.addCarToGarage(1, 1);
-        assertEquals(result.address(), "Warszawa");
+        assertEquals(result.address(), "X");
         assertEquals(result.places(), 2);
         assertEquals(result.lpgAllowed(),true);
-        assertEquals(car.getGarage(),garage);
+        assertEquals(car.getGarage(),garage1);
         verify(garageRepository, times(1)).findById(1);
         verify(garageRepository, times(1)).saveAndFlush(any(Garage.class));
     }
 
     @Test
     public void shouldDeleteCarFromGarage() {
-        Garage garage = new Garage(2, "Warszawa", true);
-        Car car = new Car("Mercedes", "S-class", "petrol");
-        garage.addCar(car);
-        when(garageRepository.findById(1)).thenReturn(Optional.of(garage));
+        garage1.addCar(car);
+        when(garageRepository.findById(1)).thenReturn(Optional.of(garage1));
         when(carRepository.findById(1)).thenReturn(Optional.of(car));
         garageService.deleteCarFromGarage(1, 1);
-        assertFalse(garage.getCars().contains(car));
+        assertFalse(garage1.getCars().contains(car));
         verify(garageRepository, times(1)).findById(1);
         verify(carRepository, times(1)).findById(1);
 

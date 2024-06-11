@@ -20,10 +20,14 @@ public class CarServiceTest {
 
     @InjectMocks
     private CarService carService;
+    private Car car1;
+    private Car car2;
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
+        car1 = new Car("Audi", "RS5", "petrol");
+        car2 = new Car("BMW", "M3", "diesel");
     }
 
 //    @Test
@@ -34,8 +38,6 @@ public class CarServiceTest {
 
     @Test
     public void shouldReturnAllCars() {
-        Car car1 = new Car("Audi", "RS5", "petrol");
-        Car car2 = new Car("BMW", "M3", "diesel");
         when(carRepository.findAll()).thenReturn(List.of(car1, car2));
         List<CarDto> cars = carService.findAllCars();
         assertEquals(2, cars.size());
@@ -54,8 +56,7 @@ public class CarServiceTest {
 
     @Test
     public void shouldFindCarById() {
-        Car car = new Car("Audi", "RS5", "petrol");
-        when(carRepository.findById(anyInt())).thenReturn(Optional.of(car));
+        when(carRepository.findById(anyInt())).thenReturn(Optional.of(car1));
         CarDto carDto = carService.findCarById(1);
         assertEquals("Audi", carDto.brand());
         verify(carRepository, times(1)).findById(anyInt());
@@ -81,10 +82,9 @@ public class CarServiceTest {
 
     @Test
     public void shouldEditCar() {
-        Car car = new Car("Mercedes", "C63", "petrol");
         CreateCarCommand command = new CreateCarCommand("BMW", "M6", "petrol");
-        when(carRepository.findById(anyInt())).thenReturn(Optional.of(car));
-        when(carRepository.saveAndFlush(any(Car.class))).thenReturn(car);
+        when(carRepository.findById(anyInt())).thenReturn(Optional.of(car1));
+        when(carRepository.saveAndFlush(any(Car.class))).thenReturn(car1);
         CarDto carDto = carService.editCar(1, command);
         assertNotNull(carDto);
         assertEquals("BMW", carDto.brand());
