@@ -21,6 +21,10 @@ public class GarageController {
 
     private final GarageService garageService;
 
+    @GetMapping("/test")
+    public void test(){
+        garageService.playWithTransactions();
+    }
 
     @GetMapping
     public ResponseEntity<Page<GarageDto>> findAll(@PageableDefault Pageable pageable) {

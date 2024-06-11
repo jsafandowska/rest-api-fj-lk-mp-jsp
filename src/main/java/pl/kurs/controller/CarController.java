@@ -18,7 +18,6 @@ public class CarController {
 
     private final CarService carService;
 
-
     @GetMapping
     public ResponseEntity<List<CarDto>> findAll() {
         log.info("findAll");

@@ -2,9 +2,11 @@ package pl.kurs.service;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.kurs.exceptions.CarNotFoundException;
 import pl.kurs.exceptions.GarageNotFoundException;
 import pl.kurs.model.Car;
@@ -18,6 +20,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class GarageService {
 
     private final GarageRepository garageRepository;
@@ -75,5 +78,14 @@ public class GarageService {
         Car car = carRepository.findById(carId).orElseThrow(CarNotFoundException::new);
         garage.deleteCar(car);
         carRepository.saveAndFlush(car);
+    }
+
+    @Transactional
+    public void playWithTransactions() {
+        log.info("-------------------------");
+        Garage g1 = garageRepository.findById(1).get();
+        Garage g2 = garageRepository.findById(1).get();
+        log.info("G1 == G2: " + (g1 == g2));
+        log.info("-------------------------");
     }
 }
