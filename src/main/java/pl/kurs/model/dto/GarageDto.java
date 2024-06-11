@@ -10,5 +10,4 @@ public record GarageDto(int id, int places, String address, boolean lpgAllowed) 
                 garage.isLpgAllowed());
     }
 
-//    jest sens to robić w przypadku garażu??
 }

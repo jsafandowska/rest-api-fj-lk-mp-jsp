@@ -11,5 +11,5 @@ public class CreateCarCommand {
     private String brand;
     private String model;
     private String fuelType;
-    private Integer garageId;
+
 }

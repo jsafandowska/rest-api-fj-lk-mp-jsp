@@ -1,10 +1,12 @@
 package pl.kurs.model;
+
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,7 +19,7 @@ public class Garage {
     private int places;
     private String address;
     private boolean lpgAllowed;
-    @OneToMany(mappedBy = "garage")
+    @OneToMany(mappedBy = "garage",fetch = FetchType.EAGER)
     @ToString.Exclude
     private Set<Car> cars = new HashSet<>();
 
@@ -40,19 +42,20 @@ public class Garage {
     }
 
     private void validateAddCar(Car car) {
-        if(cars.size() >= places){
+        if (cars.size() >= places) {
             throw new IllegalStateException("GARAGE_IS_FULL");
         }
-        if(!lpgAllowed && "LPG".equals(car.getFuelType())){
+        if (!lpgAllowed && "LPG".equals(car.getFuelType())) {
             throw new IllegalStateException("GARAGE_NOT_ACCEPT_LPG");
         }
     }
 
     private void validateDeleteCar(Car car) {
-        if(Optional.ofNullable(car.getGarage()).map(garage -> garage.getId() != id).orElse(true)){
+        if (Optional.ofNullable(car.getGarage()).map(garage -> garage.getId() != id).orElse(true)) {
             throw new IllegalStateException("CAR_NOT_IN_THE_GARAGE");
         }
     }
+
 
 
 }

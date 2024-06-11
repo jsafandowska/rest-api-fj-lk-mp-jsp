@@ -2,8 +2,8 @@ package pl.kurs.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import pl.kurs.exceptions.TheGarageDoesNotAllowParkingLPGCars;
-import pl.kurs.exceptions.TheGarageIsFull;
+
+
 
 @Getter
 @Setter
