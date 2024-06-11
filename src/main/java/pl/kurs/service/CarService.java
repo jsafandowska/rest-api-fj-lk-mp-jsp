@@ -1,4 +1,5 @@
 package pl.kurs.service;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.kurs.exceptions.CarNotFoundException;
@@ -13,7 +14,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CarService {
     private final CarRepository carRepository;
-//    @PostConstruct
+    @PostConstruct
     public void init() {
         carRepository.saveAndFlush(new Car("Mercedes", "S-class", "petrol"));
         carRepository.saveAndFlush(new Car("Audi", "RS", "petrol"));

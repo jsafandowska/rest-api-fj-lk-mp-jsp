@@ -18,10 +18,6 @@ public class CarController {
 
     private final CarService carService;
 
-    @PostConstruct
-    public void init() {
-        carService.init();
-    }
 
     @GetMapping
     public ResponseEntity<List<CarDto>> findAll() {

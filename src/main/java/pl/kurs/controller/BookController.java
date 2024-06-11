@@ -21,11 +21,6 @@ public class BookController {
 
     private final BookService bookService;
 
-    @PostConstruct
-    public void init() {
-        bookService.init();
-    }
-
     @GetMapping
     public ResponseEntity<Page<BookDto>> findAll(@PageableDefault Pageable pageable) {
         log.info("findAll");

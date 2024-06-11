@@ -131,10 +131,11 @@ public class GarageControllerTest {
     public void shouldDeleteCarFromGarageSuccessfully() throws Exception {
         Garage garage = garageRepository.saveAndFlush(new Garage(2, "Test Address", true));
         Car car = carRepository.saveAndFlush(new Car("Toyota", "Petrol", "Corolla"));
+        car.setGarage(garage);
+        carRepository.saveAndFlush(car);
         postman.perform(delete("/api/v1/garages/" + garage.getId() + "/cars/" + car.getId())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-        ;
         Garage recentlyAdded = garageRepository.findById(garage.getId()).get();
 //        System.out.println(recentlyAdded.getCars()); --> faktycznie nie ma carsów
 //        System.out.println(garage.getCars()); ---->  a tu wyświetla się

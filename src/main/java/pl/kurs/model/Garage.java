@@ -43,6 +43,9 @@ public class Garage {
     }
 
     private void validateAddCar(Car car) {
+        if(car.getGarage() != null){
+            throw new IllegalStateException("CAR_IS_IN_THE_GARAGE");
+        }
         if (cars.size() >= places) {
             throw new IllegalStateException("GARAGE_IS_FULL");
         }

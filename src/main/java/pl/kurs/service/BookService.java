@@ -1,4 +1,5 @@
 package pl.kurs.service;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,7 +22,7 @@ public class BookService {
     private final BookRepository bookRepository;
 
 
-//    @PostConstruct
+    @PostConstruct
     public void init() {
         Author a1 = authorRepository.saveAndFlush(new Author("Kazimierz", "Wielki", 1900, 2000));
         Author a2 = authorRepository.saveAndFlush(new Author("Maria", "Wielka", 1900, 2000));
