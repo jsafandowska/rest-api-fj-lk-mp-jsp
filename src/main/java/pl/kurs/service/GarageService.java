@@ -66,11 +66,12 @@ public class GarageService {
         return garageRepository.saveAndFlush(garage);
     }
 
-    public void addCarToGarage(int id, int carId) {
+    public Garage addCarToGarage(int id, int carId) {
         Garage garage = garageRepository.findById(id).orElseThrow(() -> new GarageNotFoundException());
         Car car = carRepository.findById(carId).orElseThrow(() -> new CarNotFoundException());
         garage.addCar(car);
         carRepository.saveAndFlush(car);
+        return garage;
     }
 
     public void deleteCarFromGarage(int id, int carId) {

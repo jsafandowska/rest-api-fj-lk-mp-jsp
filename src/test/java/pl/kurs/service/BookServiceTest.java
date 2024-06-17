@@ -50,10 +50,10 @@ public class BookServiceTest {
         Pageable pageable = PageRequest.of(0, 2);
         Page<Book> page = new PageImpl<>(Arrays.asList(book1, book2), pageable, 2);
         when(bookRepository.findAll(pageable)).thenReturn(page);
-        Page<BookDto> result = bookService.findAll(pageable);
+        Page<Book> result = bookService.findAll(pageable);
         assertEquals(2, result.getTotalElements());
-        assertEquals("Ogniem i mieczem", result.getContent().get(0).title());
-        assertEquals("Ogniem i mieczem 2", result.getContent().get(1).title());
+        assertEquals("Ogniem i mieczem", result.getContent().get(0).getTitle());
+        assertEquals("Ogniem i mieczem 2", result.getContent().get(1).getTitle());
         verify(bookRepository, times(1)).findAll(pageable);
     }
 
@@ -63,8 +63,8 @@ public class BookServiceTest {
         CreateBookCommand command = new CreateBookCommand("New Book", "CATEGORY", 1);
         when(authorRepository.findById(1)).thenReturn(Optional.of(author));
         when(bookRepository.saveAndFlush(any(Book.class))).thenReturn(book);
-        BookDto result = bookService.addBook(command);
-        assertEquals("New Book", result.title());
+        Book result = bookService.addBook(command);
+        assertEquals("New Book", result.getTitle());
         verify(bookRepository).saveAndFlush(any(Book.class));
     }
 
@@ -72,8 +72,8 @@ public class BookServiceTest {
     @Test
     public void shouldFindBook() {
         when(bookRepository.findById(1)).thenReturn(Optional.of(book1));
-        BookDto result = bookService.findBook(1);
-        assertEquals("Ogniem i mieczem", result.title());
+        Book result = bookService.findBook(1);
+        assertEquals("Ogniem i mieczem", result.getTitle());
         verify(bookRepository, times(1)).findById(1);
     }
 
@@ -88,8 +88,8 @@ public class BookServiceTest {
         EditBookCommand command = new EditBookCommand("New Title", "New Category", false);
         when(bookRepository.findById(1)).thenReturn(Optional.of(book1));
         when(bookRepository.saveAndFlush(any(Book.class))).thenReturn(book1);
-        BookDto result = bookService.editBook(1, command);
-        assertEquals("New Title", result.title());
+        Book result = bookService.editBook(1, command);
+        assertEquals("New Title", result.getTitle());
         verify(bookRepository, times(1)).findById(1);
         verify(bookRepository, times(1)).saveAndFlush(book1);
     }
@@ -99,9 +99,9 @@ public class BookServiceTest {
         EditBookCommand command = new EditBookCommand(null, "New Category", false);
         when(bookRepository.findById(1)).thenReturn(Optional.of(book1));
         when(bookRepository.saveAndFlush(any(Book.class))).thenReturn(book1);
-        BookDto result = bookService.editBookPartially(1, command);
-        assertEquals("Ogniem i mieczem", result.title());
-        assertEquals("New Category", result.category());
+        Book result = bookService.editBookPartially(1, command);
+        assertEquals("Ogniem i mieczem", result.getTitle());
+        assertEquals("New Category", result.getCategory());
         verify(bookRepository, times(1)).findById(1);
         verify(bookRepository, times(1)).saveAndFlush(book1);
     }

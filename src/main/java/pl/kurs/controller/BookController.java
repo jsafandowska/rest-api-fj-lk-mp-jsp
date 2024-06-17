@@ -8,6 +8,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.kurs.model.Book;
 import pl.kurs.model.command.CreateBookCommand;
 import pl.kurs.model.command.EditBookCommand;
 import pl.kurs.model.dto.BookDto;
@@ -22,7 +23,7 @@ public class BookController {
     private final BookService bookService;
 
     @GetMapping
-    public ResponseEntity<Page<BookDto>> findAll(@PageableDefault Pageable pageable) {
+    public ResponseEntity<Page<Book>> findAll(@PageableDefault Pageable pageable) {
         log.info("findAll");
         return ResponseEntity.ok(bookService.findAll(pageable));
     }
@@ -30,13 +31,13 @@ public class BookController {
     @PostMapping
     public ResponseEntity<BookDto> addBook(@RequestBody CreateBookCommand command) {
         log.info("addBook({})", command);
-        return ResponseEntity.status(HttpStatus.CREATED).body(bookService.addBook(command));
+        return ResponseEntity.status(HttpStatus.CREATED).body(BookDto.toDto(bookService.addBook(command)));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<BookDto> findBook(@PathVariable int id) {
         log.info("findBook({})", id);
-        return ResponseEntity.ok(bookService.findBook(id));
+        return ResponseEntity.ok(BookDto.toDto(bookService.findBook(id)));
     }
 
     @DeleteMapping("/{id}")
@@ -49,12 +50,12 @@ public class BookController {
     @PutMapping("/{id}")
     public ResponseEntity<BookDto> editBook(@PathVariable int id, @RequestBody EditBookCommand command) {
         log.info("editBook({}, {})", id, command);
-        return ResponseEntity.status(HttpStatus.OK).body(bookService.editBook(id, command));
+        return ResponseEntity.status(HttpStatus.OK).body(BookDto.toDto(bookService.editBook(id, command)));
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<BookDto> editBookPartially(@PathVariable int id, @RequestBody EditBookCommand command) {
         log.info("editBook({}, {})", id, command);
-        return ResponseEntity.status(HttpStatus.OK).body(bookService.editBookPartially(id, command));
+        return ResponseEntity.status(HttpStatus.OK).body(BookDto.toDto(bookService.editBookPartially(id, command)));
     }
 }
