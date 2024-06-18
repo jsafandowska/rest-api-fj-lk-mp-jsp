@@ -1,5 +1,4 @@
 package pl.kurs.controller;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -24,19 +23,19 @@ public class BookController {
     @GetMapping
     public ResponseEntity<Page<BookDto>> findAll(@PageableDefault Pageable pageable) {
         log.info("findAll");
-        return ResponseEntity.ok(bookService.findAll(pageable));
+        return ResponseEntity.ok(bookService.findAll(pageable).map(BookDto::toDto));
     }
 
     @PostMapping
     public ResponseEntity<BookDto> addBook(@RequestBody CreateBookCommand command) {
         log.info("addBook({})", command);
-        return ResponseEntity.status(HttpStatus.CREATED).body(bookService.addBook(command));
+        return ResponseEntity.status(HttpStatus.CREATED).body(BookDto.toDto(bookService.addBook(command)));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<BookDto> findBook(@PathVariable int id) {
         log.info("findBook({})", id);
-        return ResponseEntity.ok(bookService.findBook(id));
+        return ResponseEntity.ok(BookDto.toDto(bookService.findBook(id)));
     }
 
     @DeleteMapping("/{id}")
@@ -49,12 +48,12 @@ public class BookController {
     @PutMapping("/{id}")
     public ResponseEntity<BookDto> editBook(@PathVariable int id, @RequestBody EditBookCommand command) {
         log.info("editBook({}, {})", id, command);
-        return ResponseEntity.status(HttpStatus.OK).body(bookService.editBook(id, command));
+        return ResponseEntity.status(HttpStatus.OK).body(BookDto.toDto(bookService.editBook(id, command)));
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<BookDto> editBookPartially(@PathVariable int id, @RequestBody EditBookCommand command) {
         log.info("editBook({}, {})", id, command);
-        return ResponseEntity.status(HttpStatus.OK).body(bookService.editBookPartially(id, command));
+        return ResponseEntity.status(HttpStatus.OK).body(BookDto.toDto(bookService.editBookPartially(id, command)));
     }
 }

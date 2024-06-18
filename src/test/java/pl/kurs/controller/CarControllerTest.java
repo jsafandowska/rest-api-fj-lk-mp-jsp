@@ -46,7 +46,6 @@ public class CarControllerTest {
     }
 
     @Test
-//    @Transactional
     public void shouldAddCar() throws Exception {
         CreateCarCommand command = new CreateCarCommand("Audi", "RS5", "petrol");
         String json = obj.writeValueAsString(command);
