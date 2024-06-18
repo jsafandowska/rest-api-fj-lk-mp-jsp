@@ -11,7 +11,6 @@ import pl.kurs.model.Car;
 import pl.kurs.model.Garage;
 import pl.kurs.model.command.CreateGarageCommand;
 import pl.kurs.model.command.EditGarageCommand;
-import pl.kurs.model.dto.GarageDto;
 import pl.kurs.repository.CarRepository;
 import pl.kurs.repository.GarageRepository;
 
@@ -31,59 +30,51 @@ public class GarageService {
     }
 
     //todo zamienić garage na garageDTO
-    public Page<Garage> findAll(Pageable pa) {
-        return garageRepository.findAll(pa);
+
+    public Page<Garage> findAllGarages(Pageable pageable) {
+        return garageRepository.findAll(pageable);
     }
 
-    @Transactional
-    public GarageDto addGarage(CreateGarageCommand command) {
-        Garage garage = garageRepository.saveAndFlush(new Garage(command.getPlaces(), command.getAddress(), command.isLpgAllowed()));
-        return GarageDto.toDto(garage);
+    public Garage addGarage(CreateGarageCommand command) {
+        return garageRepository.saveAndFlush(new Garage(command.getPlaces(), command.getAddress(), command.isLpgAllowed()));
     }
 
-    public GarageDto findGarage(int id) {
-        return GarageDto.toDto(garageRepository.findById(id).orElseThrow(GarageNotFoundException::new));
+    public Garage findGarage(int id) {
+        return garageRepository.findById(id).orElseThrow(GarageNotFoundException::new);
     }
 
-    @Transactional
     public void deleteGarage(int id) {
         garageRepository.deleteById(id);
     }
 
-    @Transactional
-    public GarageDto editGarage(int id, CreateGarageCommand command) {
+    public Garage editGarage(int id, CreateGarageCommand command) {
         Garage garage = garageRepository.findById(id).orElseThrow(GarageNotFoundException::new);
         garage.setAddress(command.getAddress());
         garage.setPlaces(command.getPlaces());
         garage.setLpgAllowed(command.isLpgAllowed());
-        return GarageDto.toDto(garageRepository.saveAndFlush(garage));
+        return garageRepository.saveAndFlush(garage);
     }
 
-    @Transactional
-    public GarageDto editGaragePartially(int id, EditGarageCommand command) {
+    public Garage editGaragePartially(int id, EditGarageCommand command) {
         Garage garage = garageRepository.findById(id).orElseThrow(GarageNotFoundException::new);
         Optional.ofNullable(command.getAddress()).ifPresent(garage::setAddress);
         Optional.ofNullable(command.getPlaces()).ifPresent(garage::setPlaces);
         Optional.ofNullable(command.getLpgAllowed()).ifPresent(garage::setLpgAllowed);
-        return GarageDto.toDto(garageRepository.saveAndFlush(garage));
+        return garageRepository.saveAndFlush(garage);
     }
 
-    @Transactional
-    public void addCar(int id, int carId) {
-        Garage garage = garageRepository.findById(id).orElseThrow(GarageNotFoundException::new);
-        Car car = carRepository.findById(carId).orElseThrow(CarNotFoundException::new);
-        if (garage.getCars().contains(car)) {
-            throw new IllegalStateException("Car is already in this garage");
-        }
+    public void addCarToGarage(int id, int carId) {
+        Garage garage = garageRepository.findById(id).orElseThrow(() -> new GarageNotFoundException());
+        Car car = carRepository.findById(carId).orElseThrow(() -> new CarNotFoundException());
         garage.addCar(car);
         carRepository.saveAndFlush(car);
     }
 
-    @Transactional
     public void deleteCarFromGarage(int id, int carId) {
         Garage garage = garageRepository.findById(id).orElseThrow(GarageNotFoundException::new);
         Car car = carRepository.findById(carId).orElseThrow(CarNotFoundException::new);
         garage.deleteCar(car);
         carRepository.saveAndFlush(car);
     }
+
 }

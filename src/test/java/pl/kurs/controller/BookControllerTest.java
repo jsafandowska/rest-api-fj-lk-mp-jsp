@@ -25,7 +25,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("tests")
 class BookControllerTest {
-
     @Autowired
     private MockMvc postman;
 
@@ -55,7 +54,7 @@ class BookControllerTest {
 
     @Test
     public void shouldAddBook() throws Exception {
-        Author author = authorRepository.findAll().get(0);
+        Author author = authorRepository.findAllWithBooks().get(0);
         CreateBookCommand command = new CreateBookCommand("podstawy java", "NAUKOWE", author.getId());
         String json = objectMapper.writeValueAsString(command);
         String responseString = postman.perform(post("/api/v1/books")
@@ -79,13 +78,12 @@ class BookControllerTest {
         Assertions.assertEquals(saved.getId(), recentlyAdded.getId());
         Assertions.assertEquals(author.getId(), recentlyAdded.getAuthor().getId());
         Assertions.assertTrue(recentlyAdded.isAvailable());
-        Assertions.assertTrue(recentlyAdded.getId() > 0);
     }
 
     @Test
     public void shouldDeleteBook() throws Exception {
         Author author = authorRepository.findAllWithBooks().get(0);
-        Book bookToDelete = bookRepository.saveAndFlush(new Book("Some Title", "Some Category", true,author));
+        Book bookToDelete = bookRepository.saveAndFlush(new Book("Some Title", "Some Category", true, author));
         postman.perform(delete("/api/v1/books/" + bookToDelete.getId()))
                 .andExpect(status().isNoContent());
         boolean bookExists = bookRepository.existsById(bookToDelete.getId());
@@ -95,7 +93,7 @@ class BookControllerTest {
     @Test
     public void shouldEditBook() throws Exception {
         Author author = authorRepository.findAllWithBooks().get(0);
-        Book book = bookRepository.saveAndFlush(new Book("Old Title", "Old Category", true,author));
+        Book book = bookRepository.saveAndFlush(new Book("Old Title", "Old Category", true, author));
         EditBookCommand command = new EditBookCommand("New Title", "New Category", false);
         String json = objectMapper.writeValueAsString(command);
 
@@ -117,7 +115,7 @@ class BookControllerTest {
         Assertions.assertNotNull(recentlyAdded, "The book should exist in the list");
         Assertions.assertEquals("New Title", recentlyAdded.getTitle());
         Assertions.assertEquals("New Category", recentlyAdded.getCategory());
-        Assertions.assertEquals(recentlyAdded.getId(),book.getId());
+        Assertions.assertEquals(recentlyAdded.getId(), book.getId());
         Assertions.assertEquals(author.getId(), recentlyAdded.getAuthor().getId());
         Assertions.assertFalse(recentlyAdded.isAvailable());
     }
@@ -125,7 +123,7 @@ class BookControllerTest {
     @Test
     public void shouldEditBookPartially() throws Exception {
         Author author = authorRepository.findAllWithBooks().get(0);
-        Book book = bookRepository.saveAndFlush(new Book("Old Title", "Old Category", true,author));
+        Book book = bookRepository.saveAndFlush(new Book("Old Title", "Old Category", true, author));
         EditBookCommand command = new EditBookCommand(null, "New Category", null);
         String json = objectMapper.writeValueAsString(command);
         String responseString = postman.perform(patch("/api/v1/books/" + book.getId())

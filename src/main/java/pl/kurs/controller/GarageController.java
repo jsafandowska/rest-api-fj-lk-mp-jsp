@@ -1,6 +1,5 @@
 package pl.kurs.controller;
 
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -21,27 +20,22 @@ import pl.kurs.service.GarageService;
 public class GarageController {
     private final GarageService garageService;
 
-    @PostConstruct
-    public void init() {
-        garageService.init();
-    }
-
     @GetMapping
     public ResponseEntity<Page<GarageDto>> findAll(@PageableDefault Pageable pageable) {
         log.info("findAll");
-        return ResponseEntity.ok(garageService.findAll(pageable).map(GarageDto::toDto));
+        return ResponseEntity.ok(garageService.findAllGarages(pageable).map(GarageDto::toDto));
     }
 
     @PostMapping
     public ResponseEntity<GarageDto> addGarage(@RequestBody CreateGarageCommand command) {
         log.info("addGarage({})", command);
-        return ResponseEntity.status(HttpStatus.CREATED).body(garageService.addGarage(command));
+        return ResponseEntity.status(HttpStatus.CREATED).body(GarageDto.toDto(garageService.addGarage(command)));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<GarageDto> findGarage(@PathVariable int id) {
         log.info("findGarage({})", id);
-        return ResponseEntity.ok(garageService.findGarage(id));
+        return ResponseEntity.ok(GarageDto.toDto(garageService.findGarage(id)));
     }
 
     @DeleteMapping("/{id}")
@@ -54,19 +48,19 @@ public class GarageController {
     @PutMapping("/{id}")
     public ResponseEntity<GarageDto> editGarage(@PathVariable int id, @RequestBody CreateGarageCommand command) {
         log.info("editGarage({}, {})", id, command);
-        return ResponseEntity.status(HttpStatus.OK).body(garageService.editGarage(id, command));
+        return ResponseEntity.status(HttpStatus.OK).body(GarageDto.toDto(garageService.editGarage(id, command)));
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<GarageDto> editGaragePartially(@PathVariable int id, @RequestBody EditGarageCommand command) {
         log.info("editGarage({}, {})", id, command);
-        return ResponseEntity.status(HttpStatus.OK).body(garageService.editGaragePartially(id, command));
+        return ResponseEntity.status(HttpStatus.OK).body(GarageDto.toDto(garageService.editGaragePartially(id, command)));
     }
 
     @PatchMapping("/{id}/cars/{carId}")
     public ResponseEntity<GarageDto> addCar(@PathVariable int id, @PathVariable int carId) {
         log.info("addCar({}, {})", id, carId);
-        garageService.addCar(id, carId);
+        garageService.addCarToGarage(id, carId);
         return ResponseEntity.ok().build();
     }
 
