@@ -84,7 +84,6 @@ class BookControllerTest {
 
     @Test
     public void shouldDeleteBook() throws Exception {
-//        Author author = authorRepository.findAll().get(0);
         Author author = authorRepository.findAllWithBooks().get(0);
         Book bookToDelete = bookRepository.saveAndFlush(new Book("Some Title", "Some Category", true,author));
         postman.perform(delete("/api/v1/books/" + bookToDelete.getId()))

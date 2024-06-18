@@ -3,6 +3,9 @@ package pl.kurs.controller;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,8 +13,6 @@ import pl.kurs.model.command.CreateGarageCommand;
 import pl.kurs.model.command.EditGarageCommand;
 import pl.kurs.model.dto.GarageDto;
 import pl.kurs.service.GarageService;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/garages")
@@ -26,9 +27,9 @@ public class GarageController {
     }
 
     @GetMapping
-    public ResponseEntity<List<GarageDto>> findAll() {
+    public ResponseEntity<Page<GarageDto>> findAll(@PageableDefault Pageable pageable) {
         log.info("findAll");
-        return ResponseEntity.ok(garageService.findAll());
+        return ResponseEntity.ok(garageService.findAll(pageable).map(GarageDto::toDto));
     }
 
     @PostMapping

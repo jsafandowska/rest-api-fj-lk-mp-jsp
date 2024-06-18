@@ -2,6 +2,8 @@ package pl.kurs.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import pl.kurs.exceptions.CarNotFoundException;
 import pl.kurs.exceptions.GarageNotFoundException;
@@ -13,9 +15,7 @@ import pl.kurs.model.dto.GarageDto;
 import pl.kurs.repository.CarRepository;
 import pl.kurs.repository.GarageRepository;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,8 +30,9 @@ public class GarageService {
         garageRepository.saveAndFlush(new Garage(3, "Piątkowska", false));
     }
 
-    public List<GarageDto> findAll() {
-        return garageRepository.findAll().stream().map(GarageDto::toDto).collect(Collectors.toList());
+    //todo zamienić garage na garageDTO
+    public Page<Garage> findAll(Pageable pa) {
+        return garageRepository.findAll(pa);
     }
 
     @Transactional
@@ -68,7 +69,7 @@ public class GarageService {
     }
 
     @Transactional
-    public GarageDto addCar(int id, int carId) {
+    public void addCar(int id, int carId) {
         Garage garage = garageRepository.findById(id).orElseThrow(GarageNotFoundException::new);
         Car car = carRepository.findById(carId).orElseThrow(CarNotFoundException::new);
         if (garage.getCars().contains(car)) {
@@ -76,15 +77,13 @@ public class GarageService {
         }
         garage.addCar(car);
         carRepository.saveAndFlush(car);
-        return GarageDto.toDto(garage);
     }
 
     @Transactional
-    public GarageDto deleteCarFromGarage(int id, int carId) {
+    public void deleteCarFromGarage(int id, int carId) {
         Garage garage = garageRepository.findById(id).orElseThrow(GarageNotFoundException::new);
         Car car = carRepository.findById(carId).orElseThrow(CarNotFoundException::new);
         garage.deleteCar(car);
         carRepository.saveAndFlush(car);
-        return GarageDto.toDto(garage);
     }
 }
