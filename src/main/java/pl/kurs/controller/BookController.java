@@ -1,5 +1,5 @@
 package pl.kurs.controller;
-import jakarta.annotation.PostConstruct;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -8,10 +8,13 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import pl.kurs.model.command.CreateBookCommand;
 import pl.kurs.model.command.EditBookCommand;
 import pl.kurs.model.dto.BookDto;
 import pl.kurs.service.BookService;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("api/v1/books")
@@ -56,5 +59,10 @@ public class BookController {
     public ResponseEntity<BookDto> editBookPartially(@PathVariable int id, @RequestBody EditBookCommand command) {
         log.info("editBook({}, {})", id, command);
         return ResponseEntity.status(HttpStatus.OK).body(bookService.editBookPartially(id, command));
+    }
+
+    @PostMapping("/_import")
+    public void importBooks(@RequestPart("books")MultipartFile file) throws IOException {
+        bookService.importBooks(file.getBytes());
     }
 }

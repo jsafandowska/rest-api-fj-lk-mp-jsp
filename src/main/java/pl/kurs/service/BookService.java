@@ -1,6 +1,7 @@
 package pl.kurs.service;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -13,8 +14,14 @@ import pl.kurs.model.command.EditBookCommand;
 import pl.kurs.model.dto.BookDto;
 import pl.kurs.repository.AuthorRepository;
 import pl.kurs.repository.BookRepository;
-import java.util.Optional;
 
+import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BookService {
@@ -64,5 +71,29 @@ public class BookService {
         Optional.ofNullable(command.getTitle()).ifPresent(book::setTitle);
         return BookDto.toDto(bookRepository.saveAndFlush(book));
     }
+
+    public void importBooks(byte[] bytes) {
+        String content = new String(bytes, Charset.defaultCharset());
+
+        AtomicInteger counter = new AtomicInteger(0);
+        AtomicLong start = new AtomicLong(System.currentTimeMillis());
+
+        Arrays.stream(content.split("\r\n"))
+                .map(line -> line.split(","))
+                .map(args -> new CreateBookCommand(args))
+                .peek(command -> countTime(counter, start))
+                .forEach(this::addBook);
+    }
+
+    private void countTime(AtomicInteger counter, AtomicLong start){
+        if(counter.incrementAndGet() % 1000 == 0){
+            log.info("Imported: {} in {} ms", counter, (System.currentTimeMillis() - start.get()));
+            start.set(System.currentTimeMillis());
+        }
+    }
+
+//    20-40k na sekunde
+//    minimalne zuzycie pamieci
+    // pobawic sie z visual vm
 
 }
