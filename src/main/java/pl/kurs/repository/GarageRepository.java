@@ -7,6 +7,6 @@ import pl.kurs.model.Garage;
 import java.util.List;
 
 public interface GarageRepository extends JpaRepository<Garage,Integer> {
-    @Query("SELECT g FROM Garage g JOIN FETCH g.cars")
+    @Query("SELECT g FROM Garage g LEFT JOIN FETCH g.cars")
     List<Garage> findAllWithCars();
 }

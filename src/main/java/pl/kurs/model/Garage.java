@@ -20,7 +20,7 @@ public class Garage {
     private int places;
     private String address;
     private boolean lpgAllowed;
-    @OneToMany(mappedBy = "garage", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "garage")
     @ToString.Exclude
     private Set<Car> cars = new HashSet<>();
 

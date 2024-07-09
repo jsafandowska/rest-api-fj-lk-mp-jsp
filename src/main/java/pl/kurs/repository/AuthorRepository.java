@@ -5,6 +5,6 @@ import pl.kurs.model.Author;
 import java.util.List;
 
 public interface AuthorRepository extends JpaRepository<Author, Integer> {
-    @Query("select a from Author a join fetch a.books")
+    @Query("select a from Author a left join fetch a.books")
     List<Author> findAllWithBooks();
 }
