@@ -2,10 +2,13 @@ package pl.kurs.service;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import pl.kurs.exceptions.CarNotFoundException;
 import pl.kurs.exceptions.GarageNotFoundException;
@@ -30,18 +33,21 @@ public class GarageService {
     public void init() {
         garageRepository.saveAndFlush(new Garage(2, "Warszawa", true));
         garageRepository.saveAndFlush(new Garage(3, "Piątkowska", false));
+        garageRepository.saveAndFlush(new Garage(3, "Piątkowska", false));
         carRepository.saveAndFlush(new Car("Mercedes", "S-class", "petrol"));
         carRepository.saveAndFlush(new Car("Audi", "RS", "petrol"));
     }
 
+    @Transactional(readOnly = true, propagation = Propagation.MANDATORY)
     public Page<Garage> findAllGarages(Pageable pageable) {
         return garageRepository.findAll(pageable);
     }
 
     public Garage addGarage(CreateGarageCommand command) {
-       return garageRepository.saveAndFlush(new Garage(command.getPlaces(), command.getAddress(), command.isLpgAllowed()));
+        return garageRepository.saveAndFlush(new Garage(command.getPlaces(), command.getAddress(), command.isLpgAllowed()));
     }
 
+    @Transactional(readOnly = true, isolation = Isolation.READ_UNCOMMITTED)
     public Garage findGarage(int id) {
         return garageRepository.findById(id).orElseThrow(GarageNotFoundException::new);
     }
@@ -80,12 +86,56 @@ public class GarageService {
         carRepository.saveAndFlush(car);
     }
 
+//    @Transactional
+//    public void playWithTransactions() {
+//        log.info("-------------------------");
+//        Garage g1 = garageRepository.findById(1).get();
+//        Garage g2 = garageRepository.findById(1).get();
+//        log.info("G1 == G2: " + (g1 == g2));
+//        log.info("-------------------------");
+//    }
+
+//    @Transactional
+//    public void playWithTransactions() {
+//        log.info("-------------------------");
+//        Garage g1 = garageRepository.findById(1).get();
+//        Garage g2 = garageRepository.findById(2).get();
+//        g1.setAddress("zmieniony");
+//        garageRepository.saveAndFlush(g1);
+//        g2.setAddress("ZMIENIONY");
+//
+//        log.info("-------------------------");
+//    }
+//    @Transactional
+//    public void playWithTransactions() {
+//        log.info("-------------------------");
+//        Garage g1 = garageRepository.findById(1).get();
+//        log.info("{} ma samochodow: {}", g1.getAddress(), g1.getCars().size());
+//        log.info("-------------------------");
+//    }
+
+//    @Transactional
+//    public void playWithTransactions() {
+//        log.info("-------------------------");
+//        for(Garage g: garageRepository.findAllWithCars()){
+//            log.info("{} ma samochodow: {}", g.getAddress(), g.getCars().size());
+//        }
+//        log.info("-------------------------");
+//    }
+
     @Transactional
+    @SneakyThrows
     public void playWithTransactions() {
         log.info("-------------------------");
         Garage g1 = garageRepository.findById(1).get();
-        Garage g2 = garageRepository.findById(1).get();
-        log.info("G1 == G2: " + (g1 == g2));
+        g1.setAddress("zmieniony");
+        garageRepository.saveAndFlush(g1);
+        try {
+            Thread.sleep(15000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         log.info("-------------------------");
+        throw new Exception("Wycofanie transakcji");
     }
 }

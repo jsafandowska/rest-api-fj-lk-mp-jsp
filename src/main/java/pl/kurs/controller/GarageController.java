@@ -22,7 +22,7 @@ public class GarageController {
     private final GarageService garageService;
 
     @GetMapping("/test")
-    public void test(){
+    public void test() {
         garageService.playWithTransactions();
     }
 
