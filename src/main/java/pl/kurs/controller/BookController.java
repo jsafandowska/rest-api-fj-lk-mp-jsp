@@ -61,8 +61,15 @@ public class BookController {
         return ResponseEntity.status(HttpStatus.OK).body(BookDto.toDto(bookService.editBookPartially(id, command)));
     }
 
+//    @PostMapping("/_import")
+//    public void importBooks(@RequestPart("books")MultipartFile file) throws IOException {
+//        bookService.importBooks(file.getBytes());
+//    }
     @PostMapping("/_import")
-    public void importBooks(@RequestPart("books")MultipartFile file) throws IOException {
-        bookService.importBooks(file.getBytes());
+    public ResponseEntity<Void> importBooks(@RequestPart("books") MultipartFile file) throws IOException {
+        log.info("Starting asynchronous book import");
+        bookService.importBooksAsync(file);
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 }

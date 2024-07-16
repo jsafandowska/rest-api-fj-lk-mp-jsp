@@ -1,10 +1,13 @@
 package pl.kurs.service;
+
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import pl.kurs.exceptions.AuthorNotFoundException;
 import pl.kurs.exceptions.BookNotFoundException;
 import pl.kurs.model.Author;
@@ -15,9 +18,15 @@ import pl.kurs.model.dto.BookDto;
 import pl.kurs.repository.AuthorRepository;
 import pl.kurs.repository.BookRepository;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -84,8 +93,8 @@ public class BookService {
                 .forEach(this::addBook);
     }
 
-    private void countTime(AtomicInteger counter, AtomicLong start){
-        if(counter.incrementAndGet() % 1000 == 0){
+    private void countTime(AtomicInteger counter, AtomicLong start) {
+        if (counter.incrementAndGet() % 1000 == 0) {
             log.info("Imported: {} in {} ms", counter, (System.currentTimeMillis() - start.get()));
             start.set(System.currentTimeMillis());
         }
@@ -94,5 +103,65 @@ public class BookService {
 //    20-40k na sekunde
 //    minimalne zuzycie pamieci
     // pobawic sie z visual vm
+
+        @Async("taskExecutor")
+    public CompletableFuture<Void> importBooksAsync(MultipartFile file) throws IOException {
+        List<CreateBookCommand> batch = new ArrayList<>();
+        int batchSize = 100;
+        AtomicInteger counter = new AtomicInteger(0);
+        AtomicLong start = new AtomicLong(System.currentTimeMillis());
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] bookData = line.split(",");
+                CreateBookCommand command = new CreateBookCommand(bookData[0], bookData[1], Integer.parseInt(bookData[2]));
+                batch.add(command);
+                countTime(counter,start);
+                if (batch.size() >= batchSize) {
+                    addBooks(batch);
+                    batch.clear();
+
+                }
+            }
+
+            if (!batch.isEmpty()) {
+                addBooks(batch);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return CompletableFuture.completedFuture(null);
+    }
+//    @Async("taskExecutor")
+//    public CompletableFuture<Void> importBooksAsync(MultipartFile file) throws IOException {
+////        List<CreateBookCommand> batch = new ArrayList<>();
+////        int batchSize = 100;
+//        AtomicInteger counter = new AtomicInteger(0);
+//        AtomicLong start = new AtomicLong(System.currentTimeMillis());
+//
+//        try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+//            String line;
+//            while ((line = reader.readLine()) != null) {
+//                String[] bookData = line.split(",");
+//                CreateBookCommand command = new CreateBookCommand(bookData[0], bookData[1], Integer.parseInt(bookData[2]));
+//                addBook(command);
+//                countTime(counter, start);
+//            }
+//
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//
+//        return CompletableFuture.completedFuture(null);
+//    }
+
+    public void addBooks(List<CreateBookCommand> commands) {
+        for (CreateBookCommand command : commands) {
+            addBook(command);
+        }
+    }
+
 
 }
