@@ -37,39 +37,38 @@ public class BookService {
         bookRepository.saveAndFlush(new Book("Ogniem i mieczem 2", "LEKTURA", true, a2));
     }
 
-    public Page<BookDto> findAll(Pageable pageable) {
-        return bookRepository.findAll(pageable).map(BookDto::toDto);
+    public Page<Book> findAll(Pageable pageable) {
+        return bookRepository.findAll(pageable);
     }
 
-    public BookDto addBook(CreateBookCommand command) {
+    public Book addBook(CreateBookCommand command) {
         Author author = authorRepository.findById(command.getAuthorId()).orElseThrow(AuthorNotFoundException::new);
-        Book book = bookRepository.saveAndFlush(new Book(command.getTitle(), command.getCategory(), true, author));
-        return BookDto.toDto(book);
+        return bookRepository.saveAndFlush(new Book(command.getTitle(), command.getCategory(), true, author));
     }
 
 
-    public BookDto findBook(int id) {
-        return BookDto.toDto(bookRepository.findById(id).orElseThrow(BookNotFoundException::new));
+    public Book findBook(int id) {
+        return bookRepository.findById(id).orElseThrow(BookNotFoundException::new);
     }
 
     public void deleteBook(int id) {
         bookRepository.deleteById(id);
     }
 
-    public BookDto editBook(int id, EditBookCommand command) {
+    public Book editBook(int id, EditBookCommand command) {
         Book book = bookRepository.findById(id).orElseThrow(BookNotFoundException::new);
         book.setAvailable(command.getAvailable());
         book.setCategory(command.getCategory());
         book.setTitle(command.getTitle());
-        return BookDto.toDto(bookRepository.saveAndFlush(book));
+        return bookRepository.saveAndFlush(book);
     }
 
-    public BookDto editBookPartially(int id, EditBookCommand command) {
+    public Book editBookPartially(int id, EditBookCommand command) {
         Book book = bookRepository.findById(id).orElseThrow(BookNotFoundException::new);
         Optional.ofNullable(command.getAvailable()).ifPresent(book::setAvailable);
         Optional.ofNullable(command.getCategory()).ifPresent(book::setCategory);
         Optional.ofNullable(command.getTitle()).ifPresent(book::setTitle);
-        return BookDto.toDto(bookRepository.saveAndFlush(book));
+        return bookRepository.saveAndFlush(book);
     }
 
     public void importBooks(byte[] bytes) {
