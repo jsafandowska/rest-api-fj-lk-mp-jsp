@@ -1,10 +1,13 @@
 package pl.kurs.service;
 import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.kurs.exceptions.AuthorNotFoundException;
 import pl.kurs.exceptions.BookNotFoundException;
 import pl.kurs.model.Author;
@@ -14,9 +17,7 @@ import pl.kurs.model.command.EditBookCommand;
 import pl.kurs.model.dto.BookDto;
 import pl.kurs.repository.AuthorRepository;
 import pl.kurs.repository.BookRepository;
-
-import java.nio.charset.Charset;
-import java.util.Arrays;
+import java.io.*;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -27,6 +28,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class BookService {
     private final AuthorRepository authorRepository;
     private final BookRepository bookRepository;
+    private final EntityManager entityManager;
 
 
     @PostConstruct
@@ -41,9 +43,10 @@ public class BookService {
         return bookRepository.findAll(pageable).map(BookDto::toDto);
     }
 
+    @Transactional
     public BookDto addBook(CreateBookCommand command) {
         Author author = authorRepository.findById(command.getAuthorId()).orElseThrow(AuthorNotFoundException::new);
-        Book book = bookRepository.saveAndFlush(new Book(command.getTitle(), command.getCategory(), true, author));
+        Book book = bookRepository.save(new Book(command.getTitle(), command.getCategory(), true, author));
         return BookDto.toDto(book);
     }
 
@@ -72,28 +75,23 @@ public class BookService {
         return BookDto.toDto(bookRepository.saveAndFlush(book));
     }
 
-    public void importBooks(byte[] bytes) {
-        String content = new String(bytes, Charset.defaultCharset());
 
-        AtomicInteger counter = new AtomicInteger(0);
-        AtomicLong start = new AtomicLong(System.currentTimeMillis());
 
-        Arrays.stream(content.split("\r\n"))
-                .map(line -> line.split(","))
-                .map(args -> new CreateBookCommand(args))
-                .peek(command -> countTime(counter, start))
-                .forEach(this::addBook);
-    }
 
-    private void countTime(AtomicInteger counter, AtomicLong start){
-        if(counter.incrementAndGet() % 1000 == 0){
-            log.info("Imported: {} in {} ms", counter, (System.currentTimeMillis() - start.get()));
-            start.set(System.currentTimeMillis());
-        }
-    }
-
-//    20-40k na sekunde
-//    minimalne zuzycie pamieci
-    // pobawic sie z visual vm
+//    public void importBooks(byte[] bytes) {
+//        String content = new String(bytes, Charset.defaultCharset());
+//        AtomicInteger counter = new AtomicInteger(0);
+//        AtomicLong start = new AtomicLong(System.currentTimeMillis());
+//        Arrays.stream(content.split("\r\n"))
+//                .map(line -> line.split(","))
+//                .map(args -> new CreateBookCommand(args))
+//                .peek(command -> countTime(counter, start))
+//                .forEach(this::addBook);
+//    }
 
 }
+//    20-40k na sekunde
+//    minimalne zuzycie pamieci
+// pobawic sie z visual vm
+
+
