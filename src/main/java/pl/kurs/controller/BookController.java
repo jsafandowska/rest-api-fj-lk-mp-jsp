@@ -14,7 +14,12 @@ import pl.kurs.model.command.EditBookCommand;
 import pl.kurs.model.dto.BookDto;
 import pl.kurs.service.BookService;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("api/v1/books")
@@ -61,8 +66,6 @@ public class BookController {
         return ResponseEntity.status(HttpStatus.OK).body(BookDto.toDto(bookService.editBookPartially(id, command)));
     }
 
-    @PostMapping("/_import")
-    public void importBooks(@RequestPart("books")MultipartFile file) throws IOException {
-        bookService.importBooks(file.getBytes());
-    }
+
+
 }
