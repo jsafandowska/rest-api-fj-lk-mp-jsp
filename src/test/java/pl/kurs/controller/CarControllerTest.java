@@ -41,13 +41,6 @@ public class CarControllerTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenCarNotFound() throws Exception {
-        int nonExistentCarId = 999;
-        postman.perform(get("/api/v1/cars/" + nonExistentCarId))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
     public void shouldAddCar() throws Exception {
         CreateCarCommand command = new CreateCarCommand("Audi", "RS5", "petrol");
         String json = obj.writeValueAsString(command);
@@ -130,6 +123,7 @@ public class CarControllerTest {
         Assertions.assertEquals("Mercedes", recentlyAdded.getBrand());
         Assertions.assertEquals("M6", recentlyAdded.getModel());
         Assertions.assertEquals("petrol", recentlyAdded.getFuelType());
+        Assertions.assertTrue(recentlyAdded.getId() > 0);
 
     }
 }

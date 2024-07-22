@@ -1,5 +1,8 @@
 package pl.kurs.model.dto;
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/master
 import pl.kurs.model.Car;
 
 public record CarDto(int id, String brand, String model, String fuelType) {
@@ -9,4 +12,19 @@ public record CarDto(int id, String brand, String model, String fuelType) {
                 car.getModel(),
                 car.getFuelType());
     }
+<<<<<<< HEAD
 }
+=======
+//public record CarDto(int id, String brand, String model, String fuelType, Integer garageId) {
+//    public static CarDto toDto(Car car) {
+//        Integer garageId = (car.getGarage() != null) ? car.getGarage().getId() : null;
+//        return new CarDto(car.getId(),
+//                car.getBrand(),
+//                car.getModel(),
+//                car.getFuelType(),
+//                garageId);
+//    }
+//    wcześniej mieliśmy wyjątek, bo odwoływaliśmy się do garazu, a dopiero potem do jego id
+}
+
+>>>>>>> origin/master
