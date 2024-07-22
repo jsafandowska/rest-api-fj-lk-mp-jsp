@@ -13,6 +13,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.time.LocalDateTime;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -26,7 +27,7 @@ public class ImportService {
     private final ImportStatusRepository importStatusRepository;
 
     @Transactional
-    private void saveBook(String[] args) {
+    public void saveBook(String[] args) {
         jdbcTemplate.update(INSERT_BOOK_SQL,
                 args[0], args[1], true, Integer.parseInt(args[2]));
     }
@@ -42,25 +43,39 @@ public class ImportService {
         // rozpocxzaecie procesowania
         AtomicInteger counter = new AtomicInteger(0);
         AtomicLong start = new AtomicLong(System.currentTimeMillis());
+        ImportStatus importStatus = importStatusRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid import status ID"));
+        importStatus.setStatus(ImportStatus.Status.PROCESSING);
+        importStatus.setStartDate(LocalDateTime.now());
+        importStatusRepository.save(importStatus);
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(fileReader))) {
             reader.lines()
                     .map(line -> line.split(","))
-                    .peek(command -> countTime(counter, start))
+                    .peek(command -> countTime(counter, start, importStatus))
                     .forEach(this::saveBook);
+            importStatus.setStatus(ImportStatus.Status.SUCCESS);
+            importStatus.setFinishDate(LocalDateTime.now());
+            importStatus.setPreocessed(counter.get());
+            importStatusRepository.save(importStatus);
         } catch (IOException e) {
             log.error("Error reading file", e);
+            importStatus.setStatus(ImportStatus.Status.FAILED);
+            importStatus.setFinishDate(LocalDateTime.now());
+            importStatus.setFailedReason(e.getMessage());
+            importStatusRepository.save(importStatus);
 //            koniec z bledem
         }
 
         // koniec z sukcesem
     }
 
-    private void countTime(AtomicInteger counter, AtomicLong start) {
+    private void countTime(AtomicInteger counter, AtomicLong start, ImportStatus importStatus) {
         if (counter.incrementAndGet() % 10000 == 0) {
             log.info("Imported: {} in {} ms", counter, (System.currentTimeMillis() - start.get()));
             start.set(System.currentTimeMillis());
             //update statusu
+            importStatus.setPreocessed(counter.get());
+            importStatusRepository.save(importStatus);
         }
     }
 }
