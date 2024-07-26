@@ -24,7 +24,7 @@ public class ImportStatus {
     private Status status;
     private LocalDateTime finishDate;
     private String failedReason;
-    private int preocessed;
+    private int processed;
     private String fileName;
 
     public ImportStatus(String fileName) {
