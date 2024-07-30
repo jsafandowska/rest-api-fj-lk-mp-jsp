@@ -1,7 +1,7 @@
 package pl.kurs.service;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -9,13 +9,8 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import pl.kurs.faade.ImportStatusFacade;
 import pl.kurs.model.ImportStatus;
-import pl.kurs.repository.ImportStatusRepository;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.time.LocalDateTime;
+import java.io.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -25,11 +20,12 @@ import java.util.concurrent.atomic.AtomicLong;
 public class ImportService {
 
     private static final String INSERT_BOOK_SQL = "insert into book(title, category, available, author_id) values (?,?,?,?)";
+    @Autowired
     private final JdbcTemplate jdbcTemplate;
     private final ImportStatusFacade importStatusFacade;
 
     @Transactional
-    private void saveBook(String[] args) {
+    void saveBook(String[] args) {
         jdbcTemplate.update(INSERT_BOOK_SQL,
                 args[0], args[1], true, Integer.parseInt(args[2]));
     }
@@ -37,6 +33,7 @@ public class ImportService {
     public ImportStatus startImport(String fileName) {
         return importStatusFacade.saveAndFlush(new ImportStatus(fileName));
     }
+
 
     @Transactional
     @Async("booksImportExecutor")
@@ -50,14 +47,12 @@ public class ImportService {
                     .peek(command -> countTime(counter, start, id))
                     .forEach(this::saveBook);
             importStatusFacade.updateToSuccess(id, counter.get());
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("Error during import", e);
             importStatusFacade.updateToFail(id, e.getMessage(), counter.get());
             throw new IllegalStateException("wycofanie transakcji");
         }
-
     }
-
 
     @Transactional(readOnly = true, isolation = Isolation.READ_UNCOMMITTED)
     public ImportStatus findById(int id) {
