@@ -9,7 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public abstract class Person {
 
     @Id
@@ -18,9 +18,12 @@ public abstract class Person {
     private int id;
     private String name;
     private int age;
+    @Column(unique = true)
+    private String pesel;
 
-    public Person(String name, int age) {
+    public Person(String name, int age, String pesel) {
         this.name = name;
         this.age = age;
+        this.pesel = pesel;
     }
 }

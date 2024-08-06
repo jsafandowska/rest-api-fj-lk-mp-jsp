@@ -6,11 +6,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PersonParameter {
-    //    name
-//    value
     private String name;
-    private Object value;
-    public PersonParameter(String name, Object value) {
+    private String value;
+    public PersonParameter(String name, String value) {
         this.name = name;
         this.value = value;
     }
