@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Arrays;
+import java.util.List;
+
 @Entity
 @NoArgsConstructor
 @Getter
@@ -20,5 +23,13 @@ public class Student extends Person {
         super(name, age);
         this.scholarship = scholarship;
         this.group = group;
+    }
+
+    @Override
+    public List<PersonParameter> getParameters() {
+        return Arrays.asList(
+                new PersonParameter("scholarship", String.valueOf(scholarship)),
+                new PersonParameter("group", group)
+        );
     }
 }

@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @NoArgsConstructor
 @Getter
@@ -23,4 +25,6 @@ public abstract class Person {
         this.name = name;
         this.age = age;
     }
+    public abstract List<PersonParameter> getParameters();
 }
+

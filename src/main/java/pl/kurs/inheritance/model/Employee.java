@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Arrays;
+import java.util.List;
+
 @Entity
 @NoArgsConstructor
 @Getter
@@ -18,5 +21,13 @@ public class Employee extends Person {
         super(name, age);
         this.position = position;
         this.salary = salary;
+    }
+
+    @Override
+    public List<PersonParameter> getParameters() {
+        return Arrays.asList(
+                new PersonParameter("position", position),
+                new PersonParameter("salary", String.valueOf(salary))
+        );
     }
 }
