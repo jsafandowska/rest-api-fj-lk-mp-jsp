@@ -57,7 +57,8 @@ public class ImportServiceTest {
     }
 
     @Test
-    public void shouldHandleImportBooksException() {
+    public void shouldHandleImportBooksException() throws IOException {
+        // Given
         InputStream faultyInputStream = new InputStream() {
             @Override
             public int read() throws IOException {
@@ -65,18 +66,22 @@ public class ImportServiceTest {
             }
         };
 
+        // Mockowanie metod z importStatusFacade
         when(importStatusFacade.findById(1)).thenReturn(Optional.of(importStatus));
         doNothing().when(importStatusFacade).updateToProcessing(1);
+        doNothing().when(importStatusFacade).updateToFail(anyInt(), anyString(), anyInt());
 
-        UncheckedIOException exception = Assertions.assertThrows(UncheckedIOException.class, () -> {
+        // When
+        IllegalStateException thrownException = Assertions.assertThrows(IllegalStateException.class, () -> {
             importService.importBooks(faultyInputStream, 1);
         });
 
+        // Then
         SoftAssertions softAssertions = new SoftAssertions();
-        softAssertions.assertThat(exception.getCause()).isInstanceOf(IOException.class);
-        softAssertions.assertThat(exception.getCause().getMessage()).isEqualTo("Test Exception");
+        softAssertions.assertThat(thrownException.getMessage()).isEqualTo("wycofanie transakcji");
         softAssertions.assertAll();
 
+        // Weryfikacja interakcji
         verify(importStatusFacade, times(1)).updateToProcessing(1);
         verify(importStatusFacade, times(1)).updateToFail(eq(1), anyString(), eq(0));
         verify(importStatusFacade, never()).updateToSuccess(anyInt(), anyInt());
