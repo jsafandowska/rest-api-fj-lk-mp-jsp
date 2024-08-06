@@ -2,12 +2,12 @@ package pl.kurs.inheritance.controller;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import pl.kurs.inheritance.facade.PersonFacade;
 import pl.kurs.inheritance.model.Employee;
 import pl.kurs.inheritance.model.Person;
 import pl.kurs.inheritance.model.Student;
+import pl.kurs.inheritance.model.command.CreatePersonCommand;
 import pl.kurs.inheritance.repository.PersonRepository;
 
 import java.util.List;
@@ -36,6 +36,11 @@ public class PersonController {
     @GetMapping
     public List<Person> findAll(){
         return personRepository.findAll();
+    }
+    @PostMapping
+    public Person createPerson(@RequestBody CreatePersonCommand command) {
+        Person person = PersonFacade.createPerson(command);
+        return personRepository.save(person);
     }
 
 
