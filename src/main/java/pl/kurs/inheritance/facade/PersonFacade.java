@@ -1,5 +1,6 @@
 package pl.kurs.inheritance.facade;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.kurs.inheritance.model.factory.PersonFactory;
 import pl.kurs.inheritance.model.Person;
@@ -14,13 +15,13 @@ import java.util.Map;
 @Service
 public class PersonFacade {
 
-    private final Map<String, PersonFactory> factories = new HashMap<>();
+    private final Map<String, PersonFactory> factories;
     private final PersonRepository personRepository;
 
-    public PersonFacade(PersonRepository personRepository) {
+    @Autowired
+    public PersonFacade(Map<String, PersonFactory> factories, PersonRepository personRepository) {
+        this.factories = factories;
         this.personRepository = personRepository;
-        factories.put("employee", new EmployeeFactory());
-        factories.put("student", new StudentFactory());
     }
 
     public Person createPerson(CreatePersonCommand command) {

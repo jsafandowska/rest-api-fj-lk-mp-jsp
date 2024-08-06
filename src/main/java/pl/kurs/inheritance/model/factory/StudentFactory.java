@@ -1,5 +1,6 @@
 package pl.kurs.inheritance.model.factory;
 
+import org.springframework.stereotype.Component;
 import pl.kurs.inheritance.model.Person;
 import pl.kurs.inheritance.model.PersonParameter;
 import pl.kurs.inheritance.model.Student;
@@ -9,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Component("student")
 public class StudentFactory implements PersonFactory {
 
     @Override
