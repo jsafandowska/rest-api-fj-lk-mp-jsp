@@ -45,9 +45,12 @@ public class ImportControllerTest {
         ImportStatus importStatus = new ImportStatus();
         importStatus.setId(1);
         when(importService.startImport(anyString())).thenReturn(importStatus);
-        mockMvc.perform(multipart("/api/v1/import/books").file(mockFile))
+        String resposnseString = mockMvc.perform(multipart("/api/v1/import/books").file(mockFile))
                 .andExpect(status().isAccepted())
-                .andExpect(jsonPath("$.id").value(1));
+                .andExpect(jsonPath("$.id").value(1))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
         verify(importService, times(1)).startImport(anyString());
         verify(importService, times(1)).importBooks(any(ByteArrayInputStream.class), eq(1));
     }

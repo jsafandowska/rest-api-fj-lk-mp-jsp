@@ -38,7 +38,8 @@ public class PersonService {
     }
 
     public PersonDto createPerson(CreatePersonCommand command) {
-        PersonFacade facade = facades.get(command.getClassType() + "Facade");
+        PersonFacade facade = facades.get(command.getClassType().toLowerCase() + "Facade");
+        log.info("Available facades: {}", facades.keySet());
         Person person = personRepository.saveAndFlush(facade.createPerson(command.getParameters()));
         return facade.toDto(person);
     }
