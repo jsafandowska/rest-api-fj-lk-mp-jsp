@@ -1,11 +1,10 @@
 package pl.kurs.service;
-import jakarta.annotation.PostConstruct;
+
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.kurs.exceptions.AuthorNotFoundException;
@@ -17,10 +16,8 @@ import pl.kurs.model.command.EditBookCommand;
 import pl.kurs.model.dto.BookDto;
 import pl.kurs.repository.AuthorRepository;
 import pl.kurs.repository.BookRepository;
-import java.io.*;
+
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Slf4j
 @Service
@@ -31,13 +28,13 @@ public class BookService {
     private final EntityManager entityManager;
 
 
-    @PostConstruct
-    public void init() {
-        Author a1 = authorRepository.saveAndFlush(new Author("Kazimierz", "Wielki", 1900, 2000));
-        Author a2 = authorRepository.saveAndFlush(new Author("Maria", "Wielka", 1900, 2000));
-        bookRepository.saveAndFlush(new Book("Ogniem i mieczem", "LEKTURA", true, a1));
-        bookRepository.saveAndFlush(new Book("Ogniem i mieczem 2", "LEKTURA", true, a2));
-    }
+//    @PostConstruct
+//    public void init() {
+//        Author a1 = authorRepository.saveAndFlush(new Author("Kazimierz", "Wielki", 1900, 2000));
+//        Author a2 = authorRepository.saveAndFlush(new Author("Maria", "Wielka", 1900, 2000));
+//        bookRepository.saveAndFlush(new Book("Ogniem i mieczem", "LEKTURA", true, a1));
+//        bookRepository.saveAndFlush(new Book("Ogniem i mieczem 2", "LEKTURA", true, a2));
+//    }
 
     public Page<BookDto> findAll(Pageable pageable) {
         return bookRepository.findAll(pageable).map(BookDto::toDto);

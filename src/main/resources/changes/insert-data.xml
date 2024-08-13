@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="2024-08-13-krzysiek-008-inert-records" author="krzysiek">
+        <sql>
+            insert into author (id, birth_year, death_year, name, surname) values (default, 1900, 2000, 'Antoni', 'Wielki');
+            insert into author (id, birth_year, death_year, name, surname) values (default,1900, 2000, 'Maria', 'Wielka');
+            insert into book (id, author_id, available, category, title) values (default, (select id from author where name = 'Antoni' and surname = 'Wielki'), true, 'LEKTURA', 'Opowiadanie Antoniego');
+            insert into book (id, author_id, available, category, title) values (default, (select id from author where name = 'Maria' and surname = 'Wielka'), true, 'LEKTURA', 'Opowiadanie Marii');
+<!--            insert into car (id, brand, fuel_type, garage_id, model) values (default, ?, ?, ?, ?)-->
+<!--            insert into car (id, brand, fuel_type, garage_id, model) values (default, ?, ?, ?, ?)-->
+<!--            insert into garage (id, address, lpg_allowed, places) values (default, ?, ?, ?)-->
+<!--            insert into garage (id, address, lpg_allowed, places) values (default, ?, ?, ?)-->
+<!--            insert into garage (id, address, lpg_allowed, places) values (default, ?, ?, ?)-->
+<!--            insert into car (id, brand, fuel_type, garage_id, model) values (default, ?, ?, ?, ?)-->
+<!--            insert into car (id, brand, fuel_type, garage_id, model) values (default, ?, ?, ?, ?)-->
+<!--            select next value for person_seq-->
+<!--            select next value for person_seq-->
+<!--            insert into person (age, name, pesel, position, salary, dtype, id) values (?, ?, ?, ?, ?, 'Employee', ?)-->
+<!--            insert into person (age, name, pesel, position, salary, dtype, id) values (?, ?, ?, ?, ?, 'Employee', ?)-->
+<!--            insert into person (age, name, pesel, position, salary, dtype, id) values (?, ?, ?, ?, ?, 'Employee', ?)-->
+<!--            insert into person (age, name, pesel, std_group, scholarship, dtype, id) values (?, ?, ?, ?, ?, 'Student', ?)-->
+<!--            insert into person (age, name, pesel, std_group, scholarship, dtype, id) values (?, ?, ?, ?, ?, 'Student', ?)-->
+<!--            insert into person (age, name, pesel, std_group, scholarship, dtype, id) values (?, ?, ?, ?, ?, 'Student', ?)-->
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>
