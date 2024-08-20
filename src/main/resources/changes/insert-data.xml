@@ -27,5 +27,4 @@
             insert into person (age, name, pesel, std_group, scholarship, dtype, id) values (23, 'Karolina', '4354655756765', '1A', 800, 'Student', default);
         </sql>
     </changeSet>
-
 </databaseChangeLog>
