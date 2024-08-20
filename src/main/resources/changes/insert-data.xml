@@ -10,21 +10,21 @@
             insert into author (id, birth_year, death_year, name, surname) values (default,1900, 2000, 'Maria', 'Wielka');
             insert into book (id, author_id, available, category, title) values (default, (select id from author where name = 'Antoni' and surname = 'Wielki'), true, 'LEKTURA', 'Opowiadanie Antoniego');
             insert into book (id, author_id, available, category, title) values (default, (select id from author where name = 'Maria' and surname = 'Wielka'), true, 'LEKTURA', 'Opowiadanie Marii');
-<!--            insert into car (id, brand, fuel_type, garage_id, model) values (default, ?, ?, ?, ?)-->
-<!--            insert into car (id, brand, fuel_type, garage_id, model) values (default, ?, ?, ?, ?)-->
-<!--            insert into garage (id, address, lpg_allowed, places) values (default, ?, ?, ?)-->
-<!--            insert into garage (id, address, lpg_allowed, places) values (default, ?, ?, ?)-->
-<!--            insert into garage (id, address, lpg_allowed, places) values (default, ?, ?, ?)-->
-<!--            insert into car (id, brand, fuel_type, garage_id, model) values (default, ?, ?, ?, ?)-->
-<!--            insert into car (id, brand, fuel_type, garage_id, model) values (default, ?, ?, ?, ?)-->
-<!--            select next value for person_seq-->
-<!--            select next value for person_seq-->
-<!--            insert into person (age, name, pesel, position, salary, dtype, id) values (?, ?, ?, ?, ?, 'Employee', ?)-->
-<!--            insert into person (age, name, pesel, position, salary, dtype, id) values (?, ?, ?, ?, ?, 'Employee', ?)-->
-<!--            insert into person (age, name, pesel, position, salary, dtype, id) values (?, ?, ?, ?, ?, 'Employee', ?)-->
-<!--            insert into person (age, name, pesel, std_group, scholarship, dtype, id) values (?, ?, ?, ?, ?, 'Student', ?)-->
-<!--            insert into person (age, name, pesel, std_group, scholarship, dtype, id) values (?, ?, ?, ?, ?, 'Student', ?)-->
-<!--            insert into person (age, name, pesel, std_group, scholarship, dtype, id) values (?, ?, ?, ?, ?, 'Student', ?)-->
+            insert into garage (id, address, lpg_allowed, places) values (default, 'Zielona', true, 3);
+            insert into garage (id, address, lpg_allowed, places) values (default, 'Szczęśliwa', true, 2);
+            insert into garage (id, address, lpg_allowed, places) values (default, 'Słoneczna', true, 1);
+            insert into car (id, brand, fuel_type, garage_id, model) values (default, 'BMW', 'petrol', select id from garage where address = 'Zielona', 'X3');
+            insert into car (id, brand, fuel_type, garage_id, model) values (default, 'Audi', 'petrol', select id from garage where address = 'Szczęśliwa', 'RS5');
+            insert into car (id, brand, fuel_type, garage_id, model) values (default, 'Skoda', 'petrol', select id from garage where address = 'Zielona', 'Superb');
+            insert into car (id, brand, fuel_type, garage_id, model) values (default, 'Volkswagen', 'petrol', select id from garage where address = 'Słoneczna', 'Amarok');
+            select next value for person_seq;
+            select next value for person_seq;
+            insert into person (age, name, pesel, position, salary, dtype, id) values (30, 'Kasia', '854634388', 'Księgowa', 6000, 'Employee', default);
+            insert into person (age, name, pesel, position, salary, dtype, id) values (35, 'Jerzy', '45454657756', 'Handlowiec', 10000, 'Employee', default);
+            insert into person (age, name, pesel, position, salary, dtype, id) values (40, 'Paweł', '9483948984242', 'Magazynier', 5000, 'Employee', default);
+            insert into person (age, name, pesel, std_group, scholarship, dtype, id) values (22, 'Marek', '758374832743', '1A', 1000, 'Student', default);
+            insert into person (age, name, pesel, std_group, scholarship, dtype, id) values (20, 'Kinga', '343423432232', '1B', 1500, 'Student', default);
+            insert into person (age, name, pesel, std_group, scholarship, dtype, id) values (23, 'Karolina', '4354655756765', '1A', 800, 'Student', default);
         </sql>
     </changeSet>
 
