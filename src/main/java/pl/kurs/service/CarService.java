@@ -15,11 +15,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CarService {
     private final CarRepository carRepository;
-//    @PostConstruct
-//    public void init() {
-//        carRepository.saveAndFlush(new Car("Mercedes", "S-class", "petrol"));
-//        carRepository.saveAndFlush(new Car("Audi", "RS", "petrol"));
-//    }
 
     public List<CarDto> findAllCars() {
         return carRepository.findAll().stream().map(CarDto::toDto).toList();

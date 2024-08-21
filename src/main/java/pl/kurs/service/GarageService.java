@@ -28,14 +28,6 @@ public class GarageService {
     private final GarageRepository garageRepository;
     private final CarRepository carRepository;
 
-//    @PostConstruct
-//    public void init() {
-//        garageRepository.saveAndFlush(new Garage(2, "Warszawa", true));
-//        garageRepository.saveAndFlush(new Garage(3, "Piątkowska", false));
-//        garageRepository.saveAndFlush(new Garage(3, "Piątkowska", false));
-//        carRepository.saveAndFlush(new Car("Mercedes", "S-class", "petrol"));
-//        carRepository.saveAndFlush(new Car("Audi", "RS", "petrol"));
-//    }
 
     @Transactional(readOnly = true, propagation = Propagation.MANDATORY)
     public Page<Garage> findAllGarages(Pageable pageable) {

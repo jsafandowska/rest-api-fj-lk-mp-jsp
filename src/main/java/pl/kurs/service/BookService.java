@@ -25,16 +25,6 @@ import java.util.Optional;
 public class BookService {
     private final AuthorRepository authorRepository;
     private final BookRepository bookRepository;
-    private final EntityManager entityManager;
-
-
-//    @PostConstruct
-//    public void init() {
-//        Author a1 = authorRepository.saveAndFlush(new Author("Kazimierz", "Wielki", 1900, 2000));
-//        Author a2 = authorRepository.saveAndFlush(new Author("Maria", "Wielka", 1900, 2000));
-//        bookRepository.saveAndFlush(new Book("Ogniem i mieczem", "LEKTURA", true, a1));
-//        bookRepository.saveAndFlush(new Book("Ogniem i mieczem 2", "LEKTURA", true, a2));
-//    }
 
     public Page<BookDto> findAll(Pageable pageable) {
         return bookRepository.findAll(pageable).map(BookDto::toDto);

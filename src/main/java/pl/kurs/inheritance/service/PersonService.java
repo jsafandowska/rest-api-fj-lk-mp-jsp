@@ -21,20 +21,6 @@ public class PersonService {
     private final PersonRepository personRepository;
     private final Map<String, PersonFacade> facades;
 
-//    @PostConstruct
-//    public void init(){
-//        personRepository.saveAllAndFlush(
-//                List.of(
-//                        new Employee("X", 25,"92345678123141", "programmer", 15000),
-//                        new Employee("Y", 45,"82345678123141", "programmer", 25000),
-//                        new Employee("Z", 35,"72345678123141", "programmer", 17000),
-//                        new Student("A", 20,"6345678123141", 1000, "1a"),
-//                        new Student("B", 19,"52345678123141", 0, "2a"),
-//                        new Student("C", 21,"42345678123141", 500, "1b")
-//                )
-//        );
-//    }
-
     public PersonDto createPerson(CreatePersonCommand command) {
         PersonFacade facade = facades.get(command.getClassType().toLowerCase() + "Facade");
         log.info("Available facades: {}", facades.keySet());
