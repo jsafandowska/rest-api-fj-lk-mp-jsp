@@ -28,5 +28,5 @@ public interface AuthorRepository extends JpaRepository<Author, Integer> {
      */
 
     // migracja z numeru pesel na date urodzenia i plec
-    // wykorzystac custom change task
+    // wykorzystac custom change taskk
 }
