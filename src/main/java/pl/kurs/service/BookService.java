@@ -46,6 +46,7 @@ public class BookService {
         bookRepository.deleteById(id);
     }
 
+//    @Transactional
     public BookDto editBook(int id, EditBookCommand command) {
         Book book = bookRepository.findById(id).orElseThrow(BookNotFoundException::new);
         book.setAvailable(command.getAvailable());
@@ -62,7 +63,14 @@ public class BookService {
         return BookDto.toDto(bookRepository.saveAndFlush(book));
     }
 
+    public Book save(CreateBookCommand command) {
+        Author author = authorRepository.findById(command.getAuthorId()).orElseThrow(AuthorNotFoundException::new);
+        return bookRepository.save(new Book(command.getTitle(), command.getCategory(), true, author));
+    }
 
+    public Optional<Book> findById(int id) {
+        return bookRepository.findById(id);
+    }
 
 
 //    public void importBooks(byte[] bytes) {

@@ -21,6 +21,9 @@ public class Book {
     @ToString.Exclude
     private Author author;
 
+    @Version
+    private long version;
+
     public Book(String title, String category, boolean available, Author author) {
         this.title = title;
         this.category = category;

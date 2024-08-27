@@ -10,6 +10,8 @@ public class Main {
     public static void main(String[] args) {
 
         SpringApplication.run(Main.class, args);
+
+        //todo poprawic testy w controlerach zeby uzywaly serwisow, uzupelnic authorController i autorService
     }
 }
 

@@ -12,4 +12,5 @@ public class EditBookCommand {
     private String title;
     private String category;
     private Boolean available;
+    private Long version;
 }

@@ -63,4 +63,9 @@
             alter table if exists car add constraint FK_CAR_GARAGE foreign key (garage_id) references garage;
         </sql>
     </changeSet>
+    <changeSet id="2024-08-19-jsafandowska-004-addColumn-version-in-table-book" author="krzysiek">
+        <addColumn tableName="book">
+            <column name="version" defaultValueNumeric="0" type="BIGINT"></column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
