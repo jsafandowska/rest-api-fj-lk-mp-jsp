@@ -1,10 +1,8 @@
 package pl.kurs.service;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+
 
 public class PeselConverter {
-
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public static LocalDate convertPeselToBirthDate(String pesel) {
         if (pesel == null || pesel.length() != 11) {
@@ -41,14 +39,5 @@ public class PeselConverter {
 
         int genderDigit = Character.getNumericValue(pesel.charAt(9));
         return (genderDigit % 2 == 0) ? "female" : "male";
-    }
-
-    public static void main(String[] args) {
-        String pesel = "44051401359";
-        LocalDate birthDate = convertPeselToBirthDate(pesel);
-        String gender = convertPeselToGender(pesel);
-
-        System.out.println("Birth Date: " + birthDate.format(DATE_FORMATTER));
-        System.out.println("Gender: " + gender);
     }
 }

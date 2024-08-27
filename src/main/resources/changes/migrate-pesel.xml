@@ -15,7 +15,7 @@
         </addColumn>
     </changeSet>
 
-    <changeSet id="2024-08-25-jsafandowska-002-update-birthdate-and-gender" author="krzysiek">
+    <changeSet id="2024-08-25-jsafandowska-003-update-birthdate-and-gender" author="krzysiek">
         <customChange class="pl.kurs.service.PeselConversionTaskChange"/>
     </changeSet>
 
