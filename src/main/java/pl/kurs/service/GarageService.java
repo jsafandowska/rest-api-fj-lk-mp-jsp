@@ -38,7 +38,7 @@ public class GarageService {
         return garageRepository.saveAndFlush(new Garage(command.getPlaces(), command.getAddress(), command.isLpgAllowed()));
     }
 
-    @Transactional(readOnly = true, isolation = Isolation.READ_UNCOMMITTED)
+    @Transactional
     public Garage findGarage(int id) {
         return garageRepository.findById(id).orElseThrow(GarageNotFoundException::new);
     }
@@ -62,10 +62,10 @@ public class GarageService {
         Optional.ofNullable(command.getLpgAllowed()).ifPresent(garage::setLpgAllowed);
         return garageRepository.saveAndFlush(garage);
     }
-
+    @Transactional
     public void addCarToGarage(int id, int carId) {
-        Garage garage = garageRepository.findById(id).orElseThrow(() -> new GarageNotFoundException());
-        Car car = carRepository.findById(carId).orElseThrow(() -> new CarNotFoundException());
+        Garage garage = garageRepository.findById(id).orElseThrow(GarageNotFoundException::new);
+        Car car = carRepository.findById(carId).orElseThrow(CarNotFoundException::new);
         garage.addCar(car);
         carRepository.saveAndFlush(car);
     }
