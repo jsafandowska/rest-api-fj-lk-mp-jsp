@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import pl.kurs.model.Author;
 import pl.kurs.model.command.CreateAuthorCommand;
@@ -28,6 +29,7 @@ public class AuthorController {
     public ResponseEntity<AuthorDto> addAuthor(@RequestBody CreateAuthorCommand command){
         return ResponseEntity.status(HttpStatus.CREATED).body(AuthorDto.toDto(authorService.addAuthor(command)));
     }
+    @Transactional
     @GetMapping("/{id}")
     public ResponseEntity<AuthorDto> findAuthor(@PathVariable int id){
         return ResponseEntity.ok(AuthorDto.toDto(authorService.findAuthor(id)));
@@ -41,6 +43,7 @@ public class AuthorController {
     public ResponseEntity<AuthorDto> editAuthor(@PathVariable int id, @RequestBody CreateAuthorCommand command){
         return ResponseEntity.status(HttpStatus.OK).body(AuthorDto.toDto(authorService.editAuthor(id, command)));
     }
+    @Transactional
     @PatchMapping("/{id}")
     public ResponseEntity<AuthorDto> editAuthorPartially(@PathVariable int id, @RequestBody EditAuthorCommand command){
         return ResponseEntity.status(HttpStatus.OK).body(AuthorDto.toDto(authorService.editAuthorPartially(id, command)));

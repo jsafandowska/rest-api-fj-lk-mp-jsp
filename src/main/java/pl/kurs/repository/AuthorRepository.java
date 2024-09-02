@@ -10,8 +10,6 @@ import pl.kurs.model.dto.AuthorDto;
 import java.util.List;
 
 public interface AuthorRepository extends JpaRepository<Author, Integer> {
-//    @Query("select a from Author a left join fetch a.books")
-//    Page<Author> findAllWithBooks(Pageable pageable);
 @Query(value = "SELECT a FROM Author a LEFT JOIN FETCH a.books",
        countQuery = "SELECT COUNT(a) FROM Author a")
 Page<Author> findAllWithBooks(Pageable pageable);

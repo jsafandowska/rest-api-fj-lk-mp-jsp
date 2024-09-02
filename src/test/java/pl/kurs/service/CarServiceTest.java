@@ -4,14 +4,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import pl.kurs.exceptions.CarNotFoundException;
 import pl.kurs.model.Car;
 import pl.kurs.model.command.CreateCarCommand;
 import pl.kurs.model.dto.CarDto;
 import pl.kurs.repository.CarRepository;
+
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
@@ -41,10 +41,13 @@ public class CarServiceTest {
 
     @Test
     public void shouldReturnAllCars() {
-        when(carRepository.findAll()).thenReturn(List.of(car1, car2));
-        Page<Car> cars = carService.findAllCars(PageRequest.of(1, 10, Sort.by("name").ascending()));
-        assertEquals(2, cars.getTotalElements());
-        verify(carRepository, times(1)).findAll();
+        Pageable pageable = PageRequest.of(0, 2);
+        Page<Car> page = new PageImpl<>(Arrays.asList(car1, car2), pageable, 2);
+        when(carRepository.findAll(pageable)).thenReturn(page);
+        Page<Car> result = carService.findAllCars(pageable);
+        assertEquals(2, result.getTotalElements());
+        assertEquals("Audi", result.getContent().get(0).getBrand());
+        verify(carRepository, times(1)).findAll(pageable);
     }
 
     @Test
@@ -71,11 +74,6 @@ public class CarServiceTest {
         assertThrows(CarNotFoundException.class, () -> carService.findCarById(999));
         verify(carRepository, times(1)).findById(anyInt());
     }
-//    @Test(expected = CarNotFoundException.class)
-//    public void shouldThrowExceptionWhenCarNotFound() {
-//        when(carRepository.findById(anyInt())).thenReturn(Optional.empty());
-//        carService.findCarById(999);
-//    }
 
     @Test
     public void shouldDeleteCarById() {
