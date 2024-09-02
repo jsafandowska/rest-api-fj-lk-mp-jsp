@@ -4,6 +4,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import pl.kurs.exceptions.CarNotFoundException;
 import pl.kurs.model.Car;
 import pl.kurs.model.command.CreateCarCommand;
@@ -39,8 +42,8 @@ public class CarServiceTest {
     @Test
     public void shouldReturnAllCars() {
         when(carRepository.findAll()).thenReturn(List.of(car1, car2));
-        List<CarDto> cars = carService.findAllCars();
-        assertEquals(2, cars.size());
+        Page<Car> cars = carService.findAllCars(PageRequest.of(1, 10, Sort.by("name").ascending()));
+        assertEquals(2, cars.getTotalElements());
         verify(carRepository, times(1)).findAll();
     }
 
@@ -49,16 +52,16 @@ public class CarServiceTest {
         CreateCarCommand command = new CreateCarCommand("Audi", "RS5", "petrol");
         Car car = new Car(command.getBrand(), command.getModel(), command.getFuelType());
         when(carRepository.saveAndFlush(any(Car.class))).thenReturn(car);
-        CarDto carDto = carService.addCar(command);
-        assertEquals("Audi", carDto.brand());
+        Car car2 = carService.addCar(command);
+        assertEquals("Audi", car2.getBrand());
         verify(carRepository, times(1)).saveAndFlush(any(Car.class));
     }
 
     @Test
     public void shouldFindCarById() {
         when(carRepository.findById(anyInt())).thenReturn(Optional.of(car1));
-        CarDto carDto = carService.findCarById(1);
-        assertEquals("Audi", carDto.brand());
+        Car car = carService.findCarById(1);
+        assertEquals("Audi", car.getBrand());
         verify(carRepository, times(1)).findById(anyInt());
     }
 
@@ -85,10 +88,10 @@ public class CarServiceTest {
         CreateCarCommand command = new CreateCarCommand("BMW", "M6", "petrol");
         when(carRepository.findById(anyInt())).thenReturn(Optional.of(car1));
         when(carRepository.saveAndFlush(any(Car.class))).thenReturn(car1);
-        CarDto carDto = carService.editCar(1, command);
-        assertNotNull(carDto);
-        assertEquals("BMW", carDto.brand());
-        assertEquals("M6", carDto.model());
+        Car car = carService.editCar(1, command);
+        assertNotNull(car);
+        assertEquals("BMW", car.getBrand());
+        assertEquals("M6", car.getModel());
         verify(carRepository, times(1)).findById(anyInt());
         verify(carRepository, times(1)).saveAndFlush(any(Car.class));
     }
@@ -99,9 +102,9 @@ public class CarServiceTest {
         CreateCarCommand command = new CreateCarCommand(null, "M6", null);
         when(carRepository.findById(anyInt())).thenReturn(Optional.of(car));
         when(carRepository.saveAndFlush(any(Car.class))).thenReturn(car);
-        CarDto carDto = carService.editCarPartially(1, command);
-        assertEquals("Mercedes", carDto.brand());
-        assertEquals("M6", carDto.model());
+        Car car2 = carService.editCarPartially(1, command);
+        assertEquals("Mercedes", car2.getBrand());
+        assertEquals("M6", car2.getModel());
         verify(carRepository, times(1)).findById(anyInt());
         verify(carRepository, times(1)).saveAndFlush(any(Car.class));
     }

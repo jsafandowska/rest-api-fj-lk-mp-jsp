@@ -33,7 +33,7 @@ public class GarageService {
     public Page<Garage> findAllGarages(Pageable pageable) {
         return garageRepository.findAll(pageable);
     }
-
+    @Transactional
     public Garage addGarage(CreateGarageCommand command) {
         return garageRepository.saveAndFlush(new Garage(command.getPlaces(), command.getAddress(), command.isLpgAllowed()));
     }
