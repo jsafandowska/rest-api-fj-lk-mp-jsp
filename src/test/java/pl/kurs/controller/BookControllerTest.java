@@ -84,6 +84,15 @@ class BookControllerTest {
         Assertions.assertEquals(author.getId(), updatedBook.getAuthor().getId());
         Assertions.assertTrue(updatedBook.isAvailable());
     }
+    @Test
+    public void shouldDeleteBook() throws Exception {
+        Author author = authorService.addAuthor(new CreateAuthorCommand("Adam", "Adamski", 1900, 2000));
+        Book book = bookService.addBook(new CreateBookCommand("Old Title", "Old Category", author.getId()));
+        postman.perform(delete("/api/v1/books/" + book.getId()))
+               .andExpect(status().isNoContent());
+        boolean bookExists = bookService.findById(book.getId()).isPresent();
+        Assertions.assertFalse(bookExists, "The book should be deleted from the list");
+    }
 
     @Test
     public void shouldEditBook() throws Exception {
