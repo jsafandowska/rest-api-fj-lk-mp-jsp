@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import pl.kurs.model.command.CreateAuthorCommand;
 import pl.kurs.model.command.EditAuthorCommand;
 import pl.kurs.model.dto.AuthorDto;
+import pl.kurs.model.dto.FullAuthorDto;
 import pl.kurs.service.AuthorService;
 
 
@@ -25,9 +26,9 @@ public class AuthorController {
     private final AuthorService authorService;
 
     @GetMapping
-    public ResponseEntity<Page<AuthorDto>> getAllAuthors(@PageableDefault Pageable pageable){
+    public ResponseEntity<Page<FullAuthorDto>> getAllAuthors(@PageableDefault Pageable pageable){
         log.info("findAll");
-        return ResponseEntity.ok(authorService.getAllAuthorsWithBooks(pageable).map(AuthorDto::toDto));
+        return ResponseEntity.ok(authorService.getAllAuthorsWithBooks(pageable));
     }
     @PostMapping
     public ResponseEntity<AuthorDto> addAuthor(@RequestBody CreateAuthorCommand command){
@@ -47,7 +48,7 @@ public class AuthorController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
     @PutMapping("/{id}")
-    public ResponseEntity<AuthorDto> editAuthor(@PathVariable int id, @RequestBody CreateAuthorCommand command){
+    public ResponseEntity<AuthorDto> editAuthor(@PathVariable int id, @RequestBody EditAuthorCommand command){
         log.info("editAuthor({}, {})", id, command);
         return ResponseEntity.status(HttpStatus.OK).body(AuthorDto.toDto(authorService.editAuthor(id, command)));
     }

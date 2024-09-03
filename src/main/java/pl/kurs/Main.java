@@ -11,7 +11,9 @@ public class  Main {
 
         SpringApplication.run(Main.class, args);
 
-        //todo poprawic testy w controlerach zeby uzywaly serwisow, uzupelnic authorController i autorService
+        // praca domowa obejrzec zajecia paginacja z fetchowaniem, przygotowac sobie pytania jesli takie sie pojawią
+
+        // dodac podobny mechanizm w authorze podczas edycji ma byc sprawdzana wersja
     }
 }
 

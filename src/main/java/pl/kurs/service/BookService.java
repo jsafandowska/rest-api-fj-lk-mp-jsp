@@ -45,14 +45,15 @@ public class BookService {
         bookRepository.deleteById(id);
     }
 
-     @Transactional
+    @Transactional
     public Book editBook(int id, EditBookCommand command) {
         Book book = bookRepository.findById(id).orElseThrow(BookNotFoundException::new);
-        book.setAvailable(command.getAvailable());
-        book.setCategory(command.getCategory());
-        book.setTitle(command.getTitle());
-        book.setVersion(command.getVersion());
-        return bookRepository.saveAndFlush(book);
+        Book copy = new Book(book);
+        copy.setAvailable(command.getAvailable());
+        copy.setCategory(command.getCategory());
+        copy.setTitle(command.getTitle());
+        copy.setVersion(command.getVersion());
+        return bookRepository.saveAndFlush(copy);
     }
 
     public Book editBookPartially(int id, EditBookCommand command) {
@@ -67,6 +68,7 @@ public class BookService {
         Author author = authorRepository.findById(command.getAuthorId()).orElseThrow(AuthorNotFoundException::new);
         return bookRepository.save(new Book(command.getTitle(), command.getCategory(), true, author));
     }
+
     @Transactional
     public Optional<Book> findById(int id) {
         return bookRepository.findById(id);

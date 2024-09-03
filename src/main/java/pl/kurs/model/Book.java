@@ -29,6 +29,14 @@ public class Book {
         this.category = category;
         this.available = available;
         this.author = author;
-//        author.getBooks().add(this);
+    }
+
+    public Book(Book book) {
+        this.id = book.getId();
+        this.title = book.getTitle();
+        this.category = book.getCategory();
+        this.available = book.isAvailable();
+        this.author = book.getAuthor();
+        this.version  = book.getVersion();
     }
 }

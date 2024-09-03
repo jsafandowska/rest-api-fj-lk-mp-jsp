@@ -12,6 +12,7 @@ import pl.kurs.model.Book;
 import pl.kurs.model.command.CreateAuthorCommand;
 import pl.kurs.model.command.EditAuthorCommand;
 import pl.kurs.model.dto.AuthorDto;
+import pl.kurs.model.dto.FullAuthorDto;
 import pl.kurs.repository.AuthorRepository;
 
 import java.util.Optional;
@@ -23,33 +24,31 @@ public class AuthorService {
     private final AuthorRepository authorRepository;
 
     @Transactional(readOnly = true)
-    public Page<Author> getAllAuthorsWithBooks(Pageable pageable) {
-        return authorRepository.findAll(pageable);
+    public Page<FullAuthorDto> getAllAuthorsWithBooks(Pageable pageable) {
+        return authorRepository.findAllWithBooks(pageable);
     }
 
-    @Transactional
+
     public Author addAuthor(CreateAuthorCommand command) {
         return authorRepository.saveAndFlush(new Author(command.getName(), command.getSurname(), command.getBirthYear(), command.getDeathYear()));
     }
 
 
-    @Transactional(readOnly = true, isolation = Isolation.READ_UNCOMMITTED)
+    @Transactional(readOnly = true)
     public Author findAuthor(int id) {
-        Author author = authorRepository.findById(id)
+        return authorRepository.findByIdWithBooks(id)
                 .orElseThrow(AuthorNotFoundException::new);
-        author.getBooks().size();
-        return author;
     }
 
     public void deleteAuthor(int id) {
         authorRepository.deleteById(id);
     }
 
-    public Author editAuthor(int id, CreateAuthorCommand command) {
+    @Transactional
+    public Author editAuthor(int id, EditAuthorCommand command) {
         Author author = authorRepository.findById(id).orElseThrow(AuthorNotFoundException::new);
         author.setName(command.getName());
         author.setSurname(command.getSurname());
-        author.setBirthYear(command.getBirthYear());
         author.setDeathYear(command.getDeathYear());
         return authorRepository.saveAndFlush(author);
     }
@@ -59,9 +58,7 @@ public class AuthorService {
         Author author = authorRepository.findById(id).orElseThrow(AuthorNotFoundException::new);
         Optional.ofNullable(command.getName()).ifPresent(author::setName);
         Optional.ofNullable(command.getSurname()).ifPresent(author::setSurname);
-        Optional.ofNullable(command.getBirthYear()).ifPresent(author::setBirthYear);
         Optional.ofNullable(command.getDeathYear()).ifPresent(author::setDeathYear);
-        author.getBooks().size();
         return authorRepository.saveAndFlush(author);
     }
 
@@ -69,10 +66,4 @@ public class AuthorService {
     public Author save(CreateAuthorCommand command) {
         return authorRepository.saveAndFlush(new Author(command.getName(), command.getSurname(), command.getBirthYear(), command.getDeathYear()));
     }
-
-    @Transactional
-    public Optional<Author> findById(int id) {
-        return authorRepository.findById(id);
-    }
-
 }

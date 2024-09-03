@@ -102,7 +102,7 @@ class BookControllerTest {
         Author author = authorService.save(new CreateAuthorCommand("Adam", "Adamski", 1900, 2000));
         Book book = bookService.save(new CreateBookCommand("Old Title", "Old Category", author.getId()));
         int bookId = book.getId();
-        EditBookCommand command = new EditBookCommand("New Title", "New Category", false, -1L);
+        EditBookCommand command = new EditBookCommand("New Title", "New Category", false, 0L);
         String json = objectMapper.writeValueAsString(command);
 
         System.out.println("---------------------------------------------");

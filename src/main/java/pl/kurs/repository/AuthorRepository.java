@@ -6,28 +6,20 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import pl.kurs.model.Author;
 import pl.kurs.model.dto.AuthorDto;
+import pl.kurs.model.dto.FullAuthorDto;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface AuthorRepository extends JpaRepository<Author, Integer> {
-//    @Query("select a from Author a left join fetch a.books")
-//    List<Author> findAllWithBooks();
+    @Query("select a from Author a left join fetch a.books")
+    List<Author> findAllWithBooks();
 
-    @Query(value = "select new pl.kurs.model.dto.AuthorDto(a.id, a.name, a.surname, a.birthYear, a.deathYear, (select count(b) from Book b where b.author.id = a.id)) from Author a",
+    @Query(value = "select new pl.kurs.model.dto.FullAuthorDto(a.id, a.name, a.surname, a.birthYear, a.deathYear, (select count(b) from Book b where b.author.id = a.id) as amountOfBooks) from Author a",
     countQuery = "select count(a) from Author a")
-    Page<AuthorDto> findAllWithBooks(Pageable pageable);
+    Page<FullAuthorDto> findAllWithBooks(Pageable pageable);
 
 
-    /*
-    A1:5
-    A2:2
-    A3:3
-    select * from author ... join a.books
-    A1B1
-    A1B2
-    A1B3
-     */
-
-    // migracja z numeru pesel na date urodzenia i plec
-    // wykorzystac custom change task
+    @Query("select a from Author a left join fetch a.books where a.id = ?1")
+    Optional<Author> findByIdWithBooks(int id);
 }

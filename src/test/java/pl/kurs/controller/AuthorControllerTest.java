@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import pl.kurs.Main;
 import pl.kurs.model.Author;
 import pl.kurs.model.command.CreateAuthorCommand;
+import pl.kurs.model.command.EditAuthorCommand;
 import pl.kurs.service.AuthorService;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -74,19 +75,21 @@ public class AuthorControllerTest {
         Assertions.assertEquals(1900, recentlyAdded.getBirthYear());
         Assertions.assertEquals(2000, recentlyAdded.getDeathYear());
     }
+
+    // todo do edycji wykorzystujemy EditCommand
     @Test
     public void shouldEditAuthor() throws Exception {
         Author authorToEdit = authorService.addAuthor(new CreateAuthorCommand("Name", "Surname", 1000, 1500));
-        CreateAuthorCommand command = new CreateAuthorCommand("Imie", "Nazwisko", 1900, 2000);
+        EditAuthorCommand command = new EditAuthorCommand("Imie", "Nazwisko", 2000);
         String json = objectMapper.writeValueAsString(command);
-        String responseString = postman.perform(post("/api/v1/authors")
+        String responseString = postman.perform(put("/api/v1/authors/" + authorToEdit.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").exists())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(authorToEdit.getId()))
                 .andExpect(jsonPath("$.name").value("Imie"))
                 .andExpect(jsonPath("$.surname").value("Nazwisko"))
-                .andExpect(jsonPath("$.birthYear").value(1900))
+                .andExpect(jsonPath("$.birthYear").value(1000))
                 .andExpect(jsonPath("$.deathYear").value(2000))
                 .andReturn()
                 .getResponse()
@@ -95,13 +98,15 @@ public class AuthorControllerTest {
         Author recentlyAdded = authorService.findAuthor(saved.getId());
         Assertions.assertEquals("Imie", recentlyAdded.getName());
         Assertions.assertEquals("Nazwisko", recentlyAdded.getSurname());
-        Assertions.assertEquals(1900, recentlyAdded.getBirthYear());
+        Assertions.assertEquals(1000, recentlyAdded.getBirthYear());
         Assertions.assertEquals(2000, recentlyAdded.getDeathYear());
     }
+
+    // todo do edycji wykorzystujemy EditCommand
     @Test
     public void shouldEditAuthorPartially() throws Exception {
         Author authorToEdit = authorService.addAuthor(new CreateAuthorCommand("Name", "Surname", 1000, 1500));
-        CreateAuthorCommand command = new CreateAuthorCommand("Imie", null, 1900, 2000);
+        EditAuthorCommand command = new EditAuthorCommand("Imie", null, 2000);
         String json = objectMapper.writeValueAsString(command);
         String responseString = postman.perform(patch("/api/v1/authors/" + authorToEdit.getId())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -110,16 +115,17 @@ public class AuthorControllerTest {
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.name").value("Imie"))
                 .andExpect(jsonPath("$.surname").value("Surname"))
-                .andExpect(jsonPath("$.birthYear").value(1900))
+                .andExpect(jsonPath("$.birthYear").value(1000))
                 .andExpect(jsonPath("$.deathYear").value(2000))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
         Author saved = objectMapper.readValue(responseString, Author.class);
+        System.out.println("------------------------------------------");
         Author recentlyAdded = authorService.findAuthor(saved.getId());
         Assertions.assertEquals("Imie", recentlyAdded.getName());
         Assertions.assertEquals("Surname", recentlyAdded.getSurname());
-        Assertions.assertEquals(1900, recentlyAdded.getBirthYear());
+        Assertions.assertEquals(1000, recentlyAdded.getBirthYear());
         Assertions.assertEquals(2000, recentlyAdded.getDeathYear());
     }
 }
