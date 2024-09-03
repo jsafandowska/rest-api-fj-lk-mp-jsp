@@ -29,7 +29,7 @@ public class GarageService {
     private final CarRepository carRepository;
 
 
-    @Transactional(readOnly = true, propagation = Propagation.MANDATORY)
+//    @Transactional(readOnly = true, propagation = Propagation.MANDATORY)
     public Page<Garage> findAllGarages(Pageable pageable) {
         return garageRepository.findAll(pageable);
     }

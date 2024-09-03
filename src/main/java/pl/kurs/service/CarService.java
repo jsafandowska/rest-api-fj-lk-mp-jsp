@@ -1,8 +1,11 @@
 package pl.kurs.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import pl.kurs.exceptions.CarNotFoundException;
+import pl.kurs.model.Book;
 import pl.kurs.model.Car;
 import pl.kurs.model.command.CreateCarCommand;
 import pl.kurs.model.dto.CarDto;
@@ -16,40 +19,39 @@ import java.util.Optional;
 public class CarService {
     private final CarRepository carRepository;
 
-    public List<CarDto> findAllCars() {
-        return carRepository.findAll().stream().map(CarDto::toDto).toList();
+    public Page<Car> findAllCars(Pageable pageable) {
+        return carRepository.findAll(pageable);
     }
 
-    public CarDto addCar(CreateCarCommand command) {
+    public Car addCar(CreateCarCommand command) {
         Car car = new Car(command.getBrand(), command.getModel(), command.getFuelType());
-        car = carRepository.saveAndFlush(car);
-        return CarDto.toDto(car);
+        return carRepository.saveAndFlush(car);
     }
 
-    public CarDto findCarById(int id) {
-        Car car = carRepository.findById(id).orElseThrow(CarNotFoundException::new);
-        return CarDto.toDto(car);
+    public Car findCarById(int id) {
+        return carRepository.findById(id).orElseThrow(CarNotFoundException::new);
     }
 
     public void deleteCarById(int id) {
         carRepository.deleteById(id);
     }
 
-    public CarDto editCar(int id, CreateCarCommand command) {
+    public Car editCar(int id, CreateCarCommand command) {
         Car car = carRepository.findById(id).orElseThrow(CarNotFoundException::new);
         car.setBrand(command.getBrand());
         car.setModel(command.getModel());
         car.setFuelType(command.getFuelType());
-        car = carRepository.saveAndFlush(car);
-        return CarDto.toDto(car);
+        return carRepository.saveAndFlush(car);
     }
 
-    public CarDto editCarPartially(int id, CreateCarCommand command) {
+    public Car editCarPartially(int id, CreateCarCommand command) {
         Car car = carRepository.findById(id).orElseThrow(CarNotFoundException::new);
         Optional.ofNullable(command.getBrand()).ifPresent(car::setBrand);
         Optional.ofNullable(command.getModel()).ifPresent(car::setModel);
         Optional.ofNullable(command.getFuelType()).ifPresent(car::setFuelType);
-        car = carRepository.saveAndFlush(car);
-        return CarDto.toDto(car);
+        return carRepository.saveAndFlush(car);
+    }
+    public Optional<Car> findById(int id) {
+        return carRepository.findById(id);
     }
 }
