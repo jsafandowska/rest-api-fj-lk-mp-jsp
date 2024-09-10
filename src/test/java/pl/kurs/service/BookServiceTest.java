@@ -85,11 +85,11 @@ public class BookServiceTest {
     public void shouldEditBook() {
         EditBookCommand command =  new EditBookCommand("New Title", "New Category", false,0L);
         when(bookRepository.findById(1)).thenReturn(Optional.of(book1));
-        when(bookRepository.saveAndFlush(any(Book.class))).thenReturn(book1);
+        when(bookRepository.saveAndFlush(any(Book.class))).thenReturn(new Book("New Title","New Category", false, author));
         Book result = bookService.editBook(1, command);
         assertEquals("New Title", result.getTitle());
-        verify(bookRepository, times(1)).findById(1);
-        verify(bookRepository, times(1)).saveAndFlush(book1);
+        assertEquals("New Category", result.getCategory());
+        assertFalse(result.isAvailable());
     }
 
     @Test

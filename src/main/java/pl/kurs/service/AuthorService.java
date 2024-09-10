@@ -7,10 +7,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import pl.kurs.exceptions.AuthorNotFoundException;
+import pl.kurs.exceptions.BookNotFoundException;
 import pl.kurs.model.Author;
 import pl.kurs.model.Book;
 import pl.kurs.model.command.CreateAuthorCommand;
 import pl.kurs.model.command.EditAuthorCommand;
+import pl.kurs.model.command.EditBookCommand;
 import pl.kurs.model.dto.AuthorDto;
 import pl.kurs.model.dto.FullAuthorDto;
 import pl.kurs.repository.AuthorRepository;
@@ -28,7 +30,6 @@ public class AuthorService {
         return authorRepository.findAllWithBooks(pageable);
     }
 
-
     public Author addAuthor(CreateAuthorCommand command) {
         return authorRepository.saveAndFlush(new Author(command.getName(), command.getSurname(), command.getBirthYear(), command.getDeathYear()));
     }
@@ -36,7 +37,7 @@ public class AuthorService {
 
     @Transactional(readOnly = true)
     public Author findAuthor(int id) {
-        return authorRepository.findByIdWithBooks(id)
+        return authorRepository.findById(id)
                 .orElseThrow(AuthorNotFoundException::new);
     }
 
@@ -47,11 +48,14 @@ public class AuthorService {
     @Transactional
     public Author editAuthor(int id, EditAuthorCommand command) {
         Author author = authorRepository.findById(id).orElseThrow(AuthorNotFoundException::new);
-        author.setName(command.getName());
-        author.setSurname(command.getSurname());
-        author.setDeathYear(command.getDeathYear());
-        return authorRepository.saveAndFlush(author);
+        Author copy = new Author(author);
+        copy.setName(command.getName());
+        copy.setSurname(command.getSurname());
+        copy.setDeathYear(command.getDeathYear());
+        copy.setVersion(command.getVersion());
+        return authorRepository.saveAndFlush(copy);
     }
+
 
     @Transactional
     public Author editAuthorPartially(int id, EditAuthorCommand command) {

@@ -32,35 +32,38 @@ public class AuthorServiceTest {
     private AuthorService authorService;
 
     private Author author;
-    private Author authorWithBooks;
-    private CreateAuthorCommand createAuthorCommand;
-    private EditAuthorCommand editAuthorCommand;
+
+    private FullAuthorDto fullAuthorDto;
+    private FullAuthorDto fullAuthorDto2;
+
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
         author = new Author("John", "Doe", 1970, 2020);
-        authorWithBooks = new Author("Jane", "Doe", 1980, 2021);
-        createAuthorCommand = new CreateAuthorCommand("Jane", "Doe", 1980, 2021);
-        editAuthorCommand = new EditAuthorCommand(null, "Doe", null);
+        fullAuthorDto = new FullAuthorDto(1, "Jane", "Doe", 1980, null, 2L);
+        fullAuthorDto2 = new FullAuthorDto(1, "Jane2", "Doe", 1980, null, 3L);
     }
 
     //to do test do poprawy
-//    @Test
-//    public void shouldReturnAllAuthorsWithBooks() {
-//        Pageable pageable = PageRequest.of(0, 10);
-//        Page<Author> authorsPage = new PageImpl<>(List.of(authorWithBooks), pageable, 1);
-//        when(authorRepository.findAll(pageable)).thenReturn(authorsPage);
-//        Page<FullAuthorDto> result = authorService.getAllAuthorsWithBooks(pageable);
-//        assertEquals(1, result.getTotalElements());
-//        assertEquals("Jane", result.getContent().get(0).getName());
-//        verify(authorRepository, times(1)).findAll(pageable);
-//    }
+    @Test
+    public void shouldReturnAllAuthorsWithBooks() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<FullAuthorDto> authorsPage = new PageImpl<>(List.of(fullAuthorDto, fullAuthorDto2), pageable, 1);
+        when(authorRepository.findAllWithBooks(pageable)).thenReturn(authorsPage);
+        Page<FullAuthorDto> result = authorService.getAllAuthorsWithBooks(pageable);
+        assertEquals(2, result.getTotalElements());
+        assertEquals("Jane", result.getContent().get(0).name());
+        assertEquals("Jane2", result.getContent().get(1).name());
+        assertEquals(2L, result.getContent().get(0).amountOfBooks());
+        assertEquals(3L, result.getContent().get(1).amountOfBooks());
+        verify(authorRepository, times(1)).findAllWithBooks(pageable);
+    }
 
     @Test
     public void shouldAddAuthor() {
         when(authorRepository.saveAndFlush(any(Author.class))).thenReturn(author);
-        Author result = authorService.addAuthor(new CreateAuthorCommand("John","Doe",1970,2020));
+        Author result = authorService.addAuthor(new CreateAuthorCommand("John", "Doe", 1970, 2020));
         assertEquals("John", result.getName());
         verify(authorRepository, times(1)).saveAndFlush(any(Author.class));
     }
@@ -88,25 +91,27 @@ public class AuthorServiceTest {
 
     @Test
     void shouldEditAuthor() {
-        when(authorRepository.findById(anyInt())).thenReturn(Optional.of(author));
-        when(authorRepository.saveAndFlush(any(Author.class))).thenReturn(author);
+        EditAuthorCommand editAuthorCommand = new EditAuthorCommand("John2", "Doe2", 2000, 0L);
+        when(authorRepository.findById(1)).thenReturn(Optional.of(author));
+        when(authorRepository.saveAndFlush(any(Author.class))).thenReturn(new Author("John2", "Doe2", 1970, 2000));
         Author result = authorService.editAuthor(1, editAuthorCommand);
-        assertEquals("Jane", result.getName());
-        assertEquals("Doe", result.getSurname());
-        assertEquals(1980, result.getBirthYear());
-        assertEquals(2021, result.getDeathYear());
+        assertEquals("John2", result.getName());
+        assertEquals("Doe2", result.getSurname());
+        assertEquals(1970, result.getBirthYear());
+        assertEquals(2000, result.getDeathYear());
         verify(authorRepository, times(1)).findById(1);
         verify(authorRepository, times(1)).saveAndFlush(any(Author.class));
     }
 
     @Test
     void shouldEditAuthorPartially() {
+        EditAuthorCommand editAuthorCommand = new EditAuthorCommand(null, "Doe2", null, 0L);
         when(authorRepository.findById(anyInt())).thenReturn(Optional.of(author));
         when(authorRepository.saveAndFlush(any(Author.class))).thenReturn(author);
         Author result = authorService.editAuthorPartially(1, editAuthorCommand);
         assertEquals("John", result.getName());
-        assertEquals("Doe", result.getSurname());
-        assertEquals(1980, result.getBirthYear());
+        assertEquals("Doe2", result.getSurname());
+        assertEquals(1970, result.getBirthYear());
         assertEquals(2020, result.getDeathYear());
         verify(authorRepository, times(1)).findById(1);
         verify(authorRepository, times(1)).saveAndFlush(any(Author.class));

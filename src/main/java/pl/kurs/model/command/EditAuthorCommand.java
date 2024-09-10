@@ -11,4 +11,5 @@ public class EditAuthorCommand {
     private String name;
     private String surname;
     private Integer deathYear;
+    private Long version;
 }

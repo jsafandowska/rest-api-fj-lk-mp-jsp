@@ -26,6 +26,9 @@ public class Author {
     @OneToMany(mappedBy = "author")
     @ToString.Exclude
     private Set<Book> books = new HashSet<>();
+    @Version
+    private long version;
+
 
     public Author(String name, String surname, Integer birthYear, Integer deathYear) {
         this.name = name;
@@ -33,4 +36,14 @@ public class Author {
         this.birthYear = birthYear;
         this.deathYear = deathYear;
     }
+
+    public Author(Author author) {
+        this.id = author.getId();
+        this.name=author.getName();
+        this.surname=author.getSurname();
+        this.birthYear=author.getBirthYear();
+        this.deathYear=author.getDeathYear();
+        this.version=author.getVersion();
+    }
+
 }

@@ -21,7 +21,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-
 @SpringBootTest(classes = Main.class)
 @AutoConfigureMockMvc
 @ActiveProfiles("tests")
@@ -80,8 +79,9 @@ public class AuthorControllerTest {
     @Test
     public void shouldEditAuthor() throws Exception {
         Author authorToEdit = authorService.addAuthor(new CreateAuthorCommand("Name", "Surname", 1000, 1500));
-        EditAuthorCommand command = new EditAuthorCommand("Imie", "Nazwisko", 2000);
+        EditAuthorCommand command = new EditAuthorCommand("Imie", "Nazwisko", 2000, 0L);
         String json = objectMapper.writeValueAsString(command);
+        System.out.println("---------------------------------------------");
         String responseString = postman.perform(put("/api/v1/authors/" + authorToEdit.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
@@ -91,22 +91,25 @@ public class AuthorControllerTest {
                 .andExpect(jsonPath("$.surname").value("Nazwisko"))
                 .andExpect(jsonPath("$.birthYear").value(1000))
                 .andExpect(jsonPath("$.deathYear").value(2000))
+                .andExpect(jsonPath("$.version").value(1))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
+        System.out.println("---------------------------------------------");
         Author saved = objectMapper.readValue(responseString, Author.class);
         Author recentlyAdded = authorService.findAuthor(saved.getId());
         Assertions.assertEquals("Imie", recentlyAdded.getName());
         Assertions.assertEquals("Nazwisko", recentlyAdded.getSurname());
         Assertions.assertEquals(1000, recentlyAdded.getBirthYear());
         Assertions.assertEquals(2000, recentlyAdded.getDeathYear());
+        Assertions.assertEquals(1, recentlyAdded.getVersion());
     }
 
     // todo do edycji wykorzystujemy EditCommand
     @Test
     public void shouldEditAuthorPartially() throws Exception {
         Author authorToEdit = authorService.addAuthor(new CreateAuthorCommand("Name", "Surname", 1000, 1500));
-        EditAuthorCommand command = new EditAuthorCommand("Imie", null, 2000);
+        EditAuthorCommand command = new EditAuthorCommand("Imie", null, 2000,0L);
         String json = objectMapper.writeValueAsString(command);
         String responseString = postman.perform(patch("/api/v1/authors/" + authorToEdit.getId())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -117,6 +120,7 @@ public class AuthorControllerTest {
                 .andExpect(jsonPath("$.surname").value("Surname"))
                 .andExpect(jsonPath("$.birthYear").value(1000))
                 .andExpect(jsonPath("$.deathYear").value(2000))
+                .andExpect(jsonPath("$.version").value(1))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -127,5 +131,6 @@ public class AuthorControllerTest {
         Assertions.assertEquals("Surname", recentlyAdded.getSurname());
         Assertions.assertEquals(1000, recentlyAdded.getBirthYear());
         Assertions.assertEquals(2000, recentlyAdded.getDeathYear());
+        Assertions.assertEquals(1, recentlyAdded.getVersion());
     }
 }
