@@ -68,4 +68,9 @@
             <column name="version" defaultValueNumeric="0" type="BIGINT"></column>
         </addColumn>
     </changeSet>
+    <changeSet id="2024-09-09-jsafandowska-004-addColumn-version-in-table-author" author="lukasz">
+        <addColumn tableName="author">
+            <column name="version" defaultValueNumeric="0" type="BIGINT"></column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

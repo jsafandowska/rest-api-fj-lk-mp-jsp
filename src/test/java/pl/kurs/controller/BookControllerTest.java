@@ -40,8 +40,8 @@ class BookControllerTest {
 
     @Test
     public void shouldReturnSingleBook() throws Exception {
-        Author author = authorService.save(new CreateAuthorCommand("Adam", "Adamski", 1900, 2000));
-        Book book = bookService.save(new CreateBookCommand("Old Title", "Old Category", author.getId()));
+        Author author = authorService.addAuthor(new CreateAuthorCommand("Adam", "Adamski", 1900, 2000));
+        Book book = bookService.addBook(new CreateBookCommand("Old Title", "Old Category", author.getId()));
         int id = book.getId();
 
         postman.perform(get("/api/v1/books/" + id))
@@ -58,7 +58,7 @@ class BookControllerTest {
 
     @Test
     public void shouldAddBook() throws Exception {
-        Author author = authorService.save(new CreateAuthorCommand("Adam", "Adamski", 1900, 2000));
+        Author author = authorService.addAuthor(new CreateAuthorCommand("Adam", "Adamski", 1900, 2000));
         CreateBookCommand command = new CreateBookCommand("podstawy java", "NAUKOWE", author.getId());
         String json = objectMapper.writeValueAsString(command);
         String responseString = postman.perform(post("/api/v1/books")
@@ -88,8 +88,8 @@ class BookControllerTest {
 
     @Test
     public void shouldDeleteBook() throws Exception {
-        Author author = authorService.save(new CreateAuthorCommand("Adam", "Adamski", 1900, 2000));
-        Book book = bookService.save(new CreateBookCommand("Old Title", "Old Category", author.getId()));
+        Author author = authorService.addAuthor(new CreateAuthorCommand("Adam", "Adamski", 1900, 2000));
+        Book book = bookService.addBook(new CreateBookCommand("Old Title", "Old Category", author.getId()));
         postman.perform(delete("/api/v1/books/" + book.getId()))
                 .andExpect(status().isNoContent());
 
@@ -99,8 +99,8 @@ class BookControllerTest {
 
     @Test
     public void shouldEditBook() throws Exception {
-        Author author = authorService.save(new CreateAuthorCommand("Adam", "Adamski", 1900, 2000));
-        Book book = bookService.save(new CreateBookCommand("Old Title", "Old Category", author.getId()));
+        Author author = authorService.addAuthor(new CreateAuthorCommand("Adam", "Adamski", 1900, 2000));
+        Book book = bookService.addBook(new CreateBookCommand("Old Title", "Old Category", author.getId()));
         int bookId = book.getId();
         EditBookCommand command = new EditBookCommand("New Title", "New Category", false, 0L);
         String json = objectMapper.writeValueAsString(command);
@@ -129,8 +129,8 @@ class BookControllerTest {
 
     @Test
     public void shouldEditBookPartially() throws Exception {
-        Author author = authorService.save(new CreateAuthorCommand("Adam", "Adamski", 1900, 2000));
-        Book book = bookService.save(new CreateBookCommand("Old Title", "Old Category", author.getId()));
+        Author author = authorService.addAuthor(new CreateAuthorCommand("Adam", "Adamski", 1900, 2000));
+        Book book = bookService.addBook(new CreateBookCommand("Old Title", "Old Category", author.getId()));
         long initialVersion = book.getVersion();
 
         EditBookCommand command = new EditBookCommand(null, "New Category", null,null);

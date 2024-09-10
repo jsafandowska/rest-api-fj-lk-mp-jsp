@@ -1,6 +1,5 @@
 package pl.kurs.service;
 
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -13,7 +12,6 @@ import pl.kurs.model.Author;
 import pl.kurs.model.Book;
 import pl.kurs.model.command.CreateBookCommand;
 import pl.kurs.model.command.EditBookCommand;
-import pl.kurs.model.dto.BookDto;
 import pl.kurs.repository.AuthorRepository;
 import pl.kurs.repository.BookRepository;
 
@@ -62,11 +60,6 @@ public class BookService {
         Optional.ofNullable(command.getCategory()).ifPresent(book::setCategory);
         Optional.ofNullable(command.getTitle()).ifPresent(book::setTitle);
         return bookRepository.saveAndFlush(book);
-    }
-
-    public Book save(CreateBookCommand command) {
-        Author author = authorRepository.findById(command.getAuthorId()).orElseThrow(AuthorNotFoundException::new);
-        return bookRepository.save(new Book(command.getTitle(), command.getCategory(), true, author));
     }
 
     @Transactional
