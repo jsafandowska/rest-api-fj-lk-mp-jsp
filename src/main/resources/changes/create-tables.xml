@@ -73,4 +73,22 @@
             <column name="version" defaultValueNumeric="0" type="BIGINT"></column>
         </addColumn>
     </changeSet>
+    <changeSet id="2024-09-16-krzysiek-006-create-table-doctor" author="julia">
+        <sql>
+            CREATE TABLE doctor (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(255) NOT NULL
+            );
+        </sql>
+    </changeSet>
+    <changeSet id="2024-09-16-krzysiek-006-create-table-visit" author="julia">
+        <sql>
+            CREATE TABLE visit (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            date TIMESTAMP NOT NULL,
+            doctor_id INT NOT NULL,
+            CONSTRAINT fk_visit_doctor FOREIGN KEY (doctor_id) REFERENCES doctor(id) ON DELETE CASCADE
+            );
+        </sql>
+    </changeSet>
 </databaseChangeLog>

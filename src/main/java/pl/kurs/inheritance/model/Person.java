@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Entity
 @NoArgsConstructor
 @Getter
@@ -18,12 +20,14 @@ public abstract class Person {
     private int id;
     private String name;
     private int age;
-    @Column(unique = true)
-    private String pesel;
+    //    @Column(unique = true)
+//    private String pesel;
+    private LocalDate dateOfBirth;
+    private String gender;
 
-    public Person(String name, int age, String pesel) {
+    public Person(String name, int age) {
         this.name = name;
         this.age = age;
-        this.pesel = pesel;
+//        this.pesel = pesel;
     }
 }

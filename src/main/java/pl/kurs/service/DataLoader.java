@@ -33,12 +33,12 @@ public class DataLoader {
     public void init() {
         personRepository.saveAllAndFlush(
                 List.of(
-                        new Employee("X", 25, "92345678123141", "programmer", 15000),
-                        new Employee("Y", 45, "82345678123141", "programmer", 25000),
-                        new Employee("Z", 35, "72345678123141", "programmer", 17000),
-                        new Student("A", 20, "6345678123141", 1000, "1a"),
-                        new Student("B", 19, "52345678123141", 0, "2a"),
-                        new Student("C", 21, "42345678123141", 500, "1b")
+                        new Employee("X", 25, "programmer", 15000),
+                        new Employee("Y", 45, "programmer", 25000),
+                        new Employee("Z", 35,  "programmer", 17000),
+                        new Student("A", 20, 1000, "1a"),
+                        new Student("B", 19,  0, "2a"),
+                        new Student("C", 21,  500, "1b")
                 )
         );
         Author a1 = authorRepository.saveAndFlush(new Author("Kazimierz", "Wielki", 1900, 2000));

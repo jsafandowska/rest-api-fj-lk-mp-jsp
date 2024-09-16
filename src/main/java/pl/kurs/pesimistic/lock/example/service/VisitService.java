@@ -30,8 +30,8 @@ public class VisitService {
 
     @Transactional
     public void createVisit(CreateVisitCommand command) {
-        Doctor doctor = doctorRepository.findByIdWithLocking(command.getDoctorId()).orElseThrow();
-//        Doctor doctor = doctorRepository.findById(command.getDoctorId()).orElseThrow();
+//        Doctor doctor = doctorRepository.findByIdWithLocking(command.getDoctorId()).orElseThrow();
+        Doctor doctor = doctorRepository.findById(command.getDoctorId()).orElseThrow();
         LocalDateTime date = LocalDateTime.parse(command.getDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         checkIfVisitExistsAtGivenDate(doctor, date);
         visitRepository.save(new Visit(date, doctor));

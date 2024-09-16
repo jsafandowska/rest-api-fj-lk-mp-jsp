@@ -19,12 +19,12 @@
             insert into car (id, brand, fuel_type, garage_id, model) values (default, 'Volkswagen', 'petrol', select id from garage where address = 'Słoneczna', 'Amarok');
             select next value for person_seq;
             select next value for person_seq;
-            insert into person (age, name, pesel, position, salary, dtype, id) values (30, 'Kasia', '854634388', 'Księgowa', 6000, 'Employee', default);
-            insert into person (age, name, pesel, position, salary, dtype, id) values (35, 'Jerzy', '45454657756', 'Handlowiec', 10000, 'Employee', default);
-            insert into person (age, name, pesel, position, salary, dtype, id) values (40, 'Paweł', '9483948984242', 'Magazynier', 5000, 'Employee', default);
-            insert into person (age, name, pesel, std_group, scholarship, dtype, id) values (22, 'Marek', '758374832743', '1A', 1000, 'Student', default);
-            insert into person (age, name, pesel, std_group, scholarship, dtype, id) values (20, 'Kinga', '343423432232', '1B', 1500, 'Student', default);
-            insert into person (age, name, pesel, std_group, scholarship, dtype, id) values (23, 'Karolina', '4354655756765', '1A', 800, 'Student', default);
+            insert into person (age, name, pesel, position, salary, dtype, id) values (30, 'Kasia', '97080503860', 'Księgowa', 6000, 'Employee', default);
+            insert into person (age, name, pesel, position, salary, dtype, id) values (35, 'Jerzy', '98080503861', 'Handlowiec', 10000, 'Employee', default);
+            insert into person (age, name, pesel, position, salary, dtype, id) values (40, 'Paweł', '84032489842', 'Magazynier', 5000, 'Employee', default);
+            insert into person (age, name, pesel, std_group, scholarship, dtype, id) values (22, 'Marek', '75032483274', '1A', 1000, 'Student', default);
+            insert into person (age, name, pesel, std_group, scholarship, dtype, id) values (20, 'Kinga', '92042343223', '1B', 1500, 'Student', default);
+            insert into person (age, name, pesel, std_group, scholarship, dtype, id) values (23, 'Karolina', '93042457567', '1A', 800, 'Student', default);
         </sql>
     </changeSet>
 </databaseChangeLog>

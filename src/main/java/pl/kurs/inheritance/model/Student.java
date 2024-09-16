@@ -16,8 +16,8 @@ public class Student extends Person {
     @Column(name = "std_group")
     private String group;
 
-    public Student(String name, int age, String pesel, int scholarship, String group) {
-        super(name, age, pesel);
+    public Student(String name, int age, int scholarship, String group) {
+        super(name, age);
         this.scholarship = scholarship;
         this.group = group;
     }
