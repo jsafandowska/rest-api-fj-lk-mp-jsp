@@ -41,12 +41,11 @@ public class PersonServiceTest {
         List<PersonParameter> parameters = List.of(
                 new PersonParameter("name", "Joe"),
                 new PersonParameter("age", "22"),
-                new PersonParameter("pesel", "1234557"),
                 new PersonParameter("scholarship", "1500"),
                 new PersonParameter("group", "A1")
         );
         CreatePersonCommand command = new CreatePersonCommand("Student", parameters);
-        Student student = new Student("Joe", 22, "1234557", 1500, "A1");
+        Student student = new Student("Joe", 22, 1500, "A1");
         StudentDto expectedStudentDto = new StudentDto(1, "Joe", 22, 1500, "A1");
         when(facades.get("studentFacade")).thenReturn(studentFacade);
         when(studentFacade.createPerson(parameters)).thenReturn(student);

@@ -20,14 +20,11 @@ public abstract class Person {
     private int id;
     private String name;
     private int age;
-    //    @Column(unique = true)
-//    private String pesel;
     private LocalDate dateOfBirth;
     private String gender;
 
     public Person(String name, int age) {
         this.name = name;
         this.age = age;
-//        this.pesel = pesel;
     }
 }

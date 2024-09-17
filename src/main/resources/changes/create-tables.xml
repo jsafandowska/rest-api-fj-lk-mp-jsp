@@ -65,12 +65,12 @@
     </changeSet>
     <changeSet id="2024-08-19-jsafandowska-004-addColumn-version-in-table-book" author="krzysiek">
         <addColumn tableName="book">
-            <column name="version" defaultValueNumeric="0" type="BIGINT"></column>
+            <column name="version" defaultValueNumeric="0" type="BIGINT"/>
         </addColumn>
     </changeSet>
     <changeSet id="2024-08-19-jsafandowska-005-addColumn-version-in-table-author" author="michal">
         <addColumn tableName="author">
-            <column name="version" defaultValueNumeric="0" type="BIGINT"></column>
+            <column name="version" defaultValueNumeric="0" type="BIGINT"/>
         </addColumn>
     </changeSet>
     <changeSet id="2024-09-16-krzysiek-006-create-table-doctor" author="julia">
@@ -81,7 +81,7 @@
             );
         </sql>
     </changeSet>
-    <changeSet id="2024-09-16-krzysiek-006-create-table-visit" author="julia">
+    <changeSet id="2024-09-16-krzysiek-007-create-table-visit" author="julia">
         <sql>
             CREATE TABLE visit (
             id INT AUTO_INCREMENT PRIMARY KEY,

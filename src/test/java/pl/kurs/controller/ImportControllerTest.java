@@ -13,9 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import pl.kurs.model.ImportStatus;
 import pl.kurs.service.ImportService;
-
 import java.io.ByteArrayInputStream;
-
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -40,7 +38,7 @@ public class ImportControllerTest {
     }
 
     @Test
-    public void testImportBooks() throws Exception {
+    public void shouldImportBooks() throws Exception {
         MockMultipartFile mockFile = new MockMultipartFile("books", "books.csv", "text/csv", "sample data".getBytes());
         ImportStatus importStatus = new ImportStatus();
         importStatus.setId(1);
@@ -56,7 +54,7 @@ public class ImportControllerTest {
     }
 
     @Test
-    public void testGetImportStatus() throws Exception {
+    public void shouldGetImportStatus() throws Exception {
         ImportStatus importStatus = new ImportStatus();
         importStatus.setId(1);
         importStatus.setStatus(ImportStatus.Status.SUCCESS);
@@ -67,4 +65,45 @@ public class ImportControllerTest {
         verify(importService, times(1)).findById(1);
         Assertions.assertEquals(ImportStatus.Status.SUCCESS, importStatus.getStatus());
     }
+    /*
+
+    @Test
+    public void shouldFindImportById() throws Exception {
+        LocalDateTime start = LocalDateTime.of(2020, 10, 20, 20, 20, 20);
+        ImportStatus importStatus = new ImportStatus("test", start);
+        importStatusRepository.saveAndFlush(importStatus);
+        Mockito.when(importDateProvider.provideNow()).thenReturn(start);
+        MvcResult result = postman.perform(get("/api/imports/{id}", importStatus.getId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+
+
+        String response = result.getResponse().getContentAsString();
+        ImportStatusDto importDto = objectMapper.readValue(response, new TypeReference<>() {
+        });
+        verify(importStatusRepository, times(1)).findById(importStatus.getId());
+        assertImportsEquals(importStatus, importDto);
+    }
+
+    @Test
+    public void shouldThrowImportNotFoundExceptionWhenIdNotFound() throws Exception {
+        long nonExistentEventId = 0;
+        postman.perform(get("/api/imports/{id}", nonExistentEventId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+        verify(importStatusRepository, times(1)).findById(nonExistentEventId);
+    }
+
+    private void assertImportsEquals(ImportStatus importStatus, ImportStatusDto importStatusDto) {
+        assertEquals(importStatus.getId(), importStatusDto.id());
+        assertEquals(importStatus.getStatus(), importStatusDto.status());
+        assertEquals(importStatus.getFailReason(), importStatusDto.failReason());
+        assertEquals(importStatus.getFileName(), importStatusDto.fileName());
+        assertEquals(importStatus.getProcessedRows(), importStatusDto.processedRows());
+        assertEquals(importStatus.getStartDate(), importStatusDto.startDate());
+        assertEquals(importStatus.getFinishDate(), importStatusDto.finishDate());
+        assertEquals(importStatus.getSubmitDate(), importStatusDto.submitDate());
+    }
+
+     */
 }
