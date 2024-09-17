@@ -4,6 +4,9 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import pl.kurs.dictionary.model.Dictionary;
+import pl.kurs.dictionary.model.DictionaryValue;
+import pl.kurs.dictionary.repository.DictionaryRepository;
 import pl.kurs.inheritance.model.Employee;
 import pl.kurs.inheritance.model.Student;
 import pl.kurs.inheritance.repository.PersonRepository;
@@ -28,6 +31,7 @@ public class DataLoader {
     private final GarageRepository garageRepository;
     private final BookRepository bookRepository;
     private final AuthorRepository authorRepository;
+    private final DictionaryRepository dictionaryRepository;
 
     @PostConstruct
     public void init() {
@@ -60,6 +64,19 @@ public class DataLoader {
         carRepository.saveAndFlush(new Car("Mercedes", "S-class", "petrol"));
         carRepository.saveAndFlush(new Car("Audi", "RS", "petrol"));
 
+        Dictionary countries = new Dictionary("COUNTRIES");
+        Dictionary positions = new Dictionary("POSITIONS");
+
+        new DictionaryValue("Polska", countries);
+        new DictionaryValue("Niemcy", countries);
+        new DictionaryValue("Wielka Brytania", countries);
+        new DictionaryValue("Francja", countries);
+        new DictionaryValue("Devops", positions);
+        new DictionaryValue("Senior Developer", positions);
+        new DictionaryValue("Mid Developer", positions);
+        new DictionaryValue("Junior Developer", positions);
+
+        dictionaryRepository.saveAllAndFlush(List.of(countries, positions));
 
     }
 }

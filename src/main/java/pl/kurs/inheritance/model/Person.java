@@ -21,7 +21,9 @@ public abstract class Person {
     private String name;
     private int age;
     private LocalDate dateOfBirth;
+    // zamienic gender na enum, w bazie ma byc przechowywane jako string, @Enumerated
     private String gender;
+    private String country;
 
     public Person(String name, int age) {
         this.name = name;

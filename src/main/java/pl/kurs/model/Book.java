@@ -20,7 +20,6 @@ public class Book {
     @JoinColumn(name = "author_id")
     @ToString.Exclude
     private Author author;
-
     @Version
     private long version;
 
