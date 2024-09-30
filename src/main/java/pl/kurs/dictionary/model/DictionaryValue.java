@@ -14,6 +14,7 @@ public class DictionaryValue {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "dictionaryValueIdGenerator")
     @SequenceGenerator(name = "dictionaryValueIdGenerator", sequenceName = "dictionary_value_seq", initialValue = 100000, allocationSize = 1000)
     private int id;
+    @Column(name = "\"value\"")
     private String value;
     @ManyToOne
     @JoinColumn(name = "dictionary_id")

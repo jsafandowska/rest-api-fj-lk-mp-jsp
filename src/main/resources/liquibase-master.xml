@@ -7,5 +7,6 @@
     <include file="/changes/create-tables.xml"/>
     <include file="/changes/insert-data.xml"/>
     <include file="/changes/migrate-pesel.xml"/>
+    <include file="/changes/dictionary.xml"/>
 
 </databaseChangeLog>

@@ -76,6 +76,7 @@ public class DataLoader {
         new DictionaryValue("Mid Developer", positions);
         new DictionaryValue("Junior Developer", positions);
 
+
         dictionaryRepository.saveAllAndFlush(List.of(countries, positions));
 
     }

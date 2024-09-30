@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import pl.kurs.inheritance.enums.Country;
+import pl.kurs.inheritance.enums.Gender;
 
 import java.time.LocalDate;
 
@@ -22,8 +24,12 @@ public abstract class Person {
     private int age;
     private LocalDate dateOfBirth;
     // zamienic gender na enum, w bazie ma byc przechowywane jako string, @Enumerated
-    private String gender;
-    private String country;
+
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
+    @Enumerated(EnumType.STRING)
+    private Country country;
 
     public Person(String name, int age) {
         this.name = name;
