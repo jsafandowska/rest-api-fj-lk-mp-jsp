@@ -1,7 +1,10 @@
 package pl.kurs.pesimistic.lock.example.service;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.kurs.pesimistic.lock.example.model.Doctor;
@@ -13,6 +16,7 @@ import pl.kurs.pesimistic.lock.example.repository.VisitRepository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

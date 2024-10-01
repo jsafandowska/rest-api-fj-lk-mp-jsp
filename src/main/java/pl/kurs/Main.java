@@ -13,9 +13,9 @@ public class  Main {
 
         SpringApplication.run(Main.class, args);
 
-        // praca domowa obejrzec zajecia paginacja z fetchowaniem, przygotowac sobie pytania jesli takie sie pojawią
-
-        // dodac podobny mechanizm w authorze podczas edycji ma byc sprawdzana wersja
+        // aktualizacja liquibase po dodaniu slownikow
+        // sprawdzic testy
+        // uzupelnic w data loader Persony, zeby kazdy mial jakies country i employee zeby mial position
     }
 }
 

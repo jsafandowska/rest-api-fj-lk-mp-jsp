@@ -35,16 +35,16 @@ public class DataLoader {
 
     @PostConstruct
     public void init() {
-        personRepository.saveAllAndFlush(
-                List.of(
-                        new Employee("X", 25, "programmer", 15000),
-                        new Employee("Y", 45, "programmer", 25000),
-                        new Employee("Z", 35,  "programmer", 17000),
-                        new Student("A", 20, 1000, "1a"),
-                        new Student("B", 19,  0, "2a"),
-                        new Student("C", 21,  500, "1b")
-                )
-        );
+//        personRepository.saveAllAndFlush(
+//                List.of(
+//                        new Employee("X", 25, "programmer", 15000),
+//                        new Employee("Y", 45, "programmer", 25000),
+//                        new Employee("Z", 35,  "programmer", 17000),
+//                        new Student("A", 20, 1000, "1a"),
+//                        new Student("B", 19,  0, "2a"),
+//                        new Student("C", 21,  500, "1b")
+//                )
+//        );
         Author a1 = authorRepository.saveAndFlush(new Author("Kazimierz", "Wielki", 1900, 2000));
         Author a2 = authorRepository.saveAndFlush(new Author("Maria", "Wielka", 1900, 2000));
         Author a3 = authorRepository.saveAndFlush(new Author("Marcin", "Jakis", 2000, null));

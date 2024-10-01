@@ -15,7 +15,8 @@ public interface AuthorRepository extends JpaRepository<Author, Integer> {
     @Query("select a from Author a left join fetch a.books")
     List<Author> findAllWithBooks();
 
-    @Query(value = "select new pl.kurs.model.dto.FullAuthorDto(a.id, a.name, a.surname, a.birthYear, a.deathYear, (select count(b) from Book b where b.author.id = a.id) as amountOfBooks) from Author a",
+    @Query(value = "select new pl.kurs.model.dto.FullAuthorDto(a.id, a.name, a.surname, a.birthYear, a.deathYear, " +
+            "(select count(b) from Book b where b.author.id = a.id) as amountOfBooks) from Author a",
     countQuery = "select count(a) from Author a")
     Page<FullAuthorDto> findAllWithBooks(Pageable pageable);
 

@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import pl.kurs.inheritance.enums.Country;
+import pl.kurs.dictionary.model.DictionaryValue;
 import pl.kurs.inheritance.enums.Gender;
 
 import java.time.LocalDate;
@@ -23,16 +23,17 @@ public abstract class Person {
     private String name;
     private int age;
     private LocalDate dateOfBirth;
-    // zamienic gender na enum, w bazie ma byc przechowywane jako string, @Enumerated
-
     @Enumerated(EnumType.STRING)
     private Gender gender;
+    @ManyToOne
+    @JoinColumn(name = "country_id")
+    private DictionaryValue country;
 
-    @Enumerated(EnumType.STRING)
-    private Country country;
-
-    public Person(String name, int age) {
+    public Person(String name, int age, LocalDate dateOfBirth, Gender gender, DictionaryValue country) {
         this.name = name;
         this.age = age;
+        this.dateOfBirth = dateOfBirth;
+        this.gender = gender;
+        this.country = country;
     }
 }

@@ -58,6 +58,4 @@ public class AuthorController {
         log.info("editAuthorPartially({}, {})", id, command);
         return ResponseEntity.status(HttpStatus.OK).body(AuthorDto.toDto(authorService.editAuthorPartially(id, command)));
     }
-
-
 }
