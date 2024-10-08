@@ -1,9 +1,6 @@
 package pl.kurs.dictionary.model.command;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.Set;
 
@@ -11,6 +8,8 @@ import java.util.Set;
 @Setter
 @ToString
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CreateDictionaryCommand {
     private String name;
     private Set<String> launchValues;

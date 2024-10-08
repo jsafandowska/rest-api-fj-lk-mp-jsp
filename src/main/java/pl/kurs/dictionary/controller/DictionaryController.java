@@ -4,13 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import pl.kurs.dictionary.model.Dictionary;
+import org.springframework.web.bind.annotation.*;
 import pl.kurs.dictionary.model.command.CreateDictionaryCommand;
+import pl.kurs.dictionary.model.command.CreateDictionaryValueCommand;
+import pl.kurs.dictionary.model.command.EditDictionaryValueCommand;
 import pl.kurs.dictionary.model.dto.DictionaryDto;
+import pl.kurs.dictionary.model.dto.DictionaryValueDto;
 import pl.kurs.dictionary.service.DictionaryService;
 
 @RestController
@@ -26,21 +25,36 @@ public class DictionaryController {
         log.info("saveDictionary({})", command);
         return ResponseEntity.status(HttpStatus.CREATED).body(dictionaryService.save(command));
     }
-    // todo
-    // dodawanie wartosci do slownika
 
-    // edycja wartosci w slowniku
+    @PostMapping("/{dictionaryId}/values")
+    public ResponseEntity<DictionaryValueDto> addValueToDictionary(@PathVariable int dictionaryId, @RequestBody CreateDictionaryValueCommand command) {
+        log.info("addValueToDictionary(dictionaryId: {}, command: {})", dictionaryId, command);
+        return ResponseEntity.status(HttpStatus.CREATED).body(dictionaryService.addValueToDictionary(dictionaryId, command));
+    }
 
+    @PutMapping("/{dictionaryId}/values/{valueId}")
+    public ResponseEntity<DictionaryValueDto> updateDictionaryValue(@PathVariable int dictionaryId, @PathVariable int valueId, @RequestBody EditDictionaryValueCommand command) {
+        log.info("updateDictionaryValue(dictionaryId: {}, valueId: {}, command: {})", dictionaryId, valueId, command);
+        return ResponseEntity.status(HttpStatus.OK).body(dictionaryService.updateDictionaryValue(dictionaryId, valueId, command));
+    }
 
-    // pobranie slownika po id
+    @GetMapping("/{id}")
+    public ResponseEntity<DictionaryDto> findDictionaryById(@PathVariable int id) {
+        log.info("getDictionaryById({})", id);
+        return ResponseEntity.status(HttpStatus.OK).body(dictionaryService.findById(id));
+    }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> softDeleteDictionary(@PathVariable int id) {
+        log.info("softDeleteDictionary({})", id);
+        dictionaryService.softDeleteDictionary(id);
+        return  ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 
-    // usuniecia chce zeby byly zrobione za pomoca soft delete, czyli po protu ustawiamy jakis status np dodajemy pole w dictionary deleted ktore ma wartosc false, a jak usuniemy to ma sie zmienic na true
-    // sprawdzic adnotacje @Where i @SoftDelete
-
-    // usuniecie slownika
-
-    // usuniecie wartosci ze slownika
-
-
+    @DeleteMapping("/{dictionaryId}/values/{valueId}")
+    public ResponseEntity<Void> softDeleteDictionaryValue(@PathVariable int dictionaryId, @PathVariable int valueId) {
+        log.info("softDeleteDictionaryValue(dictionaryId: {}, valueId: {})", dictionaryId, valueId);
+        dictionaryService.softDeleteDictionaryValue(dictionaryId, valueId);
+        return  ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }

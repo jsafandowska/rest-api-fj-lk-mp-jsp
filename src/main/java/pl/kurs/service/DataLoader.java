@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import pl.kurs.dictionary.model.Dictionary;
 import pl.kurs.dictionary.model.DictionaryValue;
 import pl.kurs.dictionary.repository.DictionaryRepository;
+import pl.kurs.inheritance.enums.Gender;
 import pl.kurs.inheritance.model.Employee;
 import pl.kurs.inheritance.model.Student;
 import pl.kurs.inheritance.repository.PersonRepository;
@@ -19,6 +20,7 @@ import pl.kurs.repository.BookRepository;
 import pl.kurs.repository.CarRepository;
 import pl.kurs.repository.GarageRepository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -35,16 +37,7 @@ public class DataLoader {
 
     @PostConstruct
     public void init() {
-//        personRepository.saveAllAndFlush(
-//                List.of(
-//                        new Employee("X", 25, "programmer", 15000),
-//                        new Employee("Y", 45, "programmer", 25000),
-//                        new Employee("Z", 35,  "programmer", 17000),
-//                        new Student("A", 20, 1000, "1a"),
-//                        new Student("B", 19,  0, "2a"),
-//                        new Student("C", 21,  500, "1b")
-//                )
-//        );
+
         Author a1 = authorRepository.saveAndFlush(new Author("Kazimierz", "Wielki", 1900, 2000));
         Author a2 = authorRepository.saveAndFlush(new Author("Maria", "Wielka", 1900, 2000));
         Author a3 = authorRepository.saveAndFlush(new Author("Marcin", "Jakis", 2000, null));
@@ -75,9 +68,25 @@ public class DataLoader {
         new DictionaryValue("Senior Developer", positions);
         new DictionaryValue("Mid Developer", positions);
         new DictionaryValue("Junior Developer", positions);
-
-
         dictionaryRepository.saveAllAndFlush(List.of(countries, positions));
 
+
+        DictionaryValue france = countries.getValueByName("Francja");
+        DictionaryValue devops = positions.getValueByName("Devops");
+
+        List<Employee> employees = List.of(
+                new Employee("X", 25, LocalDate.of(1999, 1, 1), Gender.MALE, france, devops, 15000),
+                new Employee("Y", 45, LocalDate.of(1979, 1, 1), Gender.MALE, france, devops, 25000),
+                new Employee("Z", 35, LocalDate.of(1989, 1, 1), Gender.FEMALE, france, devops, 17000)
+        );
+
+        List<Student> students = List.of(
+                new Student("A", 20, LocalDate.of(2004, 1, 1), Gender.FEMALE, france, 1000, "1a"),
+                new Student("B", 19, LocalDate.of(2005, 1, 1), Gender.MALE, france, 0, "2a"),
+                new Student("C", 21, LocalDate.of(2003, 1, 1), Gender.FEMALE, france, 500, "1b")
+        );
+
+        personRepository.saveAllAndFlush(employees);
+        personRepository.saveAllAndFlush(students);
     }
 }
