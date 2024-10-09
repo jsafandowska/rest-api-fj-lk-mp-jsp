@@ -41,7 +41,7 @@ public class StudentFacade implements PersonFacade<Student, StudentDto> {
                 student.getAge(),
                 student.getDateOfBirth(),
                 student.getGender(),
-                student.getCountry().getValue(),
+                student.getCountry(),
                 student.getScholarship(),
                 student.getGroup()
         );

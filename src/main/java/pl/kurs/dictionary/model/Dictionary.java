@@ -38,7 +38,7 @@ public class Dictionary {
     }
     public DictionaryValue getValueByName(String value) {
         return values.stream()
-                .filter(dictValue -> dictValue.getValue().equals(value))
+                .filter(dictValue -> dictValue.getValue().equalsIgnoreCase(value))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Value not found: " + value));
     }

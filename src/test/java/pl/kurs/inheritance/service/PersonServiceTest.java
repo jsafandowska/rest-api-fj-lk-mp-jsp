@@ -61,7 +61,7 @@ public class PersonServiceTest {
         when(dictionaryValueRepository.findByDictionaryNameAndValue("COUNTRIES", "Polska"))
                 .thenReturn(Optional.of(countryValue));
         Student student = new Student("Joe", 22, LocalDate.of(2000, 1, 1), Gender.MALE, countryValue, 1500, "A1");
-        StudentDto expectedStudentDto = new StudentDto(1, "Joe", 22, LocalDate.of(2000, 1, 1), Gender.MALE, countryValue.getValue(), 1500, "A1");
+        StudentDto expectedStudentDto = new StudentDto(1, "Joe", 22, LocalDate.of(2000, 1, 1), Gender.MALE, countryValue, 1500, "A1");
         when(facades.get("studentFacade")).thenReturn(studentFacade);
         when(studentFacade.createPerson(parameters)).thenReturn(student);
         when(personRepository.saveAndFlush(student)).thenReturn(student);

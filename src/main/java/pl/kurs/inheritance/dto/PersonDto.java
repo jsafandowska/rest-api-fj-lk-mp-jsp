@@ -18,9 +18,9 @@ public abstract class PersonDto {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    private String country;
+    private DictionaryValue country;
 
-    public PersonDto(int id, String name, int age, LocalDate dateOfBirth, Gender gender, String country) {
+    public PersonDto(int id, String name, int age, LocalDate dateOfBirth, Gender gender, DictionaryValue country) {
         this.id = id;
         this.name = name;
         this.age = age;
