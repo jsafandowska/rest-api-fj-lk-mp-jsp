@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import java.util.HashSet;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 @Setter
 @EqualsAndHashCode(of = "name")
 @NoArgsConstructor
+@SQLDelete(sql = "update dictionary set deleted = true where id = ?1")
 @Where(clause = "deleted = false")
 public class Dictionary {
     @Id
@@ -24,9 +26,9 @@ public class Dictionary {
     private int id;
     @Column(unique = true)
     private String name;
-    @OneToMany(mappedBy = "dictionary", cascade = {CascadeType.PERSIST})
+    @OneToMany(mappedBy = "dictionary", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     private Set<DictionaryValue> values = new HashSet<>();
-    private boolean deleted = false;
+    private boolean deleted;
 
     public Dictionary(String name) {
         this.name = name;

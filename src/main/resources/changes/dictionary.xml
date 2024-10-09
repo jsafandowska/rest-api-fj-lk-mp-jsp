@@ -65,71 +65,71 @@
             </column>
         </addColumn>
     </changeSet>
-    <changeSet id="2024-10-10-krzysiek-009-insert-sample-dictionaries-and-values" author="krzysiek">
+<!--    <changeSet id="2024-10-10-krzysiek-009-insert-sample-dictionaries-and-values" author="krzysiek">-->
 
-        <insert tableName="dictionary">
-            <column name="id" valueComputed="NEXTVAL('dictionary_seq')" />
-            <column name="name" value="COUNTRIES" />
-            <column name="deleted" valueBoolean="false" />
-        </insert>
-
-
-        <insert tableName="dictionary">
-            <column name="id" valueComputed="NEXTVAL('dictionary_seq')" />
-            <column name="name" value="POSITIONS" />
-            <column name="deleted" valueBoolean="false" />
-        </insert>
-
-        <insert tableName="dictionary_value">
-            <column name="id" valueComputed="NEXTVAL('dictionary_value_seq')" />
-            <column name="dict_value" value="Polska" />
-            <column name="dictionary_id" valueComputed="(SELECT id FROM dictionary WHERE name = 'COUNTRIES')" />
-            <column name="deleted" valueBoolean="false" />
-        </insert>
-
-        <insert tableName="dictionary_value">
-            <column name="id" valueComputed="NEXTVAL('dictionary_value_seq')" />
-            <column name="dict_value" value="Niemcy" />
-            <column name="dictionary_id" valueComputed="(SELECT id FROM dictionary WHERE name = 'COUNTRIES')" />
-            <column name="deleted" valueBoolean="false" />
-        </insert>
-
-        <insert tableName="dictionary_value">
-            <column name="id" valueComputed="NEXTVAL('dictionary_value_seq')" />
-            <column name="dict_value" value="Wielka Brytania" />
-            <column name="dictionary_id" valueComputed="(SELECT id FROM dictionary WHERE name = 'COUNTRIES')" />
-            <column name="deleted" valueBoolean="false" />
-        </insert>
+<!--        <insert tableName="dictionary">-->
+<!--            <column name="id" valueComputed="NEXTVAL('dictionary_seq')" />-->
+<!--            <column name="name" value="COUNTRIES" />-->
+<!--            <column name="deleted" valueBoolean="false" />-->
+<!--        </insert>-->
 
 
-        <insert tableName="dictionary_value">
-            <column name="id" valueComputed="NEXTVAL('dictionary_value_seq')" />
-            <column name="dict_value" value="Devops" />
-            <column name="dictionary_id" valueComputed="(SELECT id FROM dictionary WHERE name = 'POSITIONS')" />
-            <column name="deleted" valueBoolean="false" />
-        </insert>
+<!--        <insert tableName="dictionary">-->
+<!--            <column name="id" valueComputed="NEXTVAL('dictionary_seq')" />-->
+<!--            <column name="name" value="POSITIONS" />-->
+<!--            <column name="deleted" valueBoolean="false" />-->
+<!--        </insert>-->
 
-        <insert tableName="dictionary_value">
-            <column name="id" valueComputed="NEXTVAL('dictionary_value_seq')" />
-            <column name="dict_value" value="Senior Developer" />
-            <column name="dictionary_id" valueComputed="(SELECT id FROM dictionary WHERE name = 'POSITIONS')" />
-            <column name="deleted" valueBoolean="false" />
-        </insert>
+<!--        <insert tableName="dictionary_value">-->
+<!--            <column name="id" valueComputed="NEXTVAL('dictionary_value_seq')" />-->
+<!--            <column name="dict_value" value="Polska" />-->
+<!--            <column name="dictionary_id" valueComputed="(SELECT id FROM dictionary WHERE name = 'COUNTRIES')" />-->
+<!--            <column name="deleted" valueBoolean="false" />-->
+<!--        </insert>-->
 
-        <insert tableName="dictionary_value">
-            <column name="id" valueComputed="NEXTVAL('dictionary_value_seq')" />
-            <column name="dict_value" value="Mid Developer" />
-            <column name="dictionary_id" valueComputed="(SELECT id FROM dictionary WHERE name = 'POSITIONS')" />
-            <column name="deleted" valueBoolean="false" />
-        </insert>
+<!--        <insert tableName="dictionary_value">-->
+<!--            <column name="id" valueComputed="NEXTVAL('dictionary_value_seq')" />-->
+<!--            <column name="dict_value" value="Niemcy" />-->
+<!--            <column name="dictionary_id" valueComputed="(SELECT id FROM dictionary WHERE name = 'COUNTRIES')" />-->
+<!--            <column name="deleted" valueBoolean="false" />-->
+<!--        </insert>-->
 
-        <insert tableName="dictionary_value">
-            <column name="id" valueComputed="NEXTVAL('dictionary_value_seq')" />
-            <column name="dict_value" value="Junior Developer" />
-            <column name="dictionary_id" valueComputed="(SELECT id FROM dictionary WHERE name = 'POSITIONS')" />
-            <column name="deleted" valueBoolean="false" />
-        </insert>
+<!--        <insert tableName="dictionary_value">-->
+<!--            <column name="id" valueComputed="NEXTVAL('dictionary_value_seq')" />-->
+<!--            <column name="dict_value" value="Wielka Brytania" />-->
+<!--            <column name="dictionary_id" valueComputed="(SELECT id FROM dictionary WHERE name = 'COUNTRIES')" />-->
+<!--            <column name="deleted" valueBoolean="false" />-->
+<!--        </insert>-->
 
-    </changeSet>
+
+<!--        <insert tableName="dictionary_value">-->
+<!--            <column name="id" valueComputed="NEXTVAL('dictionary_value_seq')" />-->
+<!--            <column name="dict_value" value="Devops" />-->
+<!--            <column name="dictionary_id" valueComputed="(SELECT id FROM dictionary WHERE name = 'POSITIONS')" />-->
+<!--            <column name="deleted" valueBoolean="false" />-->
+<!--        </insert>-->
+
+<!--        <insert tableName="dictionary_value">-->
+<!--            <column name="id" valueComputed="NEXTVAL('dictionary_value_seq')" />-->
+<!--            <column name="dict_value" value="Senior Developer" />-->
+<!--            <column name="dictionary_id" valueComputed="(SELECT id FROM dictionary WHERE name = 'POSITIONS')" />-->
+<!--            <column name="deleted" valueBoolean="false" />-->
+<!--        </insert>-->
+
+<!--        <insert tableName="dictionary_value">-->
+<!--            <column name="id" valueComputed="NEXTVAL('dictionary_value_seq')" />-->
+<!--            <column name="dict_value" value="Mid Developer" />-->
+<!--            <column name="dictionary_id" valueComputed="(SELECT id FROM dictionary WHERE name = 'POSITIONS')" />-->
+<!--            <column name="deleted" valueBoolean="false" />-->
+<!--        </insert>-->
+
+<!--        <insert tableName="dictionary_value">-->
+<!--            <column name="id" valueComputed="NEXTVAL('dictionary_value_seq')" />-->
+<!--            <column name="dict_value" value="Junior Developer" />-->
+<!--            <column name="dictionary_id" valueComputed="(SELECT id FROM dictionary WHERE name = 'POSITIONS')" />-->
+<!--            <column name="deleted" valueBoolean="false" />-->
+<!--        </insert>-->
+
+<!--    </changeSet>-->
         </databaseChangeLog>
 

@@ -47,14 +47,14 @@ public class DictionaryController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> softDeleteDictionary(@PathVariable int id) {
         log.info("softDeleteDictionary({})", id);
-        dictionaryService.softDeleteDictionary(id);
+        dictionaryService.deleteDictionary(id);
         return  ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @DeleteMapping("/{dictionaryId}/values/{valueId}")
     public ResponseEntity<Void> softDeleteDictionaryValue(@PathVariable int dictionaryId, @PathVariable int valueId) {
         log.info("softDeleteDictionaryValue(dictionaryId: {}, valueId: {})", dictionaryId, valueId);
-        dictionaryService.softDeleteDictionaryValue(dictionaryId, valueId);
+        dictionaryService.deleteDictionaryValue(dictionaryId, valueId);
         return  ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

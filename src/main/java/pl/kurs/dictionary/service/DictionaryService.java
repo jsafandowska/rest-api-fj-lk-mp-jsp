@@ -52,18 +52,12 @@ public class DictionaryService {
 
 // usuniecie slownika
 
-        public void softDeleteDictionary(int id) {
-            Dictionary dictionary = dictionaryRepository.findById(id)
-                    .orElseThrow(() -> new EntityNotFoundException("Dictionary not found"));
-            dictionary.setDeleted(true);
-            dictionaryRepository.save(dictionary);
+        public void deleteDictionary(int id) {
+            dictionaryRepository.deleteById(id);
         }
     // usuniecie wartosci ze slownika
-        public void softDeleteDictionaryValue(int dictionaryId, int valueId) {
-            DictionaryValue dictionaryValue = dictionaryValueRepository.findByIdAndDictionaryId(valueId, dictionaryId)
-                    .orElseThrow(() -> new EntityNotFoundException("Dictionary value not found"));
-            dictionaryValue.setDeleted(true);
-            dictionaryValueRepository.save(dictionaryValue);
+        public void deleteDictionaryValue(int dictionaryId, int valueId) {
+            dictionaryValueRepository.deleteById(valueId);
         }
 }
 
