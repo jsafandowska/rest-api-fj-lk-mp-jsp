@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="2024-09-30-mpawlak-001-add-dictionary-and-values" author="krzysiek">
+        <createSequence sequenceName="dictionary_seq" startValue="1000" incrementBy="100" />
+        <createTable tableName="dictionary">
+            <column name="id" type="int">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+        </createTable>
+        <createSequence sequenceName="dictionary_value_seq" startValue="100000" incrementBy="1000" />
+
+        <createTable tableName="dictionary_value">
+            <column name="id" type="int">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="value" type="varchar(255)" />
+            <column name="dictionary_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="dictionary_value"
+                                 baseColumnNames="dictionary_id"
+                                 referencedTableName="dictionary"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_dictionary_value_dictionary"/>
+    </changeSet>
+
+    <changeSet id="2024-09-30-mpawlak-002-add-country-column" author="krzysiek">
+        <addColumn tableName="person">
+            <column name="country" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>
