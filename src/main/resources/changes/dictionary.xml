@@ -20,7 +20,7 @@
             <column name="id" type="int">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="value" type="varchar(255)" />
+            <column name="dict_value" type="varchar(255)" />
             <column name="dictionary_id" type="int">
                 <constraints nullable="false"/>
             </column>
@@ -31,10 +31,104 @@
                                  referencedColumnNames="id"
                                  constraintName="fk_dictionary_value_dictionary"/>
     </changeSet>
-
-    <changeSet id="2024-09-30-jsafandowska-002-add-country-column" author="krzysiek">
+    <changeSet id="2024-10-08-krzysiek-002-add-country-id-to-person" author="krzysiek">
         <addColumn tableName="person">
-            <column name="country" type="varchar(255)"/>
+            <column name="country_id" type="int"/>
+        </addColumn>
+
+        <addForeignKeyConstraint baseTableName="person"
+                                 baseColumnNames="country_id"
+                                 referencedTableName="dictionary_value"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_person_country"/>
+    </changeSet>
+    <changeSet id="2024-10-08-krzysiek-003-add-position-id-to-person" author="krzysiek">
+        <addColumn tableName="person">
+            <column name="position_id" type="int"/>
+        </addColumn>
+
+        <addForeignKeyConstraint baseTableName="person"
+                                 baseColumnNames="position_id"
+                                 referencedTableName="dictionary_value"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_person_position"/>
+    </changeSet>
+    <changeSet id="2024-10-10-krzysiek-004-add-deleted-flag-to-dictionary-and-values" author="krzysiek">
+        <addColumn tableName="dictionary">
+            <column name="deleted" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="dictionary_value">
+            <column name="deleted" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
         </addColumn>
     </changeSet>
-        </databaseChangeLog>
+    <changeSet id="2024-10-10-krzysiek-009-insert-sample-dictionaries-and-values" author="krzysiek">
+
+        <insert tableName="dictionary">
+            <column name="id" valueComputed="NEXTVAL('dictionary_seq')" />
+            <column name="name" value="COUNTRIES" />
+            <column name="deleted" valueBoolean="false" />
+        </insert>
+
+
+        <insert tableName="dictionary">
+            <column name="id" valueComputed="NEXTVAL('dictionary_seq')" />
+            <column name="name" value="POSITIONS" />
+            <column name="deleted" valueBoolean="false" />
+        </insert>
+
+        <insert tableName="dictionary_value">
+            <column name="id" valueComputed="NEXTVAL('dictionary_value_seq')" />
+            <column name="dict_value" value="Polska" />
+            <column name="dictionary_id" valueComputed="(SELECT id FROM dictionary WHERE name = 'COUNTRIES')" />
+            <column name="deleted" valueBoolean="false" />
+        </insert>
+
+        <insert tableName="dictionary_value">
+            <column name="id" valueComputed="NEXTVAL('dictionary_value_seq')" />
+            <column name="dict_value" value="Niemcy" />
+            <column name="dictionary_id" valueComputed="(SELECT id FROM dictionary WHERE name = 'COUNTRIES')" />
+            <column name="deleted" valueBoolean="false" />
+        </insert>
+
+        <insert tableName="dictionary_value">
+            <column name="id" valueComputed="NEXTVAL('dictionary_value_seq')" />
+            <column name="dict_value" value="Wielka Brytania" />
+            <column name="dictionary_id" valueComputed="(SELECT id FROM dictionary WHERE name = 'COUNTRIES')" />
+            <column name="deleted" valueBoolean="false" />
+        </insert>
+
+
+        <insert tableName="dictionary_value">
+            <column name="id" valueComputed="NEXTVAL('dictionary_value_seq')" />
+            <column name="dict_value" value="Devops" />
+            <column name="dictionary_id" valueComputed="(SELECT id FROM dictionary WHERE name = 'POSITIONS')" />
+            <column name="deleted" valueBoolean="false" />
+        </insert>
+
+        <insert tableName="dictionary_value">
+            <column name="id" valueComputed="NEXTVAL('dictionary_value_seq')" />
+            <column name="dict_value" value="Senior Developer" />
+            <column name="dictionary_id" valueComputed="(SELECT id FROM dictionary WHERE name = 'POSITIONS')" />
+            <column name="deleted" valueBoolean="false" />
+        </insert>
+
+        <insert tableName="dictionary_value">
+            <column name="id" valueComputed="NEXTVAL('dictionary_value_seq')" />
+            <column name="dict_value" value="Mid Developer" />
+            <column name="dictionary_id" valueComputed="(SELECT id FROM dictionary WHERE name = 'POSITIONS')" />
+            <column name="deleted" valueBoolean="false" />
+        </insert>
+
+        <insert tableName="dictionary_value">
+            <column name="id" valueComputed="NEXTVAL('dictionary_value_seq')" />
+            <column name="dict_value" value="Junior Developer" />
+            <column name="dictionary_id" valueComputed="(SELECT id FROM dictionary WHERE name = 'POSITIONS')" />
+            <column name="deleted" valueBoolean="false" />
+        </insert>
+
+    </changeSet>
+</databaseChangeLog>

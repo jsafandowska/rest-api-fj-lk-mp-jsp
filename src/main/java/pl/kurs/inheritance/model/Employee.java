@@ -21,6 +21,7 @@ public class Employee extends Person {
     private DictionaryValue position;
     private int salary;
 
+
     public Employee(String name, int age, LocalDate dateOfBirth, Gender gender, DictionaryValue country, DictionaryValue position, int salary) {
         super(name, age, dateOfBirth, gender, country);
         this.position = position;

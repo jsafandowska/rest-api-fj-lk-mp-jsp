@@ -5,8 +5,10 @@ import org.springframework.stereotype.Service;
 import pl.kurs.dictionary.model.DictionaryValue;
 import pl.kurs.dictionary.repository.DictionaryValueRepository;
 import pl.kurs.inheritance.dto.EmployeeDto;
+import pl.kurs.inheritance.enums.Gender;
 import pl.kurs.inheritance.model.Employee;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 @Service
@@ -22,6 +24,8 @@ public class EmployeeFacade implements PersonFacade<Employee, EmployeeDto> {
                 .orElseThrow(() -> new IllegalStateException("Missing dictionary value in POSITIONS"));
         Employee employee = new Employee();
         employee.setName(parameters.get("name"));
+        employee.setDateOfBirth(LocalDate.parse(parameters.get("dateOfBirth")));
+        employee.setGender(Gender.valueOf(parameters.get("gender").toUpperCase()));
         employee.setPosition(positionValue);
         employee.setCountry(countryValue);
         employee.setAge(Integer.parseInt(parameters.get("age")));
@@ -34,6 +38,8 @@ public class EmployeeFacade implements PersonFacade<Employee, EmployeeDto> {
                 employee.getId(),
                 employee.getName(),
                 employee.getAge(),
+                employee.getDateOfBirth(),
+                employee.getGender(),
                 employee.getCountry().getValue(),
                 employee.getPosition().getValue(),
                 employee.getSalary()

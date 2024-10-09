@@ -4,21 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import pl.kurs.exceptions.AuthorNotFoundException;
-import pl.kurs.exceptions.BookNotFoundException;
 import pl.kurs.model.Author;
-import pl.kurs.model.Book;
 import pl.kurs.model.command.CreateAuthorCommand;
 import pl.kurs.model.command.EditAuthorCommand;
-import pl.kurs.model.command.EditBookCommand;
-import pl.kurs.model.dto.AuthorDto;
 import pl.kurs.model.dto.FullAuthorDto;
 import pl.kurs.repository.AuthorRepository;
-
 import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class AuthorService {

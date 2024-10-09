@@ -5,12 +5,14 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Where;
 
 @Entity
 @Getter
 @Setter
 @EqualsAndHashCode(of = {"value", "dictionary"})
 @NoArgsConstructor
+@Where(clause = "deleted = false")
 public class DictionaryValue {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "dictionaryValueIdGenerator")
@@ -21,6 +23,7 @@ public class DictionaryValue {
     @ManyToOne
     @JoinColumn(name = "dictionary_id")
     private Dictionary dictionary;
+    private boolean deleted = false;
 
     public DictionaryValue(String value, Dictionary dictionary) {
         this.value = value;

@@ -20,6 +20,11 @@ public class Student extends Person {
     @Column(name = "std_group")
     private String group;
 
+    public Student(int scholarship, String group) {
+        this.scholarship = scholarship;
+        this.group = group;
+    }
+
     public Student(String name, int age, LocalDate dateOfBirth, Gender gender, DictionaryValue country, int scholarship, String group) {
         super(name, age, dateOfBirth, gender, country);
         this.scholarship = scholarship;

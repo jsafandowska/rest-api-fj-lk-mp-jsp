@@ -11,9 +11,12 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import pl.kurs.Main;
 import pl.kurs.inheritance.dto.StudentDto;
+import pl.kurs.inheritance.enums.Gender;
 import pl.kurs.inheritance.model.PersonParameter;
 import pl.kurs.inheritance.model.command.CreatePersonCommand;
 import pl.kurs.inheritance.service.PersonService;
+
+import java.time.LocalDate;
 import java.util.List;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
@@ -46,7 +49,7 @@ public class PersonControllerTest {
                 new PersonParameter("group", "A1")
         );
         CreatePersonCommand command = new CreatePersonCommand("Student", parameters);
-        StudentDto studentDto = new StudentDto(1, "Joe", 22,1500,"A1");
+        StudentDto studentDto = new StudentDto(1, "Joe", 22, LocalDate.of(1995,1,1), Gender.FEMALE, "Polska",1000,"A1");
         when(personService.createPerson(Mockito.any(CreatePersonCommand.class))).thenReturn(studentDto);
         postman.perform(post("/api/v1/people")
                         .contentType(MediaType.APPLICATION_JSON)
