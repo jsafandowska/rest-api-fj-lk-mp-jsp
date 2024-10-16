@@ -17,10 +17,8 @@ import java.util.stream.Collectors;
 @Setter
 @EqualsAndHashCode(of = "name")
 @NoArgsConstructor
-@SQLDelete(sql = "update dictionary set deleted = true where id = ?1")
+//@SQLDelete(sql = "update dictionary set deleted = true where id = ?1")
 @Where(clause = "deleted = false")
-@Table(name = "dictionary", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"id", "name"})})
 
 public class Dictionary {
     @Id

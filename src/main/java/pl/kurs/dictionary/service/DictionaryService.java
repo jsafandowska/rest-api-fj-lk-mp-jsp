@@ -57,6 +57,7 @@ public class DictionaryService {
     // usuniecie slownika
     @Transactional
     public void deleteDictionary(int id) {
+//        dictionaryRepository.deleteById(id);
         deleteAllValuesFromDictionary(id);
         dictionaryRepository.softDeleteDictionary(id);
     }
