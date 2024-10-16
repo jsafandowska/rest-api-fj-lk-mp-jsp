@@ -15,6 +15,8 @@ import org.hibernate.annotations.Where;
 @NoArgsConstructor
 @SQLDelete(sql = "update dictionary_value set deleted = true where id = ?1")
 @Where(clause = "deleted = false")
+@Table(name = "dictionary_value", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"dict_value", "dictionary_id"})})
 public class DictionaryValue {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "dictionaryValueIdGenerator")
