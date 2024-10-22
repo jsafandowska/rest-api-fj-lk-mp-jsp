@@ -9,6 +9,7 @@ import java.util.concurrent.Executor;
 @Configuration
 public class AsyncConfig {
 
+    // todo dodac te wartosci do properties, albo ustawic je w klasie konfiguracyjnej
     @Bean
     public Executor booksImportExecutor() {
         final ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
