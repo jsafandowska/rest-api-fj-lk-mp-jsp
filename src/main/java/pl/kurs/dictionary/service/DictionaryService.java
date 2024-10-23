@@ -2,6 +2,9 @@ package pl.kurs.dictionary.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.kurs.dictionary.model.Dictionary;
@@ -13,6 +16,7 @@ import pl.kurs.dictionary.model.dto.DictionaryDto;
 import pl.kurs.dictionary.model.dto.DictionaryValueDto;
 import pl.kurs.dictionary.repository.DictionaryRepository;
 import pl.kurs.dictionary.repository.DictionaryValueRepository;
+import pl.kurs.exceptions.DictionaryNotFoundException;
 
 @Service
 @RequiredArgsConstructor
@@ -35,18 +39,23 @@ public class DictionaryService {
     }
 
     // edycja wartosci w slowniku
+    @Transactional
+    @CachePut(cacheNames = "dictionaries", key = "#id")
     public DictionaryValueDto updateDictionaryValue(int dictionaryId, int valueId, EditDictionaryValueCommand command) {
         DictionaryValue dictionaryValue = dictionaryValueRepository.findByIdAndDictionaryId(valueId, dictionaryId)
-                .orElseThrow(() -> new EntityNotFoundException("Dictionary value not found"));
+                .orElseThrow(() -> new DictionaryNotFoundException("Dictionary value not found"));
         dictionaryValue.setValue(command.getValue());
         dictionaryValueRepository.save(dictionaryValue);
         return DictionaryValueDto.toDto(dictionaryValue);
     }
 
     // pobranie slownika po id
+    @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "dictionaries", key = "#id")
     public DictionaryDto findById(int id) {
+        System.out.println("odpalam metode w serwisie");
         Dictionary dictionary = dictionaryRepository.findByIdWithValues(id)
-                .orElseThrow(() -> new EntityNotFoundException("Dictionary not found"));
+                .orElseThrow(() -> new DictionaryNotFoundException("Dictionary not found"));
         return DictionaryDto.toDto(dictionary);
     }
 
@@ -56,13 +65,13 @@ public class DictionaryService {
 
     // usuniecie slownika
     @Transactional
+    @CacheEvict(cacheNames = "dictionaries", key = "#id")
     public void deleteDictionary(int id) {
-//        dictionaryRepository.deleteById(id);
+        dictionaryRepository.deleteById(id);
         deleteAllValuesFromDictionary(id);
         dictionaryRepository.softDeleteDictionary(id);
     }
 
-    // usuniecie wartosci ze slownika
     @Transactional
     public void deleteDictionaryValue(int dictionaryId, int valueId) {
         dictionaryValueRepository.softDeleteSingleDictionaryValue(valueId, dictionaryId);

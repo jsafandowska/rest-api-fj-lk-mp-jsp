@@ -26,7 +26,7 @@ public class AuthorController {
     private final AuthorService authorService;
 
     @GetMapping
-    public ResponseEntity<Page<FullAuthorDto>> getAllAuthors(@PageableDefault Pageable pageable){
+        public ResponseEntity<Page<FullAuthorDto>> getAllAuthors(@PageableDefault Pageable pageable){
         log.info("findAll");
         return ResponseEntity.ok(authorService.getAllAuthorsWithBooks(pageable));
     }
