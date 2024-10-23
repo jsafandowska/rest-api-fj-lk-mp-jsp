@@ -1,5 +1,6 @@
 package pl.kurs.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -27,24 +28,28 @@ public class GarageController {
     }
 
     @GetMapping
+    @Operation(summary = "Get all garages")
     public ResponseEntity<Page<GarageDto>> findAll(@PageableDefault Pageable pageable) {
         log.info("findAll");
         return ResponseEntity.ok(garageService.findAllGarages(pageable).map(GarageDto::toDto));
     }
 
     @PostMapping
+    @Operation(summary = "Add garage to garages")
     public ResponseEntity<GarageDto> addGarage(@RequestBody CreateGarageCommand command) {
         log.info("addGarage({})", command);
         return ResponseEntity.status(HttpStatus.CREATED).body(GarageDto.toDto(garageService.addGarage(command)));
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get garage by ID")
     public ResponseEntity<GarageDto> findGarage(@PathVariable int id) {
         log.info("findGarage({})", id);
         return ResponseEntity.ok(GarageDto.toDto(garageService.findGarage(id)));
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete garage by ID")
     public ResponseEntity<GarageDto> deleteGarage(@PathVariable int id) {
         log.info("deleteGarage({})", id);
         garageService.deleteGarage(id);
@@ -52,18 +57,21 @@ public class GarageController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Edit garage by ID")
     public ResponseEntity<GarageDto> editGarage(@PathVariable int id, @RequestBody CreateGarageCommand command) {
         log.info("editGarage({}, {})", id, command);
         return ResponseEntity.status(HttpStatus.OK).body(GarageDto.toDto(garageService.editGarage(id, command)));
     }
 
     @PatchMapping("/{id}")
+    @Operation(summary = "Edit garage partially by ID")
     public ResponseEntity<GarageDto> editGaragePartially(@PathVariable int id, @RequestBody EditGarageCommand command) {
         log.info("editGarage({}, {})", id, command);
         return ResponseEntity.status(HttpStatus.OK).body(GarageDto.toDto(garageService.editGaragePartially(id, command)));
     }
 
     @PatchMapping("/{id}/cars/{carId}")
+    @Operation(summary = "Add car by its ID to the garage with the given ID")
     public ResponseEntity<GarageDto> addCar(@PathVariable int id, @PathVariable int carId) {
         log.info("addCar({}, {})", id, carId);
         garageService.addCarToGarage(id, carId);
@@ -71,6 +79,7 @@ public class GarageController {
     }
 
     @DeleteMapping("/{id}/cars/{carId}")
+    @Operation(summary = "Delete car by its ID from garage with the given ID")
     public ResponseEntity<GarageDto> deleteCarFromGarage(@PathVariable int id, @PathVariable int carId) {
        log.info("deleteCarFromGarage({}, {})", id, carId);
         garageService.deleteCarFromGarage(id, carId);
