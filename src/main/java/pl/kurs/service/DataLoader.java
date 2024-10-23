@@ -74,6 +74,7 @@ public class DataLoader {
         DictionaryValue france = countries.getValueByName("Francja");
         DictionaryValue devops = positions.getValueByName("Devops");
 
+
         List<Employee> employees = List.of(
                 new Employee("X", 25, LocalDate.of(1999, 1, 1), Gender.MALE, france, devops, 15000),
                 new Employee("Y", 45, LocalDate.of(1979, 1, 1), Gender.MALE, france, devops, 25000),

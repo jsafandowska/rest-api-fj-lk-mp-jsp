@@ -15,9 +15,9 @@
         </addColumn>
     </changeSet>
 
-    <changeSet id="2024-08-25-jsafandowska-002-update-birthdate-and-gender" author="krzysiek">
-        <customChange class="pl.kurs.inheritance.service.PeselToBirthdateAndGenderChange"/>
-    </changeSet>
+<!--    <changeSet id="2024-08-25-jsafandowska-002-update-birthdate-and-gender" author="krzysiek">-->
+<!--        <customChange class="pl.kurs.inheritance.service.PeselToBirthdateAndGenderChange"/>-->
+<!--    </changeSet>-->
     <changeSet id="2024-09-15-jsafandowska-001-update-birthdate-and-gender" author="krzysiek">
        <dropColumn tableName="person" columnName="pesel"/>
     </changeSet>
