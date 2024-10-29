@@ -34,18 +34,24 @@ public class GarageController {
     public void test() {
         garageService.playWithTransactions();
     }
+        @GetMapping("/{id}")
     @Operation(summary = "Get garage by ID")
-    @GetMapping("/{id}")
-    public ResponseEntity<EntityModel<GarageDto>> findGarage(@PathVariable int id) {
+    public ResponseEntity<GarageDto> findGarage(@PathVariable int id) {
         log.info("findGarage({})", id);
-        GarageDto garageDto = GarageDto.toDto(garageService.findGarage(id));
-
-        EntityModel<GarageDto> resource = EntityModel.of(garageDto);
-        resource.add(linkTo(methodOn(GarageController.class).findGarage(id)).withSelfRel());
-        resource.add(linkTo(methodOn(GarageController.class).getCarsInGarage(id)).withRel("cars"));
-
-        return ResponseEntity.ok(resource);
+        return ResponseEntity.ok(GarageDto.toDto(garageService.findGarage(id)));
     }
+//    @Operation(summary = "Get garage by ID")
+//    @GetMapping("/{id}")
+//    public ResponseEntity<EntityModel<GarageDto>> findGarage(@PathVariable int id) {
+//        log.info("findGarage({})", id);
+//        GarageDto garageDto = GarageDto.toDto(garageService.findGarage(id));
+//
+//        EntityModel<GarageDto> resource = EntityModel.of(garageDto);
+//        resource.add(linkTo(methodOn(GarageController.class).findGarage(id)).withSelfRel());
+//        resource.add(linkTo(methodOn(GarageController.class).getCarsInGarage(id)).withRel("cars"));
+//
+//        return ResponseEntity.ok(resource);
+//    }
 
     @Operation(summary = "Get all cars in a specific garage")
     @GetMapping("/{id}/cars")
@@ -71,13 +77,6 @@ public class GarageController {
         log.info("addGarage({})", command);
         return ResponseEntity.status(HttpStatus.CREATED).body(GarageDto.toDto(garageService.addGarage(command)));
     }
-
-//    @GetMapping("/{id}")
-//    @Operation(summary = "Get garage by ID")
-//    public ResponseEntity<GarageDto> findGarage(@PathVariable int id) {
-//        log.info("findGarage({})", id);
-//        return ResponseEntity.ok(GarageDto.toDto(garageService.findGarage(id)));
-//    }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete garage by ID")
