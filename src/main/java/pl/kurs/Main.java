@@ -11,6 +11,8 @@ public class  Main {
 
         SpringApplication.run(Main.class, args);
 
+        // dodac jakąs walidacje do wybranego pola
+
     }
 }
 

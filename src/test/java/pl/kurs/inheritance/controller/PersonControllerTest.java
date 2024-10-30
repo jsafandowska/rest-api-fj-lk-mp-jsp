@@ -16,14 +16,13 @@ import pl.kurs.dictionary.model.DictionaryValue;
 import pl.kurs.dictionary.repository.DictionaryValueRepository;
 import pl.kurs.inheritance.dto.StudentDto;
 import pl.kurs.inheritance.enums.Gender;
-import pl.kurs.inheritance.model.Employee;
 import pl.kurs.inheritance.model.PersonParameter;
 import pl.kurs.inheritance.model.command.CreatePersonCommand;
 import pl.kurs.inheritance.service.PersonService;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
@@ -78,6 +77,25 @@ public class PersonControllerTest {
                 .andExpect(jsonPath("$.group", is(studentDto.getGroup())));
 //                .andExpect(jsonPath("$.country.value", is(countryValue.getValue())));
 //        nie działa, potrzebny by był odzielny DTO
+    }
+
+    @Test
+    public void shouldNotCreateAnyEntity_UnknownType() throws Exception {
+        CreatePersonCommand command = new CreatePersonCommand();
+        command.setClassType("Trololo");
+
+        List<PersonParameter> parameters = new ArrayList<>();
+        parameters.add(new PersonParameter("name", "sample name"));
+        parameters.add(new PersonParameter("surname", "sample surname"));
+        command.setParameters(parameters);
+
+        String json = objectMapper.writeValueAsString(command);
+
+        postman.perform(post("/api/v1/people")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(json))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.messages[0]").value("UNKNOWN_ENTITY_TYPE"));
     }
 }
 
