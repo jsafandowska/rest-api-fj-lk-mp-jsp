@@ -1,10 +1,7 @@
 package pl.kurs.model.dto;
-import io.swagger.v3.oas.annotations.links.Link;
-
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import pl.kurs.controller.GarageController;
 import pl.kurs.model.Garage;
-
 
 //public record GarageDto(int id, int places, String address, boolean lpgAllowed) {
 //    public static GarageDto toDto(Garage garage) {

@@ -1,6 +1,5 @@
 package pl.kurs.dictionary.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -32,7 +31,7 @@ public class DictionaryService {
 
     public DictionaryValueDto addValueToDictionary(int dictionaryId, CreateDictionaryValueCommand command) {
         Dictionary dictionary = dictionaryRepository.findByIdWithValues(dictionaryId)
-                .orElseThrow(() -> new EntityNotFoundException("Dictionary not found"));
+                .orElseThrow(() -> new DictionaryNotFoundException("Dictionary not found"));
         DictionaryValue dictionaryValue = new DictionaryValue(command.getValue(), dictionary);
         dictionaryValueRepository.save(dictionaryValue);
         return DictionaryValueDto.toDto(dictionaryValue);
