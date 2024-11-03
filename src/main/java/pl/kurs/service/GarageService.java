@@ -5,20 +5,27 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import pl.kurs.controller.GarageController;
 import pl.kurs.exceptions.CarNotFoundException;
 import pl.kurs.exceptions.GarageNotFoundException;
 import pl.kurs.model.Car;
 import pl.kurs.model.Garage;
 import pl.kurs.model.command.CreateGarageCommand;
 import pl.kurs.model.command.EditGarageCommand;
+import pl.kurs.model.dto.CarDto;
+import pl.kurs.model.dto.GarageDto;
 import pl.kurs.repository.CarRepository;
 import pl.kurs.repository.GarageRepository;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +41,8 @@ public class GarageService {
         return garageRepository.findAll(pageable);
     }
 
+
+
     public Garage addGarage(CreateGarageCommand command) {
         return garageRepository.saveAndFlush(new Garage(command.getPlaces(), command.getAddress(), command.isLpgAllowed()));
     }
@@ -42,6 +51,32 @@ public class GarageService {
     public Garage findGarage(int id) {
         return garageRepository.findById(id).orElseThrow(GarageNotFoundException::new);
     }
+
+    public List<CarDto> getCarsInGarage(int garageId) {
+        Garage garage = garageRepository.findById(garageId)
+                .orElseThrow(GarageNotFoundException::new);
+
+        return garage.getCars().stream()
+                .map(CarDto::toDto)
+                .collect(Collectors.toList());
+    }
+    @Transactional(readOnly = true, isolation = Isolation.READ_UNCOMMITTED)
+    public EntityModel<GarageDto> findGarageWithLinks(int id) {
+        GarageDto garageDto = GarageDto.toDto(findGarage(id));
+        EntityModel<GarageDto> resource = EntityModel.of(garageDto);
+        resource.add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(GarageController.class).findGarage(id)).withSelfRel());
+        resource.add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(GarageController.class).getCarsInGarage(id)).withRel("cars"));
+        return resource;
+    }
+
+    @Transactional(readOnly = true, isolation = Isolation.READ_UNCOMMITTED)
+    public CollectionModel<CarDto> getCarsInGarageWithLinks(int garageId) {
+        List<CarDto> cars = getCarsInGarage(garageId);
+        CollectionModel<CarDto> resources = CollectionModel.of(cars);
+        resources.add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(GarageController.class).getCarsInGarage(garageId)).withSelfRel());
+        return resources;
+    }
+
 
     public void deleteGarage(int id) {
         garageRepository.deleteById(id);
