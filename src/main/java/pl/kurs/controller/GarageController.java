@@ -6,13 +6,22 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.kurs.model.command.CreateGarageCommand;
 import pl.kurs.model.command.EditGarageCommand;
+import pl.kurs.model.dto.CarDto;
+import pl.kurs.model.dto.FullGarageDto;
 import pl.kurs.model.dto.GarageDto;
 import pl.kurs.service.GarageService;
+
+import java.util.List;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("api/v1/garages")
@@ -21,7 +30,22 @@ import pl.kurs.service.GarageService;
 public class GarageController {
 
     private final GarageService garageService;
+    @GetMapping("/{id}")
+    @Operation(summary = "Get garage by ID")
+    public ResponseEntity<FullGarageDto> findGarage(@PathVariable int id) {
+        log.info("findGarage({})", id);
+        return ResponseEntity.ok(FullGarageDto.toDto(garageService.findGarage(id)));
+    }
+    @Operation(summary = "Get all cars in a specific garage")
+    @GetMapping("/{id}/cars")
+    public ResponseEntity<CollectionModel<CarDto>> getCarsInGarage(@PathVariable int id) {
+        List<CarDto> cars = garageService.getCarsInGarage(id);
 
+        CollectionModel<CarDto> resources = CollectionModel.of(cars);
+        resources.add(linkTo(methodOn(GarageController.class).getCarsInGarage(id)).withSelfRel());
+
+        return ResponseEntity.ok(resources);
+    }
     @GetMapping("/test")
     public void test() {
         garageService.playWithTransactions();
@@ -41,12 +65,12 @@ public class GarageController {
         return ResponseEntity.status(HttpStatus.CREATED).body(GarageDto.toDto(garageService.addGarage(command)));
     }
 
-    @GetMapping("/{id}")
-    @Operation(summary = "Get garage by ID")
-    public ResponseEntity<GarageDto> findGarage(@PathVariable int id) {
-        log.info("findGarage({})", id);
-        return ResponseEntity.ok(GarageDto.toDto(garageService.findGarage(id)));
-    }
+//    @GetMapping("/{id}")
+//    @Operation(summary = "Get garage by ID")
+//    public ResponseEntity<GarageDto> findGarage(@PathVariable int id) {
+//        log.info("findGarage({})", id);
+//        return ResponseEntity.ok(GarageDto.toDto(garageService.findGarage(id)));
+//    }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete garage by ID")

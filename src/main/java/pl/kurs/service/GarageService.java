@@ -7,7 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import pl.kurs.exceptions.CarNotFoundException;
 import pl.kurs.exceptions.GarageNotFoundException;
@@ -15,10 +14,12 @@ import pl.kurs.model.Car;
 import pl.kurs.model.Garage;
 import pl.kurs.model.command.CreateGarageCommand;
 import pl.kurs.model.command.EditGarageCommand;
+import pl.kurs.model.dto.CarDto;
 import pl.kurs.repository.CarRepository;
 import pl.kurs.repository.GarageRepository;
-
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +33,16 @@ public class GarageService {
 //    @Transactional(readOnly = true, propagation = Propagation.MANDATORY)
     public Page<Garage> findAllGarages(Pageable pageable) {
         return garageRepository.findAll(pageable);
+    }
+
+    @Transactional
+    public List<CarDto> getCarsInGarage(int garageId) {
+        Garage garage = garageRepository.findById(garageId)
+                .orElseThrow(GarageNotFoundException::new);
+
+        return garage.getCars().stream()
+                .map(CarDto::toDto)
+                .collect(Collectors.toList());
     }
 
     public Garage addGarage(CreateGarageCommand command) {

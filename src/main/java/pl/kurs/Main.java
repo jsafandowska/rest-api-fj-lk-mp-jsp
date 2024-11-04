@@ -24,7 +24,7 @@ public class  Main {
 
         // kolejne zajęcia - walidacje
 
-// https://spring.io/guides/gs/rest-hateoas
+        // https://spring.io/guides/gs/rest-hateoas
     }
 }
 

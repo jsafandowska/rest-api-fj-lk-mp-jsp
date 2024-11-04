@@ -9,4 +9,5 @@ public record GarageDto(int id, int places, String address, boolean lpgAllowed) 
                 garage.getAddress(),
                 garage.isLpgAllowed());
     }
+
 }
