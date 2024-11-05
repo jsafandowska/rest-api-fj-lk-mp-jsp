@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import pl.kurs.dictionary.model.DictionaryValue;
 import pl.kurs.inheritance.enums.Gender;
+import pl.kurs.validation.annotation.CheckAge;
 
 import java.time.LocalDate;
 
@@ -21,6 +22,7 @@ public abstract class Person {
     @SequenceGenerator(name = "personIdGenerator", sequenceName = "person_seq", initialValue = 1, allocationSize = 100)
     private int id;
     private String name;
+    @CheckAge
     private int age;
     private LocalDate dateOfBirth;
     @Enumerated(EnumType.STRING)
