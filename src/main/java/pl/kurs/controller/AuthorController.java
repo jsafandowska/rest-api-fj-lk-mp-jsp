@@ -1,5 +1,6 @@
 package pl.kurs.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -31,7 +32,7 @@ public class AuthorController {
         return ResponseEntity.ok(authorService.getAllAuthorsWithBooks(pageable));
     }
     @PostMapping
-    public ResponseEntity<AuthorDto> addAuthor(@RequestBody CreateAuthorCommand command){
+    public ResponseEntity<AuthorDto> addAuthor(@RequestBody @Valid CreateAuthorCommand command){
         log.info("addAuthor({})", command);
         return ResponseEntity.status(HttpStatus.CREATED).body(AuthorDto.toDto(authorService.addAuthor(command)));
     }
