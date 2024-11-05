@@ -133,4 +133,17 @@ public class AuthorControllerTest {
         Assertions.assertEquals(2000, recentlyAdded.getDeathYear());
         Assertions.assertEquals(1, recentlyAdded.getVersion());
     }
+
+
+    @Test
+    public void shouldNotAddAuthor() throws Exception {
+        CreateAuthorCommand command = new CreateAuthorCommand("Imie", "Nazwisko", 2000, 2025);
+        String json = objectMapper.writeValueAsString(command);
+        postman.perform(post("/api/v1/authors")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.messages[0]").value("INVALID_DEATH_YEAR"));
+    }
+
 }

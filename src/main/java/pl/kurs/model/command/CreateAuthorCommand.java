@@ -8,11 +8,12 @@ import pl.kurs.validation.annotation.CheckDeathYear;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@CheckDeathYear
+
 public class CreateAuthorCommand {
     private String name;
     private String surname;
     private Integer birthYear;
+    @CheckDeathYear
     private Integer deathYear;
 
 }
