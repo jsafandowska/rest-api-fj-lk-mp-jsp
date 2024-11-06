@@ -15,10 +15,13 @@ import pl.kurs.model.Car;
 import pl.kurs.model.Garage;
 import pl.kurs.model.command.CreateGarageCommand;
 import pl.kurs.model.command.EditGarageCommand;
+import pl.kurs.model.dto.CarDto;
 import pl.kurs.repository.CarRepository;
 import pl.kurs.repository.GarageRepository;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,11 +32,18 @@ public class GarageService {
     private final CarRepository carRepository;
 
 
-//    @Transactional(readOnly = true, propagation = Propagation.MANDATORY)
+    //    @Transactional(readOnly = true, propagation = Propagation.MANDATORY)
     public Page<Garage> findAllGarages(Pageable pageable) {
         return garageRepository.findAll(pageable);
     }
+    public List<CarDto> getCarsInGarage(int garageId) {
+        Garage garage = garageRepository.findById(garageId)
+                .orElseThrow(GarageNotFoundException::new);
 
+        return garage.getCars().stream()
+                .map(CarDto::toDto)
+                .collect(Collectors.toList());
+    }
     public Garage addGarage(CreateGarageCommand command) {
         return garageRepository.saveAndFlush(new Garage(command.getPlaces(), command.getAddress(), command.isLpgAllowed()));
     }
