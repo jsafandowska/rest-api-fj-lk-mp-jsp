@@ -2,16 +2,11 @@ package pl.kurs.validation;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import pl.kurs.model.command.CreateAuthorCommand;
 import pl.kurs.validation.annotation.CheckDeathYear;
 
 import java.time.Year;
 
 public class DeathYearValidator implements ConstraintValidator<CheckDeathYear, Integer> {
-
-    @Override
-    public void initialize(CheckDeathYear constraintAnnotation) {
-    }
 
     @Override
     public boolean isValid(Integer deathYear, ConstraintValidatorContext context) {
