@@ -1,5 +1,6 @@
 package pl.kurs.controller;
 
+import com.querydsl.apt.jpa.JPAAnnotationProcessor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import pl.kurs.model.command.CreateBookCommand;
 import pl.kurs.model.command.EditBookCommand;
 import pl.kurs.model.dto.BookDto;
+import pl.kurs.model.query.FindBookQuery;
 import pl.kurs.service.BookService;
 
 @RestController
@@ -22,9 +24,9 @@ public class BookController {
     private final BookService bookService;
 
     @GetMapping
-    public ResponseEntity<Page<BookDto>> findAll(@PageableDefault Pageable pageable) {
-        log.info("findAll");
-        return ResponseEntity.ok(bookService.findAll(pageable).map(BookDto::toDto));
+    public ResponseEntity<Page<BookDto>> findAll(@PageableDefault Pageable pageable, FindBookQuery query) {
+        log.info("findAll({}, {})", pageable, query);
+        return ResponseEntity.ok(bookService.findAll(pageable, query).map(BookDto::toDto));
     }
 
     @PostMapping

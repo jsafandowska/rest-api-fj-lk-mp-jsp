@@ -41,16 +41,18 @@ public class DataLoader {
         Author a1 = authorRepository.saveAndFlush(new Author("Kazimierz", "Wielki", 1900, 2000));
         Author a2 = authorRepository.saveAndFlush(new Author("Maria", "Wielka", 1900, 2000));
         Author a3 = authorRepository.saveAndFlush(new Author("Marcin", "Jakis", 2000, null));
-        bookRepository.saveAndFlush(new Book("Ogniem i mieczem", "LEKTURA", true, a1));
-        bookRepository.saveAndFlush(new Book("Ogniem i mieczem 2", "LEKTURA", true, a1));
-        bookRepository.saveAndFlush(new Book("Ogniem i mieczem 3", "LEKTURA", true, a1));
-        bookRepository.saveAndFlush(new Book("Ogniem i mieczem 4", "LEKTURA", true, a1));
-        bookRepository.saveAndFlush(new Book("Ogniem i mieczem 5", "LEKTURA", true, a1));
-        bookRepository.saveAndFlush(new Book("Ogniem i mieczem 6", "LEKTURA", true, a2));
-        bookRepository.saveAndFlush(new Book("Ogniem i mieczem 7", "LEKTURA", true, a2));
-        bookRepository.saveAndFlush(new Book("Ogniem i mieczem 8", "LEKTURA", true, a3));
-        bookRepository.saveAndFlush(new Book("Ogniem i mieczem 9", "LEKTURA", true, a3));
-        bookRepository.saveAndFlush(new Book("Ogniem i mieczem 10", "LEKTURA", true, a3));
+        bookRepository.saveAndFlush(new Book("Ogniem i mieczem ", "KOMEDIA", true, a1));
+        bookRepository.saveAndFlush(new Book("w pustyni i w puszczy", "LEKTURA", true, a1));
+        bookRepository.saveAndFlush(new Book("potop", "KOMEDIA", true, a1));
+        bookRepository.saveAndFlush(new Book("potop 2", "LEKTURA", true, a1));
+        bookRepository.saveAndFlush(new Book("Ogniem i mieczem 1", "KRYMINAŁ", true, a1));
+        bookRepository.saveAndFlush(new Book("Pan Wołodyjowski", "LEKTURA", true, a2));
+        bookRepository.saveAndFlush(new Book("Krzyzacy", "KRYMINAŁ", false, a2));
+        bookRepository.saveAndFlush(new Book("Dziady", "LEKTURA", false, a3));
+        bookRepository.saveAndFlush(new Book("Przedwiosnie", "ROMANS", true, a3));
+        bookRepository.saveAndFlush(new Book("zboze", "LEKTURA", true, a3));
+
+
         garageRepository.saveAndFlush(new Garage(2, "Warszawa", true));
         garageRepository.saveAndFlush(new Garage(3, "Piątkowska", false));
         garageRepository.saveAndFlush(new Garage(3, "Piątkowska", false));
