@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = CheckAgeValidator.class)
 public @interface CheckAge {
-    String message() default "UNKNOWN_ENTITY_TYPE";
+    String message() default "INVALID_AGE";
 
     Class<?>[] groups() default {};
 

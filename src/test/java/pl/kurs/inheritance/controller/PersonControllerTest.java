@@ -97,6 +97,27 @@ public class PersonControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.messages[0]").value("UNKNOWN_ENTITY_TYPE"));
     }
+    @Test
+    public void shouldNotCreatePersonWithAgeHigherThen120() throws Exception {
+        List<PersonParameter> parameters = List.of(
+                new PersonParameter("name", "Joe"),
+                new PersonParameter("age", "150"),
+                new PersonParameter("dateOfBirth", "2000-01-01"),
+                new PersonParameter("gender", "MALE"),
+                new PersonParameter("country", "Polska"),
+                new PersonParameter("scholarship", "1500"),
+                new PersonParameter("group", "A1")
+                                                  );
+        CreatePersonCommand command = new CreatePersonCommand();
+        command.setParameters(parameters);
+        command.setClassType("Student");
+        String json = objectMapper.writeValueAsString(command);
+        postman.perform(post("/api/v1/people")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(json))
+               .andExpect(status().isBadRequest())
+               .andExpect(jsonPath("$.messages[0]").value("INVALID_AGE"));
+    }
 }
 
 
