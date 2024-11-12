@@ -38,9 +38,9 @@ public class DataLoader {
     @PostConstruct
     public void init() {
 
-        Author a1 = authorRepository.saveAndFlush(new Author("Kazimierz", "Wielki", 1900, 2000));
-        Author a2 = authorRepository.saveAndFlush(new Author("Maria", "Wielka", 1900, 2000));
-        Author a3 = authorRepository.saveAndFlush(new Author("Marcin", "Jakis", 2000, null));
+        Author a1 = authorRepository.saveAndFlush(new Author("Adam", "Sienkiewicz", 1900, 2000));
+        Author a2 = authorRepository.saveAndFlush(new Author("Adam", "Mickiewicz", 1900, 2000));
+        Author a3 = authorRepository.saveAndFlush(new Author("Henryk", "Sienkiewicz", 2000, null));
         bookRepository.saveAndFlush(new Book("Ogniem i mieczem ", "KOMEDIA", true, a1));
         bookRepository.saveAndFlush(new Book("w pustyni i w puszczy", "LEKTURA", true, a1));
         bookRepository.saveAndFlush(new Book("potop", "KOMEDIA", true, a1));

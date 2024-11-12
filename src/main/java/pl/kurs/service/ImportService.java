@@ -25,7 +25,7 @@ public class ImportService {
     private final ImportStatusFacade importStatusFacade;
 
     @Transactional
-    void saveBook(String[] args) {
+    public void saveBook(String[] args) {
         jdbcTemplate.update(INSERT_BOOK_SQL,
                 args[0], args[1], true, Integer.parseInt(args[2]));
     }
