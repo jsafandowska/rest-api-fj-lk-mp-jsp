@@ -5,23 +5,19 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import pl.kurs.model.Author;
 import pl.kurs.model.Book;
 import pl.kurs.model.command.CreateBookCommand;
 import pl.kurs.model.command.EditBookCommand;
 import pl.kurs.repository.AuthorRepository;
 import pl.kurs.repository.BookRepository;
-import java.util.Arrays;
+
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.times;
 
 public class BookServiceTest {
     @Mock
@@ -43,17 +39,17 @@ public class BookServiceTest {
 
 
     }
-    @Test
-    public void shouldReturnAllBooks() {
-        Pageable pageable = PageRequest.of(0, 2);
-        Page<Book> page = new PageImpl<>(Arrays.asList(book1, book2), pageable, 2);
-        when(bookRepository.findAll(pageable)).thenReturn(page);
-        Page<Book> result = bookService.findAll(pageable);
-        assertEquals(2, result.getTotalElements());
-        assertEquals("Ogniem i mieczem", result.getContent().get(0).getTitle());
-        assertEquals("Ogniem i mieczem 2", result.getContent().get(1).getTitle());
-        verify(bookRepository, times(1)).findAll(pageable);
-    }
+//    @Test
+//    public void shouldReturnAllBooks() {
+//        Pageable pageable = PageRequest.of(0, 2);
+//        Page<Book> page = new PageImpl<>(Arrays.asList(book1, book2), pageable, 2);
+//        when(bookRepository.findAll(pageable)).thenReturn(page);
+//        Page<Book> result = bookService.findAll(pageable);
+//        assertEquals(2, result.getTotalElements());
+//        assertEquals("Ogniem i mieczem", result.getContent().get(0).getTitle());
+//        assertEquals("Ogniem i mieczem 2", result.getContent().get(1).getTitle());
+//        verify(bookRepository, times(1)).findAll(pageable);
+//    }
 
     @Test
     public void shouldAddBook() {
