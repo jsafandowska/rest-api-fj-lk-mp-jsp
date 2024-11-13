@@ -11,7 +11,20 @@ public class  Main {
 
         SpringApplication.run(Main.class, args);
 
-        // dodac jakąs walidacje do wybranego pola
+        // todo doczytac jak dzialają pozostale creationPolicy stateless etc
+        // co to jest csrf
+        // z czego sie sklada JWT
+
+        // Api do tworzenia userow i ról
+        /*
+        tworzenie usera, tworzenie roli, przypisawanie roli do usera, pobieranie usera z repozytorium
+        user: id, name, surname, email, password
+        role: id, name
+        many-to-many
+        zmien konfiguracje spring security tak aby userDetailService pobierał userow z bazy a nie z pamieci
+        dodac odpowiednie tabele w liquibase, dane inicjalne itp
+         */
+
 
     }
 }
