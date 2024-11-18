@@ -20,17 +20,17 @@ public class FindBookQuery {
 
     public Predicate toPredicate() {
         BooleanBuilder conditions = new BooleanBuilder();
-        if(title != null) conditions.and(QBook.book.title.containsIgnoreCase(title));
-        if(category != null) conditions.and(QBook.book.category.eq(category));
-        if(available != null) conditions.and(QBook.book.available.eq(available));
-        if(author != null) {
+        if (title != null) conditions.and(QBook.book.title.containsIgnoreCase(title));
+        if (category != null) conditions.and(QBook.book.category.eq(category));
+        if (available != null) conditions.and(QBook.book.available.eq(available));
+        if (author != null) {
             String[] authorParts = author.split(" ");
             BooleanBuilder authorCondition = new BooleanBuilder();
             Arrays.stream(authorParts).forEach(part -> {
                 authorCondition.or(QBook.book.author.name.containsIgnoreCase(part));
                 authorCondition.or(QBook.book.author.surname.containsIgnoreCase(part));
-                conditions.and(authorCondition);
             });
+            conditions.and(authorCondition);
         }
         return conditions;
     }
