@@ -9,4 +9,5 @@
     <include file="/changes/migrate-pesel.xml"/>
     <include file="/changes/dictionary.xml"/>
 
+
 </databaseChangeLog>

@@ -2,6 +2,7 @@ package pl.kurs;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @EnableAsync
 @SpringBootApplication
@@ -10,6 +11,8 @@ public class  Main {
     public static void main(String[] args) {
 
         SpringApplication.run(Main.class, args);
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        System.out.println(encoder.encode("admin"));
 
         // todo doczytac jak dzialają pozostale creationPolicy stateless etc
         // co to jest csrf

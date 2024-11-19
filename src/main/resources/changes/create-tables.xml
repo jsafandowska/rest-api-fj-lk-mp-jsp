@@ -91,4 +91,47 @@
             );
         </sql>
     </changeSet>
+
+    <changeSet id="2024-11-18-krzysiek-008-create-table-user" author="julia">
+        <createTable tableName="app_user">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="surname" type="VARCHAR(255)"/>
+            <column name="email" type="VARCHAR(255)" />
+            <column name="password" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2024-11-18-krzysiek-009-create-table-role" author="julia">
+        <createTable tableName="role">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+
+
+    <changeSet id="2024-11-18-krzysiek-10-create-table-user_roles" author="julia">
+        <createTable tableName="user_roles">
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="user_roles" baseColumnNames="user_id"
+                                 constraintName="fk_user_roles_user"
+                                 referencedTableName="app_user" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="user_roles" baseColumnNames="role_id"
+                                 constraintName="fk_user_roles_role"
+                                 referencedTableName="role" referencedColumnNames="id"/>
+
+        <addPrimaryKey constraintName="pk_user_roles" tableName="user_roles" columnNames="user_id, role_id"/>
+    </changeSet>
+
 </databaseChangeLog>

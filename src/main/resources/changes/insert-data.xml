@@ -27,4 +27,36 @@
             insert into person (age, name, pesel, std_group, scholarship, dtype, id) values (23, 'Karolina', '93042457567', '1A', 800, 'Student', default);
         </sql>
     </changeSet>
+    <changeSet id="2024-11-18-krzysiek-009-insert-records" author="julia">
+        <sql>
+            -- Insert roles
+            INSERT INTO role (id, name) VALUES (DEFAULT, 'USER');
+            INSERT INTO role (id, name) VALUES (DEFAULT, 'ADMIN');
+
+            -- Insert admin user
+            INSERT INTO app_user (id, name, surname, email, password)
+            VALUES (DEFAULT, 'Admin', 'Admin', 'admin', '$2a$10$qqsVHUpv4xB/uWN2KRsb9eudaa0sIHtGu2h5zLmfaNAvzJE4KHuzy
+            ');
+
+            -- Assign ADMIN role to admin user
+            INSERT INTO user_roles (user_id, role_id)
+            VALUES (
+            (SELECT id FROM app_user WHERE email = 'admin'),
+            (SELECT id FROM role WHERE name = 'ADMIN')
+            );
+
+            -- Insert other users
+            INSERT INTO app_user (id, name, surname, email, password) VALUES (DEFAULT, 'Adam', 'Nowak', 'adam.nowak@example.com', '$2a$10$DowJddOkfJ5LvA0hrW1YUuP6Cfy6.EzDa41apZCgQ9a3p1z8vjuiC');
+            INSERT INTO app_user (id, name, surname, email, password) VALUES (DEFAULT, 'Ewa', 'Kowalska', 'ewa.kowalska@example.com', '$2a$10$DowJddOkfJ5LvA0hrW1YUuP6Cfy6.EzDa41apZCgQ9a3p1z8vjuiC');
+            INSERT INTO app_user (id, name, surname, email, password) VALUES (DEFAULT, 'Jan', 'Wiśniewski', 'jan.wisniewski@example.com', '$2a$10$DowJddOkfJ5LvA0hrW1YUuP6Cfy6.EzDa41apZCgQ9a3p1z8vjuiC');
+            INSERT INTO app_user (id, name, surname, email, password) VALUES (DEFAULT, 'Anna', 'Zielińska', 'anna.zielinska@example.com', '$2a$10$DowJddOkfJ5LvA0hrW1YUuP6Cfy6.EzDa41apZCgQ9a3p1z8vjuiC');
+
+            -- Assign roles to users
+            INSERT INTO user_roles (user_id, role_id) VALUES ((SELECT id FROM app_user WHERE email = 'adam.nowak@example.com'), (SELECT id FROM role WHERE name = 'USER'));
+            INSERT INTO user_roles (user_id, role_id) VALUES ((SELECT id FROM app_user WHERE email = 'ewa.kowalska@example.com'), (SELECT id FROM role WHERE name = 'USER'));
+            INSERT INTO user_roles (user_id, role_id) VALUES ((SELECT id FROM app_user WHERE email = 'jan.wisniewski@example.com'), (SELECT id FROM role WHERE name = 'ADMIN'));
+            INSERT INTO user_roles (user_id, role_id) VALUES ((SELECT id FROM app_user WHERE email = 'anna.zielinska@example.com'), (SELECT id FROM role WHERE name = 'ADMIN'));
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>
