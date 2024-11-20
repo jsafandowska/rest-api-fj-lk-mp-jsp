@@ -27,4 +27,22 @@
             insert into person (age, name, pesel, std_group, scholarship, dtype, id) values (23, 'Karolina', '93042457567', '1A', 800, 'Student', default);
         </sql>
     </changeSet>
+    <changeSet id="2024-11-18-002" author="michal">
+        <sql>
+            INSERT INTO app_user (id, name, surname, email, password) VALUES (1, 'John', 'Doe', 'john@example.com', '$2a$10$AIABxurJKPOXiUZ5n6o5FOEeUcyFQDfgvxpvgHyFHxlpAGSSVf1/G');
+            INSERT INTO app_user (id, name, surname, email, password) VALUES (2, 'Jane', 'Smith', 'jane@example.com', 'password456');
+
+            INSERT INTO role (id, name) VALUES (1, 'ADMIN');
+            INSERT INTO role (id, name) VALUES (2, 'USER');
+        </sql>
+    </changeSet>
+    <changeSet id="2024-11-18-003" author="michal">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="user_roles"/>
+        </preConditions>
+        <sql>
+            INSERT INTO user_roles (user_id, role_id) VALUES (1, 1); -- John -> ADMIN
+            INSERT INTO user_roles (user_id, role_id) VALUES (2, 2); -- Jane -> USER
+        </sql>
+    </changeSet>
 </databaseChangeLog>

@@ -2,14 +2,16 @@ package pl.kurs;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @EnableAsync
 @SpringBootApplication
 public class  Main {
 
     public static void main(String[] args) {
-
+//-Dspring.profiles.active=no-liquibase
         SpringApplication.run(Main.class, args);
+
 
         // todo doczytac jak dzialają pozostale creationPolicy stateless etc
         // co to jest csrf
@@ -25,6 +27,10 @@ public class  Main {
         dodac odpowiednie tabele w liquibase, dane inicjalne itp
          */
 
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String password = "password123";
+        String encodedPassword = encoder.encode(password);
+//        System.out.println("Zakodowane hasło: " + encodedPassword);
 
     }
 }
